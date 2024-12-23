@@ -3,8 +3,6 @@ import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import SocialIcons from "./components/SocialIcons";
 import logo from "./assets/logo.png";
-import { FaXTwitter } from "react-icons/fa6";
-import { AiFillInstagram, AiFillLinkedin, AiFillYoutube } from "react-icons/ai";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RemoteWork from "./pages/RemoteWork";
 import AboutUs from "./pages/AboutUs";
