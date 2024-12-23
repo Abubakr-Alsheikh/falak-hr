@@ -2,11 +2,12 @@ import React from "react";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import SocialIcons from "./components/SocialIcons";
-import logo from "./assets/logo.png";
+import logo from "./assets/logo.svg";
 import { FaXTwitter } from "react-icons/fa6";
 import { AiFillInstagram, AiFillLinkedin, AiFillYoutube } from "react-icons/ai";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RemoteWork from "./pages/RemoteWork";
+import AboutUs from "./pages/AboutUs";
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/remote-work" element={<RemoteWork />} />
+          <Route path="/about-us" element={<AboutUs />} />
         </Routes>
 
         <footer className="mt-8 bg-gray-200 p-4">
