@@ -14,16 +14,19 @@ const AboutUsContent: React.FC = () => {
           title="عنوان"
           description="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدا."
           imageUrl={"https://placehold.co/400x300"}
+          buttonText="عرض المزيد"
         />
         <Card
           title="عنوان"
           description="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدا."
           imageUrl={"https://placehold.co/400x300"}
+          buttonText="عرض المزيد"
         />
         <Card
           title="عنوان"
           description="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدا."
           imageUrl={"https://placehold.co/400x300"}
+          buttonText="عرض المزيد"
         />
       </div>
     </div>
