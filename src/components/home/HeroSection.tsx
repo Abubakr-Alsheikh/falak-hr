@@ -4,7 +4,7 @@ import { BsArrowLeft } from "react-icons/bs";
 
 const HeroSection: React.FC = () => {
   return (
-    <section className="mx-4 mt-10 rounded-3xl md:mx-0 hero-section">
+    <section className="hero-section mx-4 mb-8 mt-10 rounded-3xl shadow-lg md:mx-0">
       <div className="mx-auto max-w-screen-xl px-4 py-8 text-center lg:px-12 lg:py-16">
         <a
           href="#"
