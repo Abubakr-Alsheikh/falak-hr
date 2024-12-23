@@ -11,7 +11,7 @@ const Navbar: React.FC = () => {
 
   return (
     <header>
-      <nav className="border-gray-200 bg-white px-4 py-2.5 dark:bg-gray-800 lg:px-6">
+      <nav className="mt-5 border-gray-200 bg-white px-4 py-2.5 dark:bg-gray-800 lg:px-6">
         <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between">
           <Link to="/" className="flex items-center">
             <img src={logo} className="mr-3 h-16" alt="Falak HR Logo" />

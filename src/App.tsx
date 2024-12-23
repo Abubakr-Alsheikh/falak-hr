@@ -11,7 +11,7 @@ import ContactUs from "./pages/ContactUs";
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <div className="bg-gray-100 font-sans antialiased">
+      <div className="font-sans antialiased">
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
