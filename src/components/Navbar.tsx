@@ -21,9 +21,9 @@ const Navbar: React.FC = () => {
           <Link to="/about-us" className="text-gray-800 hover:text-gray-500">
             نبذة عنا
           </Link>
-          <a href="#" className="text-gray-800 hover:text-gray-500">
+          <Link to="/contact-us" className="text-gray-800 hover:text-gray-500">
             اتصل بنا
-          </a>
+          </Link>
         </div>
       </div>
       <div className="flex items-center space-x-4">

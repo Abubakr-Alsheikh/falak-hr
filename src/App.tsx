@@ -8,6 +8,7 @@ import { AiFillInstagram, AiFillLinkedin, AiFillYoutube } from "react-icons/ai";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RemoteWork from "./pages/RemoteWork";
 import AboutUs from "./pages/AboutUs";
+import ContactUs from "./pages/ContactUs";
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/remote-work" element={<RemoteWork />} />
           <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/contact-us" element={<ContactUs />} />
         </Routes>
 
         <footer className="mt-8 bg-gray-200 p-4">
