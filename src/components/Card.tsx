@@ -1,38 +1,44 @@
 import React from "react";
 import Button from "./Button";
-interface CardProps {
+
+interface AboutCardProps {
   title: string;
   description: string;
-  buttonText?: string;
-  imageUrl?: string;
-  onButtonClick?: () => void;
+  imageUrl: string;
+  buttonText: string;
+  isReversed?: boolean;
 }
 
-const Card: React.FC<CardProps> = ({
+const AboutCard: React.FC<AboutCardProps> = ({
   title,
   description,
-  buttonText,
   imageUrl,
-  onButtonClick,
+  buttonText,
+  isReversed,
 }) => {
+  const flexOrder = isReversed
+    ? "md:flex md:flex-row-reverse"
+    : "md:flex md:flex-row ";
   return (
-    <div className="rounded-lg bg-white p-6 shadow-md">
-      {imageUrl && (
-        <div className="mb-4 flex justify-center">
-          <img
-            src={imageUrl}
-            alt="Card Image"
-            className="h-32 w-48 object-contain opacity-50"
-          />
-        </div>
-      )}
-      <h3 className="mb-2 text-xl font-bold">{title}</h3>
-      <p className="mb-4 text-gray-700">{description}</p>
-      {buttonText && (
-        <Button text={buttonText} variant="secondary" onClick={onButtonClick} />
-      )}
+    <div
+      className={`border gap-8 items-center py-8 px-4  max-w-screen-xl my-5 rounded-2xl shadow-lg mx-4 md:mx-0 ${flexOrder}`}
+    >
+      <img
+        className="w-full flex-1 rounded-xl"
+        src={imageUrl}
+        alt="dashboard image"
+      />
+      <div className="mt-4 text-right md:mt-0">
+        <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+          {title}
+        </h2>
+        <p className="mb-6 font-light text-gray-500 dark:text-gray-400 md:text-lg">
+          {description}
+        </p>
+        <Button text={buttonText} variant="secondary" />
+      </div>
     </div>
   );
 };
 
-export default Card;
+export default AboutCard;

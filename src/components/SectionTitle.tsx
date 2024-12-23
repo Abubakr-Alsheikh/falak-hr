@@ -10,7 +10,7 @@ const SectionTitle: React.FC<SectionTitleProps> = ({ title, center }) => {
     <h2
       className={`text-3xl font-bold text-center ${
         center ? "text-center" : "text-right"
-      } mb-8`}
+      } mb-4`}
     >
       {title}
     </h2>
