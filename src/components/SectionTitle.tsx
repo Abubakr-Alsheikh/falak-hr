@@ -8,7 +8,7 @@ interface SectionTitleProps {
 const SectionTitle: React.FC<SectionTitleProps> = ({ title, center }) => {
   return (
     <h2
-      className={`text-3xl font-bold text-center ${
+      className={`text-4xl font-bold text-center ${
         center ? "text-center" : "text-right"
       } mb-4`}
     >

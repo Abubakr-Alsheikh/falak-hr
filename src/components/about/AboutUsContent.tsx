@@ -1,6 +1,7 @@
 import React from "react";
 import TextContent from "../TextContent";
 import AboutCard from "../AboutCard";
+import SectionTitle from "../SectionTitle";
 
 const AboutUsContent: React.FC = () => {
   const cards = [
@@ -30,7 +31,7 @@ const AboutUsContent: React.FC = () => {
   return (
     <div>
       <div className="relative text-right">
-        <div className="mb-4 text-4xl font-bold">هدفنا وقصتنا</div>
+        <SectionTitle title="هدفنا وقصتنا" />
         <TextContent text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا." />
       </div>
       {cards.map((card, index) => (

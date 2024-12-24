@@ -1,6 +1,7 @@
 import React from "react";
 import TextContent from "../TextContent";
 import AboutCard from "../AboutCard";
+import SectionTitle from "../SectionTitle";
 
 const RemoteWorkExplain: React.FC = () => {
   const cards = [
@@ -30,7 +31,7 @@ const RemoteWorkExplain: React.FC = () => {
   return (
     <div className="mt-8">
       <div className="relative text-right">
-        <div className="mb-4 text-4xl font-bold">شرح العمل عن بعد</div>
+        <SectionTitle title="شرح العمل عن بعد" />
         <TextContent text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا." />
       </div>
       {cards.map((card, index) => (
