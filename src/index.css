@@ -8,7 +8,7 @@
   font-style: normal;
 }
 
-.hero-section{
+.gradient-primary-color{
   background: rgb(76,5,25);
   background: -moz-linear-gradient(152deg, rgba(76,5,25,1) 12%, rgba(219,39,119,1) 100%);
   background: -webkit-linear-gradient(152deg, rgba(76,5,25,1) 12%, rgba(219,39,119,1) 100%);
