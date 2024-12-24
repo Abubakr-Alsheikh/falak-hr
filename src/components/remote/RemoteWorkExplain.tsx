@@ -29,10 +29,10 @@ const RemoteWorkExplain: React.FC = () => {
   ];
 
   return (
-    <div className="mt-8">
+    <div className="mt-20">
       <div className="relative text-right">
-        <SectionTitle title="شرح العمل عن بعد" />
-        <TextContent text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا." />
+        <SectionTitle title="شرح العمل عن بعد" center={true} />
+        <TextContent text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا." center={true} />
       </div>
       {cards.map((card, index) => (
         <AboutCard

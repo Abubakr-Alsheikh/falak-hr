@@ -31,8 +31,8 @@ const AboutUsContent: React.FC = () => {
   return (
     <div>
       <div className="relative text-right">
-        <SectionTitle title="هدفنا وقصتنا" />
-        <TextContent text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا." />
+        <SectionTitle title="هدفنا وقصتنا" center={true} />
+        <TextContent text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا." center={true} />
       </div>
       {cards.map((card, index) => (
         <AboutCard
