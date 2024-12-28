@@ -15,9 +15,7 @@ const HeroSection: React.FC = () => {
           <span className="mr-3 rounded-full bg-primary-600 px-4 py-1.5 text-xs text-white">
             جديد
           </span>{" "}
-          <span className="text-sm font-medium">
-           انظر الى هو جديد
-          </span>
+          <span className="text-sm font-medium">انظر الى هو جديد</span>
           <svg
             className="ml-2 h-5 w-5"
             fill="currentColor"
@@ -35,8 +33,8 @@ const HeroSection: React.FC = () => {
           فلك للموارد البشرية
         </h1>
         <p className="mb-8 text-lg font-normal text-gray-100 dark:text-gray-400 sm:px-16 lg:text-xl xl:px-48">
-          نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو
-          الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا.
+          لادارة و تشغيل باقات و انظمة وبرامج ومشاريع العمل عن بعد عبر خدمة
+          المراقبة الذاتية
         </p>
         <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 lg:mb-16">
           <Button icon={<BsArrowLeft />} text="أبدا معنا" variant="primary" />

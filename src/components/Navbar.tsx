@@ -16,7 +16,7 @@ const Navbar: React.FC = () => {
           <Link to="/" className="flex items-center">
             <img src={logo} className="mr-3 h-16" alt="Falak HR Logo" />
           </Link>
-          <div className="flex items-center lg:order-2">
+          <div className="flex items-center sm:flex-1 sm:justify-end lg:order-2">
             <Button text="اشترك معنا" variant="secondary" />
             <Button text="تسجيل الدخول" variant="primary" />
             <button
@@ -57,7 +57,7 @@ const Navbar: React.FC = () => {
           <div
             className={`${
               isMenuOpen ? "block" : "hidden"
-            } justify-center items-center w-full lg:flex lg:w-auto lg:order-1 md:flex-1 md:mr-10`}
+            } flex-1 justify-center items-center w-full lg:flex lg:w-auto lg:order-1 md:flex-1 md:mr-10`}
             id="mobile-menu-2"
           >
             <ul className="mt-4 flex flex-col font-medium lg:mt-0 lg:flex-row">

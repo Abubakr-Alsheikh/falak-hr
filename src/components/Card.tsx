@@ -21,10 +21,10 @@ const AboutCard: React.FC<AboutCardProps> = ({
     : "md:flex md:flex-row ";
   return (
     <div
-      className={`border gap-8 items-center py-8 px-4 max-w-screen-xl my-5 rounded-2xl shadow-lg mx-4 md:mx-0 ${flexOrder}`}
+      className={`border gap-8 items-center py-8 px-4 max-w-full my-5 rounded-2xl shadow-lg mx-4 md:mx-0 ${flexOrder}`}
     >
       <img
-        className="w-full flex-1 rounded-xl"
+        className="w-full flex-1 rounded-xl md:min-w-80"
         src={imageUrl}
         alt="dashboard image"
       />

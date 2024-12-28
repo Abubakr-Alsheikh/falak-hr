@@ -18,7 +18,7 @@ const PricingCard: React.FC<PricingCardProps> = ({ title, subtitle, price, featu
         <span className="mr-2 text-5xl font-extrabold">{price.split('/')[0]}</span>
         <span className="text-gray-500 dark:text-gray-400"></span>
       </div>
-      <ul role="list" className="mb-8 space-y-4 text-left">
+      <ul role="list" className="mb-8 flex-1 space-y-4 text-left">
         {features.map((feature, index) => (
           <li key={index} className="flex items-center space-x-3">
             <svg className="ml-2 h-5 w-5 flex-shrink-0 text-green-500 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

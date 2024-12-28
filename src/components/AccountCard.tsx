@@ -16,7 +16,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
   return (
     <div
       style={{ backgroundImage: `url(${backgroundImage})` }}
-      className="relative flex h-96 max-w-screen-lg overflow-hidden rounded-2xl border bg-cover bg-center p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800 md:p-12"
+      className="relative flex min-h-96 max-w-screen-lg overflow-hidden rounded-2xl border bg-cover bg-center p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800 md:p-12"
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="relative z-10 flex h-full flex-1 flex-col items-start justify-center">
