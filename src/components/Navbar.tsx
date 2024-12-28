@@ -14,10 +14,10 @@ const Navbar: React.FC = () => {
       <nav className="mt-5 border-gray-200 bg-white px-4 py-2.5 dark:bg-gray-800 lg:px-6">
         <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between">
           <Link to="/" className="flex items-center">
-            <img src={logo} className="mr-3 h-16" alt="Falak HR Logo" />
+            <img src={logo} className="mr-3 h-14" alt="Falak HR Logo" />
           </Link>
           <div className="flex items-center sm:flex-1 sm:justify-end lg:order-2">
-            <Button text="اشترك معنا" variant="secondary" />
+            <Button text="اشترك معنا" variant="secondary" hideInSmallScreen={true} />
             <Button text="تسجيل الدخول" variant="primary" />
             <button
               onClick={toggleMenu}
