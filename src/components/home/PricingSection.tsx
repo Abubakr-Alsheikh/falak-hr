@@ -1,7 +1,6 @@
 import React from "react";
-import SectionTitle from "../SectionTitle";
-import TextContent from "../TextContent";
 import PricingCard from "../PlanCard";
+import HeaderSection from "../HeaderSection";
 
 const PricingSection: React.FC = () => {
   const plans = [
@@ -44,11 +43,10 @@ const PricingSection: React.FC = () => {
 
   return (
     <section className="bg-white dark:bg-gray-900">
-      <div className="mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16">
-        <SectionTitle title="أسعار باقات الإشتراك" center={true} />
-        <TextContent
+      <div className="mx-auto mb-16 max-w-screen-xl px-4 lg:px-6">
+        <HeaderSection
+          title="أسعار باقات الإشتراك"
           text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا."
-          center={true}
         />
         <div className="space-y-8 sm:gap-6 lg:grid lg:grid-cols-3 lg:space-y-0 xl:gap-5">
           {plans.map((plan, index) => (

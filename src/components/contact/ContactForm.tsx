@@ -1,17 +1,18 @@
 import React from "react";
 import Button from "../Button";
-import SectionTitle from "../SectionTitle";
-import TextContent from "../TextContent";
 import ContactFormInput from "./ContactFormInput";
 import ContactFormTextArea from "./ContactFormTextArea";
+import HeaderSection from "../HeaderSection";
 
 const ContactForm: React.FC = () => {
   return (
     <section className="bg-white dark:bg-gray-900">
       <div className="mx-auto max-w-screen-md px-4">
         <div className="text-center">
-          <SectionTitle title="ادخل بياناتك للتواصل معك" center={true} />
-          <TextContent text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدا." center={true} />
+          <HeaderSection
+            title="ادخل بياناتك للتواصل معك"
+            text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا."
+          />
         </div>
         <form action="#" className="space-y-8 text-right">
           <ContactFormInput
