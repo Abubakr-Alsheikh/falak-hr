@@ -6,6 +6,7 @@ import RemoteWork from "./pages/RemoteWork";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import Footer from "./components/Footer";
+import PartnersSection from "./components/PartnersSection";
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact-us" element={<ContactUs />} />
         </Routes>
+        <PartnersSection />
         <Footer />
       </div>
     </BrowserRouter>
