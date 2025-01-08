@@ -18,9 +18,9 @@ const AboutCard: React.FC<AboutCardProps> = ({
 }) => {
   return (
     <div
-      className={`gap-8 items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 sm:py-16 lg:px-6 md:grid md:grid-cols-2 ${isReversed ? "md:grid-cols-2-reverse" : "md:grid-cols-2"}`}
+      className={`gap-8 border items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 sm:py-16 lg:px-6 md:grid md:grid-cols-2 shadow-xl rounded-2xl my-8 ${isReversed ? "md:grid-cols-2-reverse" : "md:grid-cols-2"}`}
     >
-      <img className={`w-full ${isReversed ? "md:order-2" : "md:order-1"}`} src={imageUrl} alt="dashboard image" />
+      <img className={`w-full rounded-2xl border ${isReversed ? "md:order-2" : "md:order-1"}`} src={imageUrl} alt="dashboard image" />
       <div className={`mt-4 text-right md:mt-0 ${isReversed ? "md:order-1" : "md:order-2"}`}>
         <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
           {title}

@@ -15,14 +15,14 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
 }) => {
   const headerClasses = isHeader
     ? "gradient-primary-color text-white rounded-3xl py-10 text-center max-w-screen-lg mb-12"
-    : "";
+    : "mb-4 ";
   const titleClasses = isHeader
     ? "text-4xl font-extrabold tracking-tight dark:text-white md:text-4xl lg:text-5xl"
     : "text-4xl font-bold text-center";
 
   return (
     <div
-      className={`mb-4 mx-3 px-3 md:mx-auto ${headerClasses} ${
+      className={`mx-3 px-3 md:mx-auto ${headerClasses} ${
         center ? "text-center" : "text-right"
       }`}
     >

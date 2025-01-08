@@ -24,7 +24,7 @@ const AboutCard: React.FC<AboutCardProps> = ({
       className={`border gap-8 items-center py-8 px-4 max-w-full my-5 rounded-2xl shadow-lg mx-4 md:mx-0 ${flexOrder}`}
     >
       <img
-        className="w-full flex-1 rounded-xl md:min-w-80"
+        className="w-full flex-1 rounded-xl md:min-w-96"
         src={imageUrl}
         alt="dashboard image"
       />
