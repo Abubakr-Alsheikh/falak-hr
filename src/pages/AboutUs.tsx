@@ -4,7 +4,7 @@ import AboutUsContent from "../components/about/AboutUsContent";
 
 const AboutUs: React.FC = () => {
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto mt-32">
       <AboutUsTitle />
       <AboutUsContent />
     </div>
