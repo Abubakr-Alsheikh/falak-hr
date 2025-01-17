@@ -1,7 +1,7 @@
 import React from "react";
-import AboutUsTitle from "../components/about/AboutUsTitle";
-import AboutUsContent from "../components/about/AboutUsContent";
-import CeoMessage from "../components/about/CeoMessage";
+import AboutUsTitle from "./sections/AboutUsTitle";
+import CeoMessage from "./sections/CeoMessage";
+import AboutUsContent from "./sections/AboutUsContent";
 
 const AboutUs: React.FC = () => {
   return (

@@ -1,5 +1,5 @@
 import React from "react";
-import SectionTitle from "../../components/SectionTitle";
+import SectionTitle from "../../../components/SectionTitle";
 
 const ContactUsTitle: React.FC = () => {
   return (

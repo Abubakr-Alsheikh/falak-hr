@@ -7,8 +7,8 @@ import {
   AiOutlineInbox,
   AiOutlineCloud,
 } from "react-icons/ai";
-import FeatureCard from "../FeatureCard";
-import HeaderSection from "../HeaderSection";
+import FeatureCard from "../../../components/FeatureCard";
+import HeaderSection from "../../../components/HeaderSection";
 
 const RemoteFeaturesSection: React.FC = () => {
   const features = [

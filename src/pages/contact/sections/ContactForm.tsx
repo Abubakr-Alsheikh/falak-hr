@@ -1,8 +1,8 @@
 import React from "react";
-import Button from "../Button";
+import Button from "../../../components/Button";
 import ContactFormInput from "./ContactFormInput";
 import ContactFormTextArea from "./ContactFormTextArea";
-import HeaderSection from "../HeaderSection";
+import HeaderSection from "../../../components/HeaderSection";
 
 const ContactForm: React.FC = () => {
   return (
