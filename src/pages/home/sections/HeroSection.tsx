@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "../Button";
+import Button from "../../../components/Button";
 import { BsArrowLeft } from "react-icons/bs";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 

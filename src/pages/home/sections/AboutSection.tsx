@@ -1,9 +1,9 @@
 import React from "react";
-import AboutCard from "../Card";
-import remoteWorkImage from '../../assets/AboutSection/remote work.jpg'
-import workSectionImage from '../../assets/AboutSection/work section.jpg'
-import trainingSessionImage from '../../assets/AboutSection/training session.png'
-import HeaderSection from "../HeaderSection";
+import AboutCard from "../../../components/Card";
+import remoteWorkImage from "../../../assets/AboutSection/remote work.jpg";
+import workSectionImage from "../../../assets/AboutSection/work section.jpg";
+import trainingSessionImage from "../../../assets/AboutSection/training session.png";
+import HeaderSection from "../../../components/HeaderSection";
 
 const AboutSection: React.FC = () => {
   const cards = [

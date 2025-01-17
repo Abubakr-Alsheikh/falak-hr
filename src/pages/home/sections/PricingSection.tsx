@@ -1,6 +1,6 @@
 import React from "react";
-import PricingCard from "../PlanCard";
-import HeaderSection from "../HeaderSection";
+import PricingCard from "../../../components/PlanCard";
+import HeaderSection from "../../../components/HeaderSection";
 
 const PricingSection: React.FC = () => {
   const plans = [

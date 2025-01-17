@@ -1,9 +1,9 @@
 import React from "react";
-import AboutCard from "../AboutCard";
-import futuristicCityscapeImage from '../../assets/AboutPage/futuristic cityscape.png'
-import digitalInterfaceImage from '../../assets/AboutPage/digital interface.png'
-import FourDistinctImage from '../../assets/AboutPage/Four distinct.png'
-import HeaderSection from "../HeaderSection";
+import futuristicCityscapeImage from '../../../assets/AboutPage/futuristic cityscape.png'
+import digitalInterfaceImage from '../../../assets/AboutPage/digital interface.png'
+import FourDistinctImage from '../../../assets/AboutPage/Four distinct.png'
+import HeaderSection from "../../../components/HeaderSection";
+import AboutCard from "../../../components/AboutCard";
 
 const AboutUsContent: React.FC = () => {
   const cards = [

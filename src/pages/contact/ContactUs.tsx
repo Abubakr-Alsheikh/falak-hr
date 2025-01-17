@@ -1,7 +1,7 @@
 import React from 'react';
-import ContactUsTitle from '../components/contact/ContactUsTitle';
-import ContactForm from '../components/contact/ContactForm';
-import MapSection from "../components/contact/MapSection";
+import ContactUsTitle from './sections/ContactUsTitle';
+import ContactForm from './sections/ContactForm';
+import MapSection from "./sections/MapSection";
 const ContactUs: React.FC = () => {
   return (
     <div className="container mx-auto mt-16">

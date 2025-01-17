@@ -1,10 +1,10 @@
 import React from "react";
-import Home from "./pages/Home";
+import Home from "./pages/home/Home";
 import Navbar from "./components/Navbar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import RemoteWork from "./pages/RemoteWork";
-import AboutUs from "./pages/AboutUs";
-import ContactUs from "./pages/ContactUs";
+import RemoteWork from "./pages/remote/RemoteWork";
+import AboutUs from "./pages/about/AboutUs";
+import ContactUs from "./pages/contact/ContactUs";
 import Footer from "./components/Footer";
 import PartnersSection from "./components/PartnersSection";
 

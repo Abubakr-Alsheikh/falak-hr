@@ -1,10 +1,10 @@
 import React from "react";
-import AboutCard from "../AboutCard";
-import calendarHighlighting from "../../assets/RemoteWorkExplain/calendar highlighting.png"
-import collaborativePlanning from "../../assets/RemoteWorkExplain/collaborative planning.png"
-import knowledgeableInstructor from "../../assets/RemoteWorkExplain/knowledgeable instructor.png"
-import groupOfIndividuals from "../../assets/RemoteWorkExplain/group of individuals.png"
-import HeaderSection from "../HeaderSection";
+import AboutCard from "../../../components/AboutCard";
+import calendarHighlighting from "../../../assets/RemoteWorkExplain/calendar highlighting.png"
+import collaborativePlanning from "../../../assets/RemoteWorkExplain/collaborative planning.png"
+import knowledgeableInstructor from "../../../assets/RemoteWorkExplain/knowledgeable instructor.png"
+import groupOfIndividuals from "../../../assets/RemoteWorkExplain/group of individuals.png"
+import HeaderSection from "../../../components/HeaderSection";
 
 const RemoteWorkExplain: React.FC = () => {
   const cards = [

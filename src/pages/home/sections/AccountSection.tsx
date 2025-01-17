@@ -1,8 +1,8 @@
 import React from "react";
-import AccountCard from "../AccountCard";
-import remoteFirstImage from "../../assets/HomeAccountSection/home-remote-1.png"
-import remoteSecondImage from "../../assets/HomeAccountSection/home-remote-2.png"
-import HeaderSection from "../HeaderSection";
+import AccountCard from "../../../components/AccountCard";
+import remoteFirstImage from "../../../assets/HomeAccountSection/home-remote-1.png";
+import remoteSecondImage from "../../../assets/HomeAccountSection/home-remote-2.png";
+import HeaderSection from "../../../components/HeaderSection";
 
 const AccountSection: React.FC = () => {
   const accountData = [

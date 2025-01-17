@@ -1,5 +1,5 @@
 import React from "react";
-import ceoImage from "../../assets/AboutPage/ceo-image.jpg";
+import ceoImage from "../../../assets/AboutPage/ceo-image.jpg";
 
 interface CeoMessageProps {
   ceoName: string;
