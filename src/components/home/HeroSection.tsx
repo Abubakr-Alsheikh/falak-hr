@@ -5,7 +5,7 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 const HeroSection: React.FC = () => {
   return (
-    <section className="gradient-primary-color relative m-5 mb-16 mt-32 flex flex-col items-center justify-center rounded-2xl shadow-2xl md:mt-14 md:h-screen md:py-24 lg:flex-row-reverse">
+    <section className="gradient-primary-color relative m-5 mb-16 mt-32 flex flex-col items-center justify-center rounded-2xl py-5 shadow-2xl md:mt-14 md:h-screen md:py-24 lg:flex-row-reverse">
       <DotLottieReact
           src="https://lottie.host/94e3c8d1-60a4-4a05-890c-f5c2ac74981a/t7moSf8EH4.lottie"
           loop

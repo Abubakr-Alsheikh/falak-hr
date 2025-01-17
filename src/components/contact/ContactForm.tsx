@@ -11,7 +11,7 @@ const ContactForm: React.FC = () => {
         <div className="text-center">
           <HeaderSection
             title="ادخل بياناتك للتواصل معك"
-            text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا."
+            text=""
           />
         </div>
         <form action="#" className="space-y-8 text-right">
