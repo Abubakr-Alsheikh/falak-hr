@@ -5,7 +5,7 @@ import CeoMessage from "../components/about/CeoMessage";
 
 const AboutUs: React.FC = () => {
   return (
-    <div className="container mx-auto mt-32">
+    <div className="container mx-auto mt-16">
       <AboutUsTitle />
       <CeoMessage
         ceoName="اسم الرئيس التنفيذي"

@@ -4,7 +4,7 @@ import RemoteFeaturesSection from '../components/remote/RemoteFeaturesSection';
 import RemoteWorkExplain from "../components/remote/RemoteWorkExplain";
 const RemoteWork: React.FC = () => {
     return (
-        <div className="container mx-auto mt-32">
+        <div className="container mx-auto mt-16">
             <RemoteWorkTitle />
             <RemoteFeaturesSection />
             <RemoteWorkExplain />

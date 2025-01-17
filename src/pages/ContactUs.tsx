@@ -4,7 +4,7 @@ import ContactForm from '../components/contact/ContactForm';
 import MapSection from "../components/contact/MapSection";
 const ContactUs: React.FC = () => {
   return (
-    <div className="container mx-auto mt-32">
+    <div className="container mx-auto mt-16">
         <ContactUsTitle />
         <ContactForm />
         <MapSection />

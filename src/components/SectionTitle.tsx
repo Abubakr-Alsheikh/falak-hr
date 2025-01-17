@@ -14,7 +14,7 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
   subtitle,
 }) => {
   const headerClasses = isHeader
-    ? "gradient-primary-color text-white rounded-3xl py-10 text-center max-w-screen-lg mb-12"
+    ? "gradient-primary-color text-white rounded-3xl py-10 text-center max-w-screen-lg pt-16 mb-12"
     : "mb-4 ";
   const titleClasses = isHeader
     ? "text-4xl font-extrabold tracking-tight dark:text-white md:text-4xl lg:text-5xl"
