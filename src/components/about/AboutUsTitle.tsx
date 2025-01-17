@@ -7,7 +7,7 @@ const AboutUsTitle: React.FC = () => {
             title="من نحن"
             center={true}
             isHeader={true}
-            subtitle="فلك للموارد البشرية: شريكك في تمكين العمل عن بعد."
+            subtitle="شريكك في تمكين العمل عن بعد."
         />
     );
 };

@@ -1,28 +1,39 @@
 import React from "react";
 import AboutCard from "../AboutCard";
+import calendarHighlighting from "../../assets/RemoteWorkExplain/calendar highlighting.png"
+import collaborativePlanning from "../../assets/RemoteWorkExplain/collaborative planning.png"
+import knowledgeableInstructor from "../../assets/RemoteWorkExplain/knowledgeable instructor.png"
+import groupOfIndividuals from "../../assets/RemoteWorkExplain/group of individuals.png"
 import HeaderSection from "../HeaderSection";
 
 const RemoteWorkExplain: React.FC = () => {
   const cards = [
     {
-      title: "عنوان 1",
+      title: "دورات تدريبية شهرية",
       description:
-        "نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدا.",
-      imageUrl: "https://placehold.co/700x700",
+        "نقدم في فلك للموارد البشرية دورات تدريبية شهرية مخصصة لموظفي برنامج العمل عن بعد، بهدف تطوير مهاراتهم وتعزيز إنتاجيتهم في بيئة العمل الحديثة.",
+      imageUrl: calendarHighlighting,
       buttonText: "عرض المزيد",
     },
     {
-      title: "عنوان 2",
+      title: "دورات تدريبية حسب الطلب للشركاء",
       description:
-        "نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدا.",
-      imageUrl: "https://placehold.co/700x700",
+        "نوفر في فلك للموارد البشرية دورات تدريبية مصممة خصيصاً لشركائنا بناءً على احتياجاتهم ومتطلباتهم، لضمان تحقيق أقصى استفادة من برنامج العمل عن بعد.",
+      imageUrl: collaborativePlanning,
       buttonText: "عرض المزيد",
     },
     {
-      title: "عنوان 3",
+      title: "مدربون معتمدون",
       description:
-        "نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدا.",
-      imageUrl: "https://placehold.co/700x700",
+        "يتم تقديم الدورات التدريبية في فلك للموارد البشرية من قبل نخبة من المدربين المعتمدين ذوي الخبرة والكفاءة العالية في مجال العمل عن بعد والموارد البشرية.",
+      imageUrl: knowledgeableInstructor,
+      buttonText: "عرض المزيد",
+    },
+    {
+      title: "شهادات حضور معتمدة",
+      description:
+        "يحصل الملتحقون بالدورات التدريبية في فلك للموارد البشرية على شهادات حضور معتمدة تثبت مشاركتهم وإتمامهم للدورة، مما يعزز ملفهم المهني.",
+      imageUrl: groupOfIndividuals,
       buttonText: "عرض المزيد",
     },
   ];
@@ -30,8 +41,8 @@ const RemoteWorkExplain: React.FC = () => {
   return (
     <div className="mt-20">
       <HeaderSection
-        title="شرح العمل عن بعد"
-        text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا."
+        title="شرح برامج التدريب للعمل عن بعد"
+        text="في فلك للموارد البشرية، نؤمن بأهمية التطوير المستمر لموظفي العمل عن بعد وشركائنا. لذلك، نقدم مجموعة متنوعة من الدورات التدريبية الاحترافية."
       />
       {cards.map((card, index) => (
         <AboutCard

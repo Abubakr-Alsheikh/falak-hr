@@ -1,7 +1,7 @@
 import React from "react";
 import AccountCard from "../AccountCard";
-import remoteFirstImage from "../../assets/home-remote-1.png"
-import remoteSecondImage from "../../assets/home-remote-2.png"
+import remoteFirstImage from "../../assets/HomeAccountSection/home-remote-1.png"
+import remoteSecondImage from "../../assets/HomeAccountSection/home-remote-2.png"
 import HeaderSection from "../HeaderSection";
 
 const AccountSection: React.FC = () => {
@@ -24,10 +24,10 @@ const AccountSection: React.FC = () => {
 
   return (
     <section className="bg-white dark:bg-gray-900">
-      <div className="mx-auto mb-16 px-4">
+      <div className="mx-auto mb-16 px-4 md:px-0">
         <HeaderSection
           title="ماذا نقدم لك"
-          text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا."
+          text="استكشف مجموعتنا الواسعة من خدمات الموارد البشرية المصممة لتحسين إدارة القوى العاملة لديك. من اكتساب المواهب إلى حلول الرواتب، نحن نغطي احتياجاتك في الموارد البشرية"
         />
         <div className="grid gap-8 md:grid-cols-2">
           {accountData.map((account, index) => (

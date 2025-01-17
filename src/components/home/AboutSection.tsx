@@ -2,6 +2,7 @@ import React from "react";
 import AboutCard from "../Card";
 import remoteWorkImage from '../../assets/AboutSection/remote work.jpg'
 import workSectionImage from '../../assets/AboutSection/work section.jpg'
+import trainingSessionImage from '../../assets/AboutSection/training session.png'
 import HeaderSection from "../HeaderSection";
 
 const AboutSection: React.FC = () => {
@@ -20,13 +21,13 @@ const AboutSection: React.FC = () => {
       imageUrl: workSectionImage,
       buttonText: "عرض المزيد",
     },
-    // {
-    //   title: "عنوان 3",
-    //   description:
-    //     "نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدا.",
-    //   imageUrl: "https://placehold.co/100x100",
-    //   buttonText: "عرض المزيد",
-    // },
+    {
+      title: "الدورات التدريبية",
+      description:
+        "في شركة فلك للموارد البشرية نحرص دائماً على تطوير وتمكين الكوادر السعودية حيث نعمل على تقديم عدة دورات تدريبية في المجالات المهنية المختلفة لدعم منسوبي إنجاز وشركاءنا.",
+      imageUrl: trainingSessionImage,
+      buttonText: "عرض المزيد",
+    },
   ];
 
   return (

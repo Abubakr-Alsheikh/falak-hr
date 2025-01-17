@@ -5,12 +5,14 @@ import AboutSection from "../components/home/AboutSection";
 import PricingSection from "../components/home/PricingSection";
 const Home: React.FC = () => {
   return (
+    <>
+    <HeroSection />
     <div className="container mx-auto">
-      <HeroSection />
       <AccountSection />
       <AboutSection />
       <PricingSection />
     </div>
+    </>
   );
 };
 

@@ -10,15 +10,15 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <header>
-      <nav className="mt-5 border-gray-200 bg-white px-4 py-2.5 dark:bg-gray-800 lg:px-6">
+    <header className="absolute left-0 top-0 z-50 mx-auto w-full">
+      <nav className="mx-6 mt-5 rounded-lg border border-primary-700 bg-white px-4 py-2.5 shadow-lg dark:bg-gray-800 md:mx-16 md:rounded-full lg:px-6">
         <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between">
           <Link to="/" className="flex items-center">
             <img src={logo} className="mr-3 h-14" alt="Falak HR Logo" />
           </Link>
-          <div className="flex items-center sm:flex-1 sm:justify-end lg:order-2">
+          <div className="flex items-center sm:justify-end lg:order-2">
             <Button text="اشترك معنا" variant="secondary" hideInSmallScreen={true} />
-            <Button text="تسجيل الدخول" variant="primary" />
+            <Button text="تسجيل الدخول" variant="primary" className="mr-2" />
             <button
               onClick={toggleMenu}
               data-collapse-toggle="mobile-menu-2"
@@ -57,7 +57,7 @@ const Navbar: React.FC = () => {
           <div
             className={`${
               isMenuOpen ? "block" : "hidden"
-            } flex-1 justify-center items-center w-full lg:flex lg:w-auto lg:order-1 md:flex-1 md:mr-10`}
+            } justify-center items-center w-full lg:flex lg:w-auto lg:order-1 md:flex-1 md:mr-10`}
             id="mobile-menu-2"
           >
             <ul className="mt-4 flex flex-col font-medium lg:mt-0 lg:flex-row">

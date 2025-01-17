@@ -38,14 +38,14 @@ const PartnersSection: React.FC = () => {
     <div className="mx-auto mb-16 px-4 text-center md:max-w-screen-md lg:max-w-screen-xl lg:px-36">
       <HeaderSection
           title="شركاؤنا"
-          text="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدًا."
+          text="الشراكات الاستراتيجية تكمن في جوهر نجاحنا. لقد قمنا بتنمية علاقاتنا مع قادة الصناعة، مما يمكننا من تقديم حلاً حديثًا يعزز الكفاءة والابتكار."
         />
       <div className="mt-8 flex flex-wrap items-center justify-center text-gray-500 sm:justify-between">
         {partnersData.map((partner) => (
           <a
             key={partner.id}
             href={partner.linkUrl}
-            className="mb-5 mr-5 rounded-2xl border bg-gray-200 p-4 shadow-sm lg:mb-0"
+            className="mb-5 mr-5 rounded-2xl border border-gray-300 bg-gray-100 p-4 shadow-sm lg:mb-0"
             target="_blank"
           >
             <img

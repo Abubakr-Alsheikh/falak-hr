@@ -2,7 +2,7 @@ import React from "react";
 import AboutCard from "../AboutCard";
 import futuristicCityscapeImage from '../../assets/AboutPage/futuristic cityscape.png'
 import digitalInterfaceImage from '../../assets/AboutPage/digital interface.png'
-import FourDistinctImage from '../../assets/AboutPage/Four distinct.jpg'
+import FourDistinctImage from '../../assets/AboutPage/Four distinct.png'
 import HeaderSection from "../HeaderSection";
 
 const AboutUsContent: React.FC = () => {

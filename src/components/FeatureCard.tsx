@@ -8,8 +8,8 @@ interface FeatureCardProps {
 
 const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, icon }) => {
   return (
-      <div className='rounded-xl border p-6 text-center shadow-lg'>
-          <div className="h-18 w-18 mx-auto mb-4 flex items-center justify-center rounded-full bg-primary-700 text-6xl text-white lg:h-24 lg:w-24">
+      <div className='flex flex-col items-center justify-center rounded-xl border p-6 text-center shadow-lg'>
+          <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-primary-700 text-6xl text-white">
               {icon}
           </div>
           <h3 className="mb-2 text-xl font-bold dark:text-white">{title}</h3>
