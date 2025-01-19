@@ -8,7 +8,7 @@ interface FadeInProps {
   direction?: "up" | "down" | "left" | "right";
   className?: string;
   viewOnce?: true | false;
-  viewSection?: "-25% 0px -25% 0px";
+  viewSection?: string;
 }
 
 const FadeIn: React.FC<FadeInProps> = ({
@@ -17,8 +17,8 @@ const FadeIn: React.FC<FadeInProps> = ({
   duration = 0.6,
   direction = "up",
   className,
-  viewOnce,
-  viewSection,
+  viewOnce = true,
+  viewSection = "-25% 0px -25% 0px",
 }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: viewOnce, margin: viewSection });
