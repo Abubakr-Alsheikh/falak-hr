@@ -4,6 +4,8 @@ import digitalInterfaceImage from '../../../assets/AboutPage/digital interface.p
 import FourDistinctImage from '../../../assets/AboutPage/Four distinct.png'
 import HeaderSection from "../../../components/HeaderSection";
 import AboutCard from "../../../components/AboutCard";
+import FadeIn from "../../../components/animations/FadeIn";
+import SlideIn from "../../../components/animations/SlideIn";
 
 const AboutUsContent: React.FC = () => {
   const cards = [
@@ -32,21 +34,28 @@ const AboutUsContent: React.FC = () => {
 
   return (
     <div>
-      <div className="relative text-right">
-        <HeaderSection
-          title="قصتنا"
-          text="تأسست فلك للموارد البشرية في عام 2021م كشركة سعودية متخصصة في تمكين العمل عن بعد. نهدف إلى دعم التحول الرقمي للمنشآت من خلال توفير حلول تقنية متكاملة للإمداد البشري في مختلف المجالات. نركز على دمج التقنيات المتطورة والذكاء الاصطناعي في إدارة العمليات اليومية لتعزيز الكفاءة ورفع مستوى الأداء."
-        />
-      </div>
+        <FadeIn direction="up">
+          <div className="relative text-right">
+            <HeaderSection
+              title="قصتنا"
+              text="تأسست فلك للموارد البشرية في عام 2021م كشركة سعودية متخصصة في تمكين العمل عن بعد. نهدف إلى دعم التحول الرقمي للمنشآت من خلال توفير حلول تقنية متكاملة للإمداد البشري في مختلف المجالات. نركز على دمج التقنيات المتطورة والذكاء الاصطناعي في إدارة العمليات اليومية لتعزيز الكفاءة ورفع مستوى الأداء."
+            />
+          </div>
+        </FadeIn>
       {cards.map((card, index) => (
-        <AboutCard
-          key={index}
-          title={card.title}
-          description={card.description}
-          imageUrl={card.imageUrl}
-          buttonText={card.buttonText}
-          isReversed={index % 2 !== 0}
-        />
+          <SlideIn
+            key={index}
+            direction={index % 2 !== 0 ? "right" : "left"}
+            delay={index * 0.15}
+          >
+            <AboutCard
+              title={card.title}
+              description={card.description}
+              imageUrl={card.imageUrl}
+              buttonText={card.buttonText}
+              isReversed={index % 2 !== 0}
+            />
+          </SlideIn>
       ))}
     </div>
   );
