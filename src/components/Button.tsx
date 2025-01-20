@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 interface ButtonProps {
   text: string;
@@ -26,10 +27,10 @@ const Button: React.FC<ButtonProps> = ({
   buttonClasses += hideInSmallScreen ? " hidden sm:block " : ""
   buttonClasses += className ? className : ""
   return (
-    <button type={type} onClick={onClick} className={buttonClasses} dir="ltr">
+    <motion.button type={type} onClick={onClick} className={buttonClasses} dir="ltr" whileTap={{ scale: 0.95 }} whileHover={{scale: 1.1}}>
       {icon && <span className="mr-2 text-lg">{icon}</span>}
       {text}
-    </button>
+    </motion.button>
   );
 };
 
