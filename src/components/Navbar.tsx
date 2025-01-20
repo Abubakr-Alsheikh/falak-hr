@@ -1,29 +1,45 @@
 import React, { useState, useEffect } from "react";
 import Button from "./Button";
 import logo from "../assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import {
+  AiOutlineHome,
+  AiOutlineCloud,
+  AiOutlineInfoCircle,
+  AiOutlinePhone,
+} from "react-icons/ai";
+import { IconType } from "react-icons";
 
 interface NavItem {
   label: string;
   to: string;
+  icon: IconType;
 }
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
+  const location = useLocation();
 
   // Navigation Links Config
   const navItems: NavItem[] = [
-    { label: "الرئيسية", to: "/" },
-    { label: "العمل عن بعد", to: "/remote-work" },
-    { label: "نبذة عنا", to: "/about-us" },
-    { label: "اتصل بنا", to: "/contact-us" },
+    { label: "الرئيسية", to: "/", icon: AiOutlineHome },
+    { label: "العمل عن بعد", to: "/remote-work", icon: AiOutlineCloud },
+    { label: "نبذة عنا", to: "/about-us", icon: AiOutlineInfoCircle },
+    { label: "اتصل بنا", to: "/contact-us", icon: AiOutlinePhone },
   ];
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   useEffect(() => {
@@ -45,18 +61,36 @@ const Navbar: React.FC = () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [location]);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      toggleMenu();
+    }
+  }, [location]);
 
   // Animation variants for large screens
   const largeScreenVariants = {
     hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeInOut" } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeInOut" },
+    },
   };
 
   // Animation variants for the mobile menu
   const mobileMenuVariants = {
-    open: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeInOut" } },
-    closed: { opacity: 0, x: "100%", transition: { duration: 0.5, ease: "easeInOut" } },
+    open: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.5, ease: "easeInOut" },
+    },
+    closed: {
+      opacity: 0,
+      x: "100%",
+      transition: { duration: 0.5, ease: "easeInOut" },
+    },
   };
 
   // Animation variants for header background
@@ -103,13 +137,7 @@ const Navbar: React.FC = () => {
                 variant="secondary"
                 hideInSmallScreen={true}
               />
-              <motion.div whileTap={{ scale: 0.95 }}>
-                <Button
-                  text="تسجيل الدخول"
-                  variant="primary"
-                  className="mr-2"
-                />
-              </motion.div>
+              <Button text="تسجيل الدخول" variant="primary" className="mr-2" />
             </motion.div>
           )}
 
@@ -164,11 +192,15 @@ const Navbar: React.FC = () => {
           >
             <ul className="mt-4 flex flex-col font-medium">
               {navItems.map((item, index) => (
-                <li key={index}>
+                <li key={index} className="flex items-center">
+                  <item.icon className="ml-2 h-5 w-5" />
                   <Link
                     to={item.to}
-                    className="block border-b border-gray-100 py-2 pl-3 pr-4 text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:mr-10 lg:border-0 lg:p-0 lg:hover:bg-transparent lg:hover:text-primary-700 lg:dark:hover:bg-transparent lg:dark:hover:text-white"
-                    onClick={toggleMenu}
+                    className="block border-b border-gray-100 py-2 pl-3 pr-4 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:mr-10 lg:border-0 lg:p-0 lg:hover:bg-transparent lg:hover:text-primary-700 lg:dark:hover:bg-transparent lg:dark:hover:text-white"
+                    onClick={() => {
+                      toggleMenu();
+                      scrollToTop();
+                    }}
                   >
                     {item.label}
                   </Link>
@@ -192,12 +224,15 @@ const Navbar: React.FC = () => {
                     key={index}
                     whileHover={{ y: -2 }}
                     transition={{ duration: 0.2 }}
+                    className="flex items-center"
                   >
                     <Link
                       to={item.to}
-                      className="block border-b border-gray-100 py-2 pl-3 pr-4 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:mr-10 lg:border-0 lg:p-0 lg:hover:bg-transparent lg:hover:text-primary-700 lg:dark:hover:bg-transparent lg:dark:hover:text-white"
+                      className="flex items-center border-b border-gray-100 py-2 pl-3 pr-4 text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:mr-10 lg:border-0 lg:p-0 lg:hover:bg-transparent lg:hover:text-primary-700 lg:dark:hover:bg-transparent lg:dark:hover:text-white"
+                      onClick={scrollToTop}
                     >
                       {item.label}
+                      <item.icon className="mr-2 h-5 w-5" />
                     </Link>
                   </motion.li>
                 ))}
