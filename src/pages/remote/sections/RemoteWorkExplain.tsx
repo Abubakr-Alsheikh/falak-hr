@@ -41,7 +41,7 @@ const RemoteWorkExplain: React.FC = () => {
   ];
 
   return (
-    <div className="mt-20">
+    <div className="mt-20 overflow-hidden">
       <FadeIn direction="up">
         <HeaderSection
           title="شرح برامج التدريب للعمل عن بعد"

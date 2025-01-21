@@ -18,7 +18,7 @@ const CeoMessage: React.FC<CeoMessageProps> = ({
 }) => {
   return (
     <FadeIn direction="up">
-      <div className="mx-4 mb-16 rounded-3xl border border-gray-200 bg-gray-50 py-16 shadow-lg md:mx-0">
+      <div className="mx-4 mb-16 overflow-hidden rounded-3xl border border-gray-200 bg-gray-50 py-16 shadow-lg md:mx-0">
         <div className="container mx-auto px-4 md:px-16">
           <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
             <SlideIn direction="left">
