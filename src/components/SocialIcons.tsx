@@ -43,8 +43,10 @@ const SocialIcons: React.FC = () => {
           }}
           whileHover={{ scale: 1.2, y: -2 }}
           whileTap={{ scale: 0.9 }}
+          about={link.alt}
+          role={link.alt}
         >
-          <link.icon alt={link.alt} />
+          <link.icon />
         </motion.a>
       ))}
     </div>
