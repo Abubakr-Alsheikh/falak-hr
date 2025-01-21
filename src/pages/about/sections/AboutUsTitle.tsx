@@ -1,15 +1,18 @@
-import React from 'react';
-import SectionTitle from '../../../components/SectionTitle';
+import React from "react";
+import SectionTitle from "../../../components/SectionTitle";
+import FadeIn from "../../../components/animations/FadeIn";
 
 const AboutUsTitle: React.FC = () => {
-    return (
-        <SectionTitle
-            title="من نحن"
-            center={true}
-            isHeader={true}
-            subtitle="شريكك في تمكين العمل عن بعد."
-        />
-    );
+  return (
+    <FadeIn direction="up">
+      <SectionTitle
+        title="من نحن"
+        center={true}
+        isHeader={true}
+        subtitle="شريكك في تمكين العمل عن بعد."
+      />
+    </FadeIn>
+  );
 };
 
 export default AboutUsTitle;

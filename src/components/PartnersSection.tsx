@@ -1,6 +1,7 @@
 import React from "react";
 import HeaderSection from "./HeaderSection";
 import FadeIn from "./animations/FadeIn";
+import { motion } from "framer-motion";
 
 const PartnersSection: React.FC = () => {
   const partnersData = [
@@ -49,18 +50,19 @@ const PartnersSection: React.FC = () => {
       <div className="mt-8 flex flex-wrap items-center justify-center text-gray-500 sm:justify-between">
         {partnersData.map((partner, index) => (
           <FadeIn direction="up" delay={index * 0.2}>
-            <a
+            <motion.a
               key={partner.id}
               href={partner.linkUrl}
               className="mb-5 mr-5 block rounded-2xl border border-gray-300 bg-gray-100 p-4 shadow-sm lg:mb-0"
               target="_blank"
+              whileTap={{ scale: 0.95 }} whileHover={{scale: 1.1}}
             >
               <img
                 src={partner.imageUrl}
                 alt={partner.altText}
                 className="h-12 w-auto"
               />
-            </a>
+            </motion.a>
           </FadeIn>
         ))}
       </div>

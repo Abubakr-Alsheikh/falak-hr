@@ -1,10 +1,12 @@
 import React from "react";
 import AboutCard from "../../../components/AboutCard";
-import calendarHighlighting from "../../../assets/RemoteWorkExplain/calendar highlighting.png"
-import collaborativePlanning from "../../../assets/RemoteWorkExplain/collaborative planning.png"
-import knowledgeableInstructor from "../../../assets/RemoteWorkExplain/knowledgeable instructor.png"
-import groupOfIndividuals from "../../../assets/RemoteWorkExplain/group of individuals.png"
+import calendarHighlighting from "../../../assets/RemoteWorkExplain/calendar highlighting.png";
+import collaborativePlanning from "../../../assets/RemoteWorkExplain/collaborative planning.png";
+import knowledgeableInstructor from "../../../assets/RemoteWorkExplain/knowledgeable instructor.png";
+import groupOfIndividuals from "../../../assets/RemoteWorkExplain/group of individuals.png";
 import HeaderSection from "../../../components/HeaderSection";
+import FadeIn from "../../../components/animations/FadeIn";
+import SlideIn from "../../../components/animations/SlideIn";
 
 const RemoteWorkExplain: React.FC = () => {
   const cards = [
@@ -39,20 +41,27 @@ const RemoteWorkExplain: React.FC = () => {
   ];
 
   return (
-    <div className="mt-20">
-      <HeaderSection
-        title="شرح برامج التدريب للعمل عن بعد"
-        text="في فلك للموارد البشرية، نؤمن بأهمية التطوير المستمر لموظفي العمل عن بعد وشركائنا. لذلك، نقدم مجموعة متنوعة من الدورات التدريبية الاحترافية."
-      />
-      {cards.map((card, index) => (
-        <AboutCard
-          key={index}
-          title={card.title}
-          description={card.description}
-          imageUrl={card.imageUrl}
-          buttonText={card.buttonText}
-          isReversed={index % 2 !== 0}
+    <div className="mt-20 overflow-hidden">
+      <FadeIn direction="up">
+        <HeaderSection
+          title="شرح برامج التدريب للعمل عن بعد"
+          text="في فلك للموارد البشرية، نؤمن بأهمية التطوير المستمر لموظفي العمل عن بعد وشركائنا. لذلك، نقدم مجموعة متنوعة من الدورات التدريبية الاحترافية."
         />
+      </FadeIn>
+      {cards.map((card, index) => (
+        <SlideIn
+          key={index}
+          direction={index % 2 !== 0 ? "right" : "left"}
+          delay={index * 0.15}
+        >
+          <AboutCard
+            title={card.title}
+            description={card.description}
+            imageUrl={card.imageUrl}
+            buttonText={card.buttonText}
+            isReversed={index % 2 !== 0}
+          />
+        </SlideIn>
       ))}
     </div>
   );

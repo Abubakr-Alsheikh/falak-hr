@@ -1,10 +1,18 @@
-import React from 'react';
+import React from "react";
 import SectionTitle from "../../../components/SectionTitle";
+import FadeIn from "../../../components/animations/FadeIn";
 
 const RemoteWorkTitle: React.FC = () => {
-    return (
-        <SectionTitle title="العمل عن بعد" center={true} isHeader={true} subtitle="نص أساسي لأي شيء تود قوله. أضف النقاط الرئيسية التي استخلصتها، أو الاقتباسات، أو الحكايات، أو حتى قصة قصيرة جدا." />
-    );
+  return (
+    <FadeIn direction="up">
+      <SectionTitle
+        title="العمل عن بعد"
+        center={true}
+        isHeader={true}
+        subtitle="نظام يوفر لك المرونة والإنتاجية، ويدعم تطورك الوظيفي."
+      />
+    </FadeIn>
+  );
 };
 
 export default RemoteWorkTitle;

@@ -18,15 +18,17 @@ const PricingCard: React.FC<PricingCardProps> = ({
 }) => {
   return (
     <div className="mx-auto flex min-h-[550px] flex-col rounded-xl border border-gray-100 bg-white p-6 text-center text-gray-900 shadow-lg dark:border-gray-600 dark:bg-gray-800 dark:text-white lg:p-8">
-      <h3 className="mb-4 text-2xl font-semibold">{title}</h3>
+      <h3 className="mb-2 text-2xl font-semibold">{title}</h3>
       <p className="font-light text-gray-500 dark:text-gray-400 sm:text-lg">
         {subtitle}
       </p>
       <div className="my-8 flex items-baseline justify-center">
-        <span className="mr-2 text-5xl font-extrabold">
+        <span className="ml-2 text-5xl font-extrabold">
           {price.split("/")[0]}
         </span>
-        <span className="text-gray-500 dark:text-gray-400"></span>
+        <span className="text-3xl text-gray-700 dark:text-gray-400">
+          {price.split("/")[1]}
+        </span>
       </div>
       <ul role="list" className="mb-8 flex-1 space-y-4 text-left">
         {features.map((feature, index) => (
