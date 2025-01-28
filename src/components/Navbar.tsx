@@ -124,22 +124,19 @@ const Navbar: React.FC = () => {
             </Link>
           </motion.div>
 
-          {/* Large Screen Section (Hidden on Small Screens) */}
-          {!isSmallScreen && (
-            <motion.div
-              className="flex items-center justify-end lg:order-2"
-              initial="hidden"
-              animate="visible"
-              variants={largeScreenVariants}
-            >
-              <Button
-                text="اشترك معنا"
-                variant="secondary"
-                hideInSmallScreen={true}
-              />
-              <Button text="تسجيل الدخول" variant="primary" className="mr-2" />
-            </motion.div>
-          )}
+          <motion.div
+            className="flex flex-grow items-start justify-end md:flex-grow-0 lg:order-2"
+            initial="hidden"
+            animate="visible"
+            variants={largeScreenVariants}
+          >
+            <Button
+              text="اشترك معنا"
+              variant="secondary"
+              hideInSmallScreen={true}
+            />
+            <Button text="تسجيل الدخول" variant="primary" className="mr-2" />
+          </motion.div>
 
           {/* Mobile Menu Button (Visible Only on Small Screens) */}
           {isSmallScreen && (
