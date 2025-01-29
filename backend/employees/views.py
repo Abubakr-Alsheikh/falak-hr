@@ -1,15 +1,17 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from employees.permissions import IsAdminOrManagerOrSelf
 from .models import Employee
 from .serializers import EmployeeSerializer
-from django.contrib.auth.models import User
+from rest_framework.filters import SearchFilter
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     permission_classes = [IsAdminOrManagerOrSelf]
+    filter_backends = [SearchFilter]
+    search_fields = ['user__username', 'user__email', 'job_title', 'department'] 
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
