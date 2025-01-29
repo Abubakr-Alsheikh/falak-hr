@@ -8,4 +8,5 @@ def api_root(request, format=None):
         'companies': reverse('company-list', request=request, format=format),
         'employees': reverse('employee-list', request=request, format=format),
         'tasks': reverse('task-list', request=request, format=format),
+        'token_obtain_pair': reverse('token_obtain_pair', request=request, format=format),
     })
