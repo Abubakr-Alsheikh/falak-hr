@@ -1,6 +1,6 @@
 import React from "react";
-import SectionTitle from "../../../components/SectionTitle";
-import FadeIn from "../../../components/animations/FadeIn";
+import SectionTitle from "@/components/public/SectionTitle";
+import FadeIn from "@components/animations/FadeIn";
 
 const ContactUsTitle: React.FC = () => {
   return (

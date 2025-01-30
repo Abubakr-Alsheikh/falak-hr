@@ -1,7 +1,7 @@
 import React from "react";
-import ceoImage from "../../../assets/AboutPage/ceo-image.jpg";
-import FadeIn from "../../../components/animations/FadeIn";
-import SlideIn from "../../../components/animations/SlideIn";
+import ceoImage from "@assets/AboutPage/ceo-image.jpg";
+import FadeIn from "@components/animations/FadeIn";
+import SlideIn from "@components/animations/SlideIn";
 
 interface CeoMessageProps {
   ceoName: string;

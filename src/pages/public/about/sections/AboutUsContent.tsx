@@ -1,11 +1,11 @@
 import React from "react";
-import futuristicCityscapeImage from "../../../assets/AboutPage/futuristic cityscape.png";
-import digitalInterfaceImage from "../../../assets/AboutPage/digital interface.png";
-import FourDistinctImage from "../../../assets/AboutPage/Four distinct.png";
-import HeaderSection from "../../../components/HeaderSection";
-import AboutCard from "../../../components/AboutCard";
-import FadeIn from "../../../components/animations/FadeIn";
-import SlideIn from "../../../components/animations/SlideIn";
+import futuristicCityscapeImage from "@assets/AboutPage/futuristic cityscape.png";
+import digitalInterfaceImage from "@assets/AboutPage/digital interface.png";
+import FourDistinctImage from "@assets/AboutPage/Four distinct.png";
+import HeaderSection from "@/components/public/HeaderSection";
+import AboutCard from "@/components/public/AboutCard";
+import FadeIn from "@components/animations/FadeIn";
+import SlideIn from "@components/animations/SlideIn";
 
 const AboutUsContent: React.FC = () => {
   const cards = [

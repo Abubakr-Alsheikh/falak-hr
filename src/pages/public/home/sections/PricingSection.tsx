@@ -1,8 +1,8 @@
 import React from "react";
-import PricingCard from "../../../components/PlanCard";
-import HeaderSection from "../../../components/HeaderSection";
-import FadeIn from "../../../components/animations/FadeIn";
-import ScaleUp from "../../../components/animations/ScaleUp";
+import PricingCard from "@/components/public/PlanCard";
+import HeaderSection from "@/components/public/HeaderSection";
+import FadeIn from "@components/animations/FadeIn";
+import ScaleUp from "@components/animations/ScaleUp";
 
 const PricingSection: React.FC = () => {
   const plans = [

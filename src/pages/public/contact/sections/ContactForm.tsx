@@ -1,9 +1,9 @@
 import React from "react";
-import Button from "../../../components/Button";
+import Button from "@/components/public/Button";
 import ContactFormInput from "./ContactFormInput";
 import ContactFormTextArea from "./ContactFormTextArea";
-import HeaderSection from "../../../components/HeaderSection";
-import FadeIn from "../../../components/animations/FadeIn";
+import HeaderSection from "@/components/public/HeaderSection";
+import FadeIn from "@components/animations/FadeIn";
 
 const ContactForm: React.FC = () => {
   return (
