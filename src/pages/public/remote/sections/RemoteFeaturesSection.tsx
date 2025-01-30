@@ -7,10 +7,10 @@ import {
   AiOutlineInbox,
   AiOutlineCloud,
 } from "react-icons/ai";
-import FeatureCard from "../../../components/FeatureCard";
-import HeaderSection from "../../../components/HeaderSection";
-import FadeIn from "../../../components/animations/FadeIn";
-import ScaleUp from "../../../components/animations/ScaleUp";
+import FeatureCard from "@/components/public/FeatureCard";
+import HeaderSection from "@/components/public/HeaderSection";
+import FadeIn from "@components/animations/FadeIn";
+import ScaleUp from "@components/animations/ScaleUp";
 
 const RemoteFeaturesSection: React.FC = () => {
   const features = [

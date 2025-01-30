@@ -1,6 +1,6 @@
 import React from "react";
-import HeaderSection from "./HeaderSection";
-import FadeIn from "./animations/FadeIn";
+import HeaderSection from "../public/HeaderSection";
+import FadeIn from "../animations/FadeIn";
 import { motion } from "framer-motion";
 
 const PartnersSection: React.FC = () => {

@@ -1,5 +1,5 @@
 import React from "react";
-import FadeIn from "../../../components/animations/FadeIn";
+import FadeIn from "@components/animations/FadeIn";
 
 const MapSection: React.FC = () => {
   return (

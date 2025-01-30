@@ -1,11 +1,11 @@
 import React from "react";
-import AboutCard from "../../../components/Card";
-import remoteWorkImage from "../../../assets/AboutSection/remote work.jpg";
-import workSectionImage from "../../../assets/AboutSection/work section.jpg";
-import trainingSessionImage from "../../../assets/AboutSection/training session.png";
-import HeaderSection from "../../../components/HeaderSection";
-import FadeIn from "../../../components/animations/FadeIn";
-import SlideIn from "../../../components/animations/SlideIn";
+import remoteWorkImage from "@assets/AboutSection/remote work.jpg";
+import workSectionImage from "@assets/AboutSection/work section.jpg";
+import trainingSessionImage from "@assets/AboutSection/training session.png";
+import AboutCard from "@/components/public/Card";
+import HeaderSection from "@/components/public/HeaderSection";
+import FadeIn from "@components/animations/FadeIn";
+import SlideIn from "@components/animations/SlideIn";
 
 const AboutSection: React.FC = () => {
   const cards = [

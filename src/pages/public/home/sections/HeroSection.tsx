@@ -1,9 +1,9 @@
 import React from "react";
-import Button from "../../../components/Button";
 import { BsArrowLeft } from "react-icons/bs";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import FadeIn from "../../../components/animations/FadeIn";
-import SlideIn from "../../../components/animations/SlideIn";
+import Button from "@/components/public/Button";
+import FadeIn from "@components/animations/FadeIn";
+import SlideIn from "@components/animations/SlideIn";
 
 const HeroSection: React.FC = () => {
   return (

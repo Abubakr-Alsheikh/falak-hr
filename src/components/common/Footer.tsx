@@ -1,6 +1,4 @@
 import React from "react";
-import logo from "../assets/footer-logo.png";
-import SocialIcons from "./SocialIcons";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -12,7 +10,9 @@ import {
   AiOutlineMail,
 } from "react-icons/ai";
 import { IconType } from "react-icons";
-import FadeIn from "./animations/FadeIn";
+import logo from "@assets/footer-logo.png";
+import SocialIcons from "./SocialIcons";
+import FadeIn from "@components/animations/FadeIn";
 
 interface FooterLink {
   label: string;

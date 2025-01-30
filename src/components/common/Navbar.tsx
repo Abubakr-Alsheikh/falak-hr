@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Button from "./Button";
-import logo from "../assets/logo.png";
 import { Link, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
   AiOutlineHome,
   AiOutlineCloud,
@@ -10,6 +7,9 @@ import {
   AiOutlinePhone,
 } from "react-icons/ai";
 import { IconType } from "react-icons";
+import { motion } from "framer-motion";
+import Button from "@/components/public/Button";
+import logo from "@assets/logo.png";
 
 interface NavItem {
   label: string;
@@ -107,8 +107,8 @@ const Navbar: React.FC = () => {
       variants={headerVariants}
     >
       <nav
-        className={`mx-6 mt-5 rounded-lg border border-primary-700 bg-white px-4 py-2.5 shadow-lg dark:bg-gray-800 md:mx-16 md:rounded-full lg:px-6 transition-all bg-opacity-80 backdrop-blur-xl ${
-          !isAtTop ? "bg-opacity-60" : ""
+        className={`mx-6 border border-primary-700 bg-white px-4 py-2.5 shadow-lg dark:bg-gray-800 md:mx-16 rounded-3xl lg:px-6 transition-all bg-opacity-80 backdrop-blur-xl ${
+          !isAtTop ? "bg-opacity-60 mt-5" : "pt-4 rounded-tl-none rounded-tr-none"
         }`}
       >
         <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between">
