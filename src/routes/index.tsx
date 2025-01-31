@@ -2,12 +2,18 @@ import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import PublicLayout from '@layouts/PublicLayout';
 import ErrorPage from '@/pages/ErrorPage';
+import PrivateRoute from '@/layouts/PrivateRoute';
+import DashboardLayout from '@/layouts/DashboardLayout';
 
 // Public Pages (Lazy Loaded)
 const Home = lazy(() => import('@pages/public/home/Home'));
 const AboutUs = lazy(() => import('@pages/public/about/AboutUs'));
 const ContactUs = lazy(() => import('@pages/public/contact/ContactUs'));
 const RemoteWork = lazy(() => import('@pages/public/remote/RemoteWork'));
+const LoginPage = lazy(() => import('@pages/auth/LoginPage'));
+
+// Dashboard Pages (Lazy Loaded)
+const DashboardOverview = lazy(() => import('@pages/dashboard/Overview'));
 
 const AppRoutes = () => {
   return (
@@ -17,6 +23,15 @@ const AppRoutes = () => {
       <Route path="/about-us" element={<PublicLayout><AboutUs /></PublicLayout>} />
       <Route path="/contact-us" element={<PublicLayout><ContactUs /></PublicLayout>} />
       <Route path="/remote-work" element={<PublicLayout><RemoteWork /></PublicLayout>} />
+
+      {/* Auth Routes */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/logout" element={<LoginPage />} />
+
+      {/* Dashboard Routes (Protected) */}
+      <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
+        <Route index element={<DashboardOverview />} />
+      </Route>
 
       {/* 404 Page */}
       <Route path="*" element={<ErrorPage />} />
