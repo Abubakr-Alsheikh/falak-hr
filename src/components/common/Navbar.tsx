@@ -108,7 +108,9 @@ const Navbar: React.FC = () => {
     >
       <nav
         className={`mx-6 border border-primary-700 bg-white px-4 py-2.5 shadow-lg dark:bg-gray-800 md:mx-16 rounded-3xl lg:px-6 transition-all bg-opacity-80 backdrop-blur-xl ${
-          !isAtTop ? "bg-opacity-60 mt-5" : "pt-4 rounded-tl-none rounded-tr-none"
+          !isAtTop
+            ? "bg-opacity-60 mt-5"
+            : "pt-4 rounded-tl-none rounded-tr-none"
         }`}
       >
         <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between">
@@ -135,7 +137,9 @@ const Navbar: React.FC = () => {
               variant="secondary"
               hideInSmallScreen={true}
             />
-            <Button text="تسجيل الدخول" variant="primary" className="mr-2" />
+            <Link to="/login">
+              <Button text="تسجيل الدخول" variant="primary" className="mr-2" />
+            </Link>
           </motion.div>
 
           {/* Mobile Menu Button (Visible Only on Small Screens) */}
