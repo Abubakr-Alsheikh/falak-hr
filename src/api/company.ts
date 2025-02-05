@@ -1,29 +1,35 @@
-import axios from "axios";
+import axiosInstance from "./auth";
 import { Company } from "@/types/models";
 import { getAccessToken } from "@utils/auth";
 
-const BASE_URL = "http://localhost:8000/api";
+interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
 
 // Function to fetch companies
-export const getCompanies = async (): Promise<Company[]> => {
+export const getCompanies = async (
+  page: number = 1,
+  pageSize: number = 10
+): Promise<PaginatedResponse<Company>> => {
   try {
     const accessToken = getAccessToken();
-    const response = await axios.get(`${BASE_URL}/companies/`, {
+    const response = await axiosInstance.get("/companies/", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      params: {
+        page: page,
+        page_size: pageSize,
+      },
     });
-    return response.data.results; // Assuming your API response is paginated and contains a 'results' array
+    return response.data;
   } catch (error: any) {
     console.error("Error fetching companies:", error);
-    if (error.response && error.response.status === 401) {
-      // Handle unauthorized error (e.g., redirect to login)
-      throw new Error("Session expired. Please log in again.");
-    }
-    throw new Error(
-      error.message ||
-        "Failed to fetch companies. An unexpected error occurred."
-    );
+
+    throw error;
   }
 };
 
@@ -33,22 +39,15 @@ export const createCompany = async (
 ): Promise<Company> => {
   try {
     const accessToken = getAccessToken();
-    const response = await axios.post(`${BASE_URL}/companies/`, companyData, {
+    const response = await axiosInstance.post("/companies/", companyData, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
       },
     });
     return response.data;
   } catch (error: any) {
     console.error("Error creating company:", error);
-    if (error.response && error.response.status === 401) {
-      // Handle unauthorized error (e.g., redirect to login)
-      throw new Error("Session expired. Please log in again.");
-    }
-    throw new Error(
-      error.message || "Failed to create company. An unexpected error occurred."
-    );
+    throw error;
   }
 };
 
@@ -59,26 +58,19 @@ export const updateCompany = async (
 ): Promise<Company> => {
   try {
     const accessToken = getAccessToken();
-    const response = await axios.put(
-      `${BASE_URL}/companies/${companyId}/`,
+    const response = await axiosInstance.put(
+      `/companies/${companyId}/`,
       companyData,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
         },
       }
     );
     return response.data;
   } catch (error: any) {
     console.error("Error updating company:", error);
-    if (error.response && error.response.status === 401) {
-      // Handle unauthorized error (e.g., redirect to login)
-      throw new Error("Session expired. Please log in again.");
-    }
-    throw new Error(
-      error.message || "Failed to update company. An unexpected error occurred."
-    );
+    throw error;
   }
 };
 
@@ -86,27 +78,22 @@ export const updateCompany = async (
 export const deleteCompany = async (companyId: number): Promise<void> => {
   try {
     const accessToken = getAccessToken();
-    await axios.delete(`${BASE_URL}/companies/${companyId}/`, {
+    await axiosInstance.delete(`/companies/${companyId}/`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
   } catch (error: any) {
     console.error("Error deleting company:", error);
-    if (error.response && error.response.status === 401) {
-      // Handle unauthorized error (e.g., redirect to login)
-      throw new Error("Session expired. Please log in again.");
-    }
-    throw new Error(
-      error.message || "Failed to delete company. An unexpected error occurred."
-    );
+    throw error;
   }
 };
+
 // Function to get a single company by ID
 export const getCompanyById = async (companyId: number): Promise<Company> => {
   try {
     const accessToken = getAccessToken();
-    const response = await axios.get(`${BASE_URL}/companies/${companyId}/`, {
+    const response = await axiosInstance.get(`/companies/${companyId}/`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -114,12 +101,6 @@ export const getCompanyById = async (companyId: number): Promise<Company> => {
     return response.data;
   } catch (error: any) {
     console.error("Error fetching company by ID:", error);
-    if (error.response && error.response.status === 401) {
-      // Handle unauthorized error (e.g., redirect to login)
-      throw new Error("Session expired. Please log in again.");
-    }
-    throw new Error(
-      error.message || "Failed to fetch company. An unexpected error occurred."
-    );
+    throw error;
   }
 };

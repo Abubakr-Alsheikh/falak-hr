@@ -35,6 +35,11 @@ const CompanyListPage: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const dropdownRefs = useRef<Map<number, HTMLDivElement>>(new Map());
 
+  // Pagination State from API
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [nextPageUrl, setNextPageUrl] = useState<string | null>(null);
+  const [previousPageUrl, setPreviousPageUrl] = useState<string | null>(null);
+
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -42,14 +47,52 @@ const CompanyListPage: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
 
-  // Fetch companies on component mount
+  // Function to generate an array of page numbers to display
+  const getPageNumbers = () => {
+    const totalPages = Math.ceil(totalCount / companiesPerPage);
+    const visiblePages = 5; // Number of visible page numbers (adjust as needed)
+    const halfVisible = Math.floor(visiblePages / 2);
+
+    let startPage = Math.max(1, currentPage - halfVisible);
+    let endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+    if (endPage - startPage + 1 < visiblePages) {
+      startPage = Math.max(1, endPage - visiblePages + 1);
+    }
+
+    const pages = [];
+    if (startPage > 1) {
+      pages.push(1);
+      if (startPage > 2) {
+        pages.push("..."); // Ellipsis for skipped pages
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pages.push("..."); // Ellipsis for skipped pages
+      }
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  // Fetch companies on component mount or page/pageSize change
   useEffect(() => {
-    const fetchCompanies = async () => {
+    const fetchCompaniesData = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await getCompanies();
-        setCompanies(data);
+        const response = await getCompanies(currentPage, companiesPerPage);
+        setCompanies(response.results);
+        setTotalCount(response.count);
+        setNextPageUrl(response.next);
+        setPreviousPageUrl(response.previous);
       } catch (error: any) {
         if (error.message === "Session expired. Please log in again.") {
           logout();
@@ -59,22 +102,37 @@ const CompanyListPage: React.FC = () => {
         setIsLoading(false);
       }
     };
-    fetchCompanies();
-  }, [logout]);
+    fetchCompaniesData();
+  }, [currentPage, companiesPerPage, logout]); // зависимость от currentPage и companiesPerPage
 
-  // Filter and paginate companies
+  // Filter companies (still client-side for search, can be moved to backend if needed for large datasets)
   const filteredCompanies = companies.filter((company) =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const indexOfLastCompany = currentPage * companiesPerPage;
-  const indexOfFirstCompany = indexOfLastCompany - companiesPerPage;
-  const currentCompanies = filteredCompanies.slice(
-    indexOfFirstCompany,
-    indexOfLastCompany
-  );
+  const currentCompanies = filteredCompanies; // No need to slice, API handles pagination
 
-  // Change page
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  // Change page - now directly interacts with backend pagination
+  const paginate = (pageNumber: number | string) => {
+    if (
+      typeof pageNumber === "number" &&
+      pageNumber > 0 &&
+      pageNumber <= Math.ceil(totalCount / companiesPerPage)
+    ) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (nextPageUrl) {
+      setCurrentPage(currentPage + 1); // Simple increment, useEffect will handle fetching
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (previousPageUrl && currentPage > 1) {
+      setCurrentPage(currentPage - 1); // Simple decrement, useEffect will handle fetching
+    }
+  };
 
   // --- Modal Handlers ---
   const handleAddCompany = () => {
@@ -85,8 +143,13 @@ const CompanyListPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const createdCompany = await createCompany(newCompany);
-      setCompanies([...companies, createdCompany]); // Update the list of companies
+      await createCompany(newCompany);
+      // Re-fetch companies to update the list including the new company, or optimistically update frontend state
+      const response = await getCompanies(currentPage, companiesPerPage); // Re-fetch current page
+      setCompanies(response.results);
+      setTotalCount(response.count);
+      setNextPageUrl(response.next);
+      setPreviousPageUrl(response.previous);
       setIsCreateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
@@ -107,8 +170,13 @@ const CompanyListPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const updated = await updateCompany(updatedCompany.id, updatedCompany);
-      setCompanies(companies.map((c) => (c.id === updated.id ? updated : c)));
+      await updateCompany(updatedCompany.id, updatedCompany);
+      // Re-fetch companies to update the list with updated company, or optimistically update frontend state
+      const response = await getCompanies(currentPage, companiesPerPage); // Re-fetch current page
+      setCompanies(response.results);
+      setTotalCount(response.count);
+      setNextPageUrl(response.next);
+      setPreviousPageUrl(response.previous);
       setIsUpdateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
@@ -136,7 +204,12 @@ const CompanyListPage: React.FC = () => {
       setError(null);
       try {
         await deleteCompany(selectedCompany.id);
-        setCompanies(companies.filter((c) => c.id !== selectedCompany.id));
+        // Re-fetch companies to update the list after deletion
+        const response = await getCompanies(currentPage, companiesPerPage); // Re-fetch current page
+        setCompanies(response.results);
+        setTotalCount(response.count);
+        setNextPageUrl(response.next);
+        setPreviousPageUrl(response.previous);
         setIsDeleteModalOpen(false);
       } catch (error: any) {
         if (error.message === "Session expired. Please log in again.") {
@@ -275,7 +348,7 @@ const CompanyListPage: React.FC = () => {
                         }}
                         className={`${
                           openDropdown === company.id ? "" : "hidden"
-                        } top-0 left-24 absolute z-10 w-44 divide-y divide-gray-100 rounded bg-white shadow dark:divide-gray-600 dark:bg-gray-700`}
+                        } bottom-0 left-24 absolute z-10 w-44 divide-y divide-gray-100 rounded bg-white shadow dark:divide-gray-600 dark:bg-gray-700`}
                       >
                         <ul
                           className="py-1 text-sm"
@@ -323,53 +396,45 @@ const CompanyListPage: React.FC = () => {
             <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
               عرض
               <span className="font-semibold text-gray-900 dark:text-white">
-                {indexOfFirstCompany + 1}-
-                {Math.min(indexOfLastCompany, filteredCompanies.length)}
+                {companies.length > 0
+                  ? (currentPage - 1) * companiesPerPage + 1
+                  : 0}
+                -{Math.min(currentPage * companiesPerPage, totalCount)}
               </span>
               من
               <span className="font-semibold text-gray-900 dark:text-white">
-                {filteredCompanies.length}
+                {totalCount}
               </span>
             </span>
             <ul className="inline-flex items-stretch -space-x-px">
               <li>
                 <button
-                  onClick={() => paginate(currentPage - 1)}
-                  disabled={currentPage === 1}
+                  onClick={goToPreviousPage}
+                  disabled={!previousPageUrl}
                   className="mr-0 flex h-full items-center justify-center rounded-r-lg border border-gray-300 bg-white px-3 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <span className="sr-only">السابق</span>
                   <FaChevronRight className="h-5 w-5" />
                 </button>
               </li>
-              {Array.from(
-                {
-                  length: Math.ceil(
-                    filteredCompanies.length / companiesPerPage
-                  ),
-                },
-                (_, i) => (
-                  <li key={i}>
-                    <button
-                      onClick={() => paginate(i + 1)}
-                      className={`flex items-center justify-center text-sm py-2 px-3 leading-tight ${
-                        currentPage === i + 1
-                          ? "text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                          : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      }`}
-                    >
-                      {i + 1}
-                    </button>
-                  </li>
-                )
-              )}
+              {getPageNumbers().map((pageNumber, index) => (
+                <li key={index}>
+                  <button
+                    onClick={() => paginate(pageNumber)}
+                    className={`flex items-center justify-center text-sm py-2 px-3 leading-tight ${
+                      currentPage === pageNumber
+                        ? "text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                        : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                </li>
+              ))}
               <li>
                 <button
-                  onClick={() => paginate(currentPage + 1)}
-                  disabled={
-                    currentPage ===
-                    Math.ceil(filteredCompanies.length / companiesPerPage)
-                  }
+                  onClick={goToNextPage}
+                  disabled={!nextPageUrl}
                   className="flex h-full items-center justify-center rounded-l-lg border border-gray-300 bg-white px-3 py-1.5 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <span className="sr-only">التالي</span>
