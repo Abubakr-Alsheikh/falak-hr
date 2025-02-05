@@ -7,7 +7,7 @@ import { FiSettings } from "react-icons/fi"
 import { FaBuilding, FaUsers, FaTasks } from "react-icons/fa"
 
 const DashboardLayout: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string } | null>(
@@ -24,10 +24,6 @@ const DashboardLayout: React.FC = () => {
 
     fetchUserData();
   }, [isAuthenticated]);
-
-  const handleLogout = () => {
-    logout();
-  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);

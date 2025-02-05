@@ -16,7 +16,7 @@ import {
   deleteCompany,
 } from "@api/company";
 import LoadingScreen from "@components/common/LoadingScreen";
-import { useAuth } from "@hooks/useAuth";
+import { useAuth } from "@contexts/AuthContext";
 import { Company } from "@/types/models";
 import CreateCompanyModal from "./CreateCompanyModal";
 import UpdateCompanyModal from "./UpdateCompanyModal";

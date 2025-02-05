@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useCallback,
   ReactNode,
+  useContext,
 } from "react";
 import {
   login as apiLogin,
@@ -88,7 +89,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     navigate("/");
   };
 
-  if (isAuthenticated === null) {
+  if (isAuthenticated === null || isLoading) {
     return <LoadingScreen />;
   }
 
@@ -100,7 +101,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 };
 
 export const useAuth = () => {
-  const context = React.useContext(AuthContext);
+  const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }

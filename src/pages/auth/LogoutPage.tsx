@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAuth } from '@hooks/useAuth';
+import { useAuth } from '@contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const LogoutPage = () => {
@@ -8,7 +8,7 @@ const LogoutPage = () => {
 
   useEffect(() => {
     const handleLogout = async () => {
-      await logout(); // Logout and redirect to login
+      await logout();
     };
 
     handleLogout();
