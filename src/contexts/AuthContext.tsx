@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import {
   login as apiLogin,
-  refreshAccessToken,
+  refreshAccessTokenFn,
   logout as apiLogout,
 } from "@api/auth";
 import {
@@ -18,7 +18,7 @@ import {
 } from "@utils/auth";
 import { useNavigate } from "react-router-dom";
 import { Tokens, Credentials } from "@/types/auth";
-import LoadingScreen from "@components/common/LoadingScreen"; //
+import LoadingScreen from "@components/common/LoadingScreen";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setIsAuthenticated(true);
     } else if (refreshToken) {
       try {
-        const newAccessToken = await refreshAccessToken(refreshToken);
+        const newAccessToken = await refreshAccessTokenFn(refreshToken);
         setTokens(newAccessToken, refreshToken);
         setIsAuthenticated(true);
       } catch (error) {
