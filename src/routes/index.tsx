@@ -12,6 +12,7 @@ const AboutUs = lazy(() => import('@pages/public/about/AboutUs'));
 const ContactUs = lazy(() => import('@pages/public/contact/ContactUs'));
 const RemoteWork = lazy(() => import('@pages/public/remote/RemoteWork'));
 const LoginPage = lazy(() => import('@pages/auth/LoginPage'));
+const LogoutPage = lazy(() => import('@pages/auth/LogoutPage'));
 
 // Dashboard Pages (Lazy Loaded)
 const DashboardOverview = lazy(() => import('@pages/dashboard/Overview'));
@@ -27,7 +28,7 @@ const AppRoutes = () => {
 
       {/* Auth Routes */}
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/logout" element={<LoginPage />} />
+      <Route path="/logout" element={<LogoutPage />} />
 
       {/* Dashboard Routes (Protected) */}
       <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>

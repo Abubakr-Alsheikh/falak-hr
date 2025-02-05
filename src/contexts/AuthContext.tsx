@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const logout = () => {
     apiLogout();
     setIsAuthenticated(false);
-    navigate("/login");
+    navigate("/");
   };
 
   if (isAuthenticated === null) {
