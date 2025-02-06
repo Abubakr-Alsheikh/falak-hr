@@ -6,7 +6,7 @@ interface UpdateCompanyModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdate: (company: Company) => void;
-  onDelete: (companyId: number) => void;
+  onDelete: (company: Company) => void;
   company: Company | null;
 }
 
@@ -49,7 +49,7 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
 
   const handleDelete = () => {
     if (company) {
-      onDelete(company.id);
+      onDelete(company);
     }
   };
 

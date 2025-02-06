@@ -4,7 +4,6 @@ import PublicLayout from '@layouts/PublicLayout';
 import ErrorPage from '@/pages/ErrorPage';
 import PrivateRoute from '@/layouts/PrivateRoute';
 import DashboardLayout from '@/layouts/DashboardLayout';
-import CompanyListPage from '@/pages/dashboard/companies/CompanyListPage';
 
 // Public Pages (Lazy Loaded)
 const Home = lazy(() => import('@pages/public/home/Home'));
@@ -16,6 +15,7 @@ const LogoutPage = lazy(() => import('@pages/auth/LogoutPage'));
 
 // Dashboard Pages (Lazy Loaded)
 const DashboardOverview = lazy(() => import('@pages/dashboard/Overview'));
+const CompanyListPage = lazy(() => import('@pages/dashboard/CompanyPage'));
 
 const AppRoutes = () => {
   return (

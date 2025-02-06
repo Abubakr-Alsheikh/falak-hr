@@ -7,7 +7,7 @@ interface ReadCompanyModalProps {
   onClose: () => void;
   company: Company | null;
   onEdit: (company: Company) => void;
-  onDelete: (companyId: number) => void;
+  onDelete: (company: Company) => void;
 }
 
 const ReadCompanyModal: React.FC<ReadCompanyModalProps> = ({
@@ -73,7 +73,7 @@ const ReadCompanyModal: React.FC<ReadCompanyModalProps> = ({
           <div className="flex items-center justify-between">
             <button
               type="button"
-              onClick={() => onDelete(company.id)}
+              onClick={() => onDelete(company)}
               className="inline-flex items-center rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
             >
               <span className="ml-2">حذف</span>
