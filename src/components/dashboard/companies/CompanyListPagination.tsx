@@ -18,9 +18,10 @@ const CompanyListPagination: React.FC<CompanyListPaginationProps> = ({
   nextPageUrl,
   previousPageUrl,
 }) => {
+  const totalPages = Math.ceil(totalCount / companiesPerPage);
+
   const getPageNumbers = () => {
-    const totalPages = Math.ceil(totalCount / companiesPerPage);
-    const visiblePages = 5; // Number of visible page numbers (adjust as needed)
+    const visiblePages = 5;
     const halfVisible = Math.floor(visiblePages / 2);
 
     let startPage = Math.max(1, currentPage - halfVisible);
@@ -34,7 +35,7 @@ const CompanyListPagination: React.FC<CompanyListPaginationProps> = ({
     if (startPage > 1) {
       pages.push(1);
       if (startPage > 2) {
-        pages.push("..."); // Ellipsis for skipped pages
+        pages.push("...");
       }
     }
 
@@ -44,11 +45,10 @@ const CompanyListPagination: React.FC<CompanyListPaginationProps> = ({
 
     if (endPage < totalPages) {
       if (endPage < totalPages - 1) {
-        pages.push("..."); // Ellipsis for skipped pages
+        pages.push("...");
       }
       pages.push(totalPages);
     }
-
     return pages;
   };
 
@@ -65,14 +65,14 @@ const CompanyListPagination: React.FC<CompanyListPaginationProps> = ({
   };
 
   const paginate = (pageNumber: number | string) => {
-    if (
-      typeof pageNumber === "number" &&
-      pageNumber > 0 &&
-      pageNumber <= Math.ceil(totalCount / companiesPerPage)
-    ) {
+    if (typeof pageNumber === "number") {
       onPageChange(pageNumber);
     }
   };
+
+  // Disable buttons based on *current page* and total pages, not just URLs.
+  const isPreviousDisabled = currentPage === 1;
+  const isNextDisabled = currentPage === totalPages || totalPages === 0; // Also disable if no pages
 
   return (
     <nav
@@ -82,8 +82,10 @@ const CompanyListPagination: React.FC<CompanyListPaginationProps> = ({
       <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
         عرض
         <span className="font-semibold text-gray-900 dark:text-white">
-          {(currentPage - 1) * companiesPerPage + 1}-
-          {Math.min(currentPage * companiesPerPage, totalCount)}
+          {companiesPerPage === 0
+            ? 0
+            : (currentPage - 1) * companiesPerPage + 1}
+          -{Math.min(currentPage * companiesPerPage, totalCount)}
         </span>
         من
         <span className="font-semibold text-gray-900 dark:text-white">
@@ -94,8 +96,8 @@ const CompanyListPagination: React.FC<CompanyListPaginationProps> = ({
         <li>
           <button
             onClick={goToPreviousPage}
-            disabled={!previousPageUrl}
-            className="mr-0 flex h-full items-center justify-center rounded-r-lg border border-gray-300 bg-white px-3 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            disabled={isPreviousDisabled}
+            className="mr-0 flex h-full items-center justify-center rounded-r-lg border border-gray-300 bg-white px-3 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:disabled:opacity-80" // Added disabled styles
           >
             <span className="sr-only">السابق</span>
             <FaChevronRight className="h-5 w-5" />
@@ -110,6 +112,7 @@ const CompanyListPagination: React.FC<CompanyListPaginationProps> = ({
                   ? "text-primary-600 bg-primary-50 border border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
                   : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               }`}
+              aria-current={currentPage === pageNumber ? "page" : undefined}
             >
               {pageNumber}
             </button>
@@ -118,8 +121,8 @@ const CompanyListPagination: React.FC<CompanyListPaginationProps> = ({
         <li>
           <button
             onClick={goToNextPage}
-            disabled={!nextPageUrl}
-            className="flex h-full items-center justify-center rounded-l-lg border border-gray-300 bg-white px-3 py-1.5 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            disabled={isNextDisabled}
+            className="flex h-full items-center justify-center rounded-l-lg border border-gray-300 bg-white px-3 py-1.5 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:disabled:opacity-80" // Added disabled styles
           >
             <span className="sr-only">التالي</span>
             <FaChevronLeft className="h-5 w-5" />

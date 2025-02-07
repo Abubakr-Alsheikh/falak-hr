@@ -5,7 +5,7 @@ import { FaTimes, FaSave } from "react-icons/fa";
 interface CreateCompanyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (company: Omit<Company, "id">) => void; // Adjust Company type
+  onCreate: (company: Omit<Company, "id">) => void;
 }
 
 const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({
@@ -28,12 +28,13 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = ({
       contact_phone: contactPhone,
       parent_company: parentCompany,
     });
-    // Reset form fields after successful creation
+    // Reset form fields
     setName("");
     setAddress("");
     setContactEmail("");
     setContactPhone("");
     setParentCompany(null);
+    onClose();
   };
 
   if (!isOpen) return null;

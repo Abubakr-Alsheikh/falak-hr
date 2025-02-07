@@ -8,11 +8,10 @@ interface PaginatedResponse<T> {
   previous: string | null;
   results: T[];
 }
-
-// Function to fetch companies
 export const getCompanies = async (
   page: number = 1,
-  pageSize: number = 10
+  pageSize: number = 10,
+  searchQuery: string = ""
 ): Promise<PaginatedResponse<Company>> => {
   try {
     const accessToken = getAccessToken();
@@ -23,12 +22,12 @@ export const getCompanies = async (
       params: {
         page: page,
         page_size: pageSize,
+        search: searchQuery, // Use the search parameter
       },
     });
     return response.data;
   } catch (error: any) {
     console.error("Error fetching companies:", error);
-
     throw error;
   }
 };

@@ -5,7 +5,6 @@ import CompanyListPagination from "./CompanyListPagination";
 
 interface CompanyListProps {
   companies: Company[];
-  searchQuery: string;
   totalCount: number;
   currentPage: number;
   companiesPerPage: number;
@@ -15,11 +14,11 @@ interface CompanyListProps {
   onEdit: (company: Company) => void;
   onView: (company: Company) => void;
   onDelete: (company: Company) => void;
+  isLoading: boolean; // Add isLoading prop
 }
 
 const CompanyList: React.FC<CompanyListProps> = ({
   companies,
-  searchQuery,
   totalCount,
   currentPage,
   companiesPerPage,
@@ -29,11 +28,8 @@ const CompanyList: React.FC<CompanyListProps> = ({
   onEdit,
   onView,
   onDelete,
+  isLoading, // Receive isLoading
 }) => {
-  const filteredCompanies = companies.filter((company) =>
-    company.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <>
       <div className="overflow-x-auto">
@@ -58,15 +54,23 @@ const CompanyList: React.FC<CompanyListProps> = ({
             </tr>
           </thead>
           <tbody>
-            {filteredCompanies.map((company) => (
-              <CompanyListItem
-                key={company.id}
-                company={company}
-                onEdit={onEdit}
-                onView={onView}
-                onDelete={onDelete}
-              />
-            ))}
+            {isLoading ? ( // Conditionally render loading indicator
+              <tr>
+                <td colSpan={5} className="p-4 text-center">
+                  <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-primary-700"></div>
+                </td>
+              </tr>
+            ) : (
+              companies.map((company) => (
+                <CompanyListItem
+                  key={company.id}
+                  company={company}
+                  onEdit={onEdit}
+                  onView={onView}
+                  onDelete={onDelete}
+                />
+              ))
+            )}
           </tbody>
         </table>
       </div>

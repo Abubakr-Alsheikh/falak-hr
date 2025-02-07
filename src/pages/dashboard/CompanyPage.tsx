@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   getCompanies,
   createCompany,
@@ -7,7 +7,6 @@ import {
 } from "@api/company";
 import { useAuth } from "@contexts/AuthContext";
 import { Company } from "@/types/models";
-import LoadingScreen from "@components/common/LoadingScreen";
 import CompanyListHeader from "@components/dashboard/companies/CompanyListHeader";
 import CompanyList from "@components/dashboard/companies/CompanyList";
 import CreateCompanyModal from "@components/dashboard/companies/Modals/CreateCompanyModal";
@@ -33,41 +32,66 @@ const CompanyListPage: React.FC = () => {
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [localSearchQuery, setLocalSearchQuery] = useState("");
 
   // Fetch Companies
-  useEffect(() => {
-    const fetchCompaniesData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await getCompanies(currentPage, companiesPerPage);
-        setCompanies(response.results);
-        setTotalCount(response.count);
-        setNextPageUrl(response.next);
-        setPreviousPageUrl(response.previous);
-      } catch (error: any) {
-        if (error.message === "Session expired. Please log in again.") {
-          logout();
-        }
-        setError(error.message || "فشل في جلب الشركات.");
-      } finally {
-        setIsLoading(false);
+  const fetchCompaniesData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await getCompanies(
+        currentPage,
+        companiesPerPage,
+        searchQuery
+      );
+      setCompanies(response.results);
+      setTotalCount(response.count);
+      setNextPageUrl(response.next);
+      setPreviousPageUrl(response.previous);
+    } catch (error: any) {
+      if (error.message === "Session expired. Please log in again.") {
+        logout();
       }
-    };
+      setError(error.message || "فشل في جلب الشركات.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, companiesPerPage, searchQuery, logout]);
+
+  useEffect(() => {
     fetchCompaniesData();
-  }, [currentPage, companiesPerPage, logout]);
+  }, [fetchCompaniesData]);
+
+  // Add a debounce function
+  const debounce = (func: (query: string) => void, delay: number) => {
+    let timeoutId: NodeJS.Timeout;
+    return (query: string) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func(query);
+      }, delay);
+    };
+  };
+
+  const handleSearchChange = useCallback(
+    debounce((query: string) => {
+      setCurrentPage(1);
+      setSearchQuery(query);
+    }, 500),
+    []
+  );
+
+  const handleLocalSearchChange = (query: string) => {
+    setLocalSearchQuery(query);
+    handleSearchChange(query);
+  };
 
   const handleCreateCompany = async (newCompany: Omit<Company, "id">) => {
     setIsLoading(true);
     setError(null);
     try {
       await createCompany(newCompany);
-      // Re-fetch companies to update the list including the new company
-      const response = await getCompanies(currentPage, companiesPerPage);
-      setCompanies(response.results);
-      setTotalCount(response.count);
-      setNextPageUrl(response.next);
-      setPreviousPageUrl(response.previous);
+      fetchCompaniesData();
       setIsCreateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
@@ -84,12 +108,7 @@ const CompanyListPage: React.FC = () => {
     setError(null);
     try {
       await updateCompany(updatedCompany.id, updatedCompany);
-      // Re-fetch companies (or optimistically update)
-      const response = await getCompanies(currentPage, companiesPerPage);
-      setCompanies(response.results);
-      setTotalCount(response.count);
-      setNextPageUrl(response.next);
-      setPreviousPageUrl(response.previous);
+      fetchCompaniesData();
       setIsUpdateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
@@ -107,12 +126,7 @@ const CompanyListPage: React.FC = () => {
     setError(null);
     try {
       await deleteCompany(selectedCompany.id);
-      // Re-fetch companies (or optimistically update)
-      const response = await getCompanies(currentPage, companiesPerPage);
-      setCompanies(response.results);
-      setTotalCount(response.count);
-      setNextPageUrl(response.next);
-      setPreviousPageUrl(response.previous);
+      fetchCompaniesData();
       setIsDeleteModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
@@ -126,38 +140,32 @@ const CompanyListPage: React.FC = () => {
 
   const handleOpenCreateModal = () => setIsCreateModalOpen(true);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
-
   const handleOpenUpdateModal = (company: Company) => {
     setSelectedCompany(company);
     setIsUpdateModalOpen(true);
   };
   const handleCloseUpdateModal = () => setIsUpdateModalOpen(false);
-
   const handleOpenReadModal = (company: Company) => {
     setSelectedCompany(company);
     setIsReadModalOpen(true);
   };
   const handleCloseReadModal = () => setIsReadModalOpen(false);
-
   const handleOpenDeleteModal = (company: Company) => {
     setSelectedCompany(company);
     setIsDeleteModalOpen(true);
   };
   const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
+  // Error Handling Display
   if (error) {
     return (
       <div className="p-4 text-center text-red-500">
         <p>Error: {error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="text-blue-500"
-        >
-          إعادة التحميل
+        <button onClick={fetchCompaniesData} className="text-blue-500">
+        إعادة التحميل
         </button>
       </div>
     );
@@ -171,22 +179,22 @@ const CompanyListPage: React.FC = () => {
       <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
         <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
           <CompanyListHeader
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
+            onSearchChange={handleLocalSearchChange}
+            searchQuery={localSearchQuery}
             onAddCompany={handleOpenCreateModal}
           />
           <CompanyList
             companies={companies}
-            searchQuery={searchQuery}
             totalCount={totalCount}
             currentPage={currentPage}
             companiesPerPage={companiesPerPage}
-            onPageChange={setCurrentPage}
+            onPageChange={handlePageChange}
             nextPageUrl={nextPageUrl}
             previousPageUrl={previousPageUrl}
             onEdit={handleOpenUpdateModal}
             onView={handleOpenReadModal}
             onDelete={handleOpenDeleteModal}
+            isLoading={isLoading}
           />
         </div>
       </div>
