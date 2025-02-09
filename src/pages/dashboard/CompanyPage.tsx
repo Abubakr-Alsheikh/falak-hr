@@ -1,11 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  getCompanies,
-  createCompany,
-  updateCompany,
-  deleteCompany,
-} from "@api/company";
-import { useAuth } from "@contexts/AuthContext";
+import React, { useState, useCallback } from "react";
+import useCompanies from "@hooks/useCompanies";
+import { companyService } from "@api/companyService";
 import { Company } from "@/types/models";
 import CompanyListHeader from "@components/dashboard/companies/CompanyListHeader";
 import CompanyList from "@components/dashboard/companies/CompanyList";
@@ -13,56 +8,30 @@ import CreateCompanyModal from "@components/dashboard/companies/Modals/CreateCom
 import UpdateCompanyModal from "@components/dashboard/companies/Modals/UpdateCompanyModal";
 import ReadCompanyModal from "@components/dashboard/companies/Modals/ReadCompanyModal";
 import DeleteCompanyModal from "@components/dashboard/companies/Modals/DeleteCompanyModal";
+import { useAuth } from "@contexts/AuthContext";
+import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
 
 const CompanyListPage: React.FC = () => {
-  const [companies, setCompanies] = useState<Company[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [companiesPerPage] = useState(10);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { logout } = useAuth();
-
-  const [totalCount, setTotalCount] = useState<number>(0);
-  const [nextPageUrl, setNextPageUrl] = useState<string | null>(null);
-  const [previousPageUrl, setPreviousPageUrl] = useState<string | null>(null);
-
+  const [localSearchQuery, setLocalSearchQuery] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-  const [localSearchQuery, setLocalSearchQuery] = useState("");
+  const { logout } = useAuth();
 
-  // Fetch Companies
-  const fetchCompaniesData = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await getCompanies(
-        currentPage,
-        companiesPerPage,
-        searchQuery
-      );
-      setCompanies(response.results);
-      setTotalCount(response.count);
-      setNextPageUrl(response.next);
-      setPreviousPageUrl(response.previous);
-    } catch (error: any) {
-      if (error.message === "Session expired. Please log in again.") {
-        logout();
-      }
-      setError(error.message || "فشل في جلب الشركات.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentPage, companiesPerPage, searchQuery, logout]);
+  const {
+    companies,
+    loading,
+    error,
+    totalCount,
+    nextPageUrl,
+    previousPageUrl,
+    refreshCompanies,
+  } = useCompanies({ page: currentPage, search: localSearchQuery });
 
-  useEffect(() => {
-    fetchCompaniesData();
-  }, [fetchCompaniesData]);
-
-  // Add a debounce function
+  // Debounce function
   const debounce = (func: (query: string) => void, delay: number) => {
     let timeoutId: NodeJS.Timeout;
     return (query: string) => {
@@ -72,11 +41,10 @@ const CompanyListPage: React.FC = () => {
       }, delay);
     };
   };
-
   const handleSearchChange = useCallback(
     debounce((query: string) => {
       setCurrentPage(1);
-      setSearchQuery(query);
+      setLocalSearchQuery(query);
     }, 500),
     []
   );
@@ -87,57 +55,44 @@ const CompanyListPage: React.FC = () => {
   };
 
   const handleCreateCompany = async (newCompany: Omit<Company, "id">) => {
-    setIsLoading(true);
-    setError(null);
     try {
-      await createCompany(newCompany);
-      fetchCompaniesData();
+      await companyService.createCompany(newCompany);
+      refreshCompanies(); // Use the refresh function
       setIsCreateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
         logout();
       }
-      setError(error.message || "فشل في إنشاء الشركة.");
-    } finally {
-      setIsLoading(false);
+      console.error("Error creating company:", error);
     }
   };
 
   const handleUpdateCompany = async (updatedCompany: Company) => {
-    setIsLoading(true);
-    setError(null);
     try {
-      await updateCompany(updatedCompany.id, updatedCompany);
-      fetchCompaniesData();
+      await companyService.updateCompany(updatedCompany.id, updatedCompany);
+      refreshCompanies(); // Use the refresh function
       setIsUpdateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
         logout();
       }
-      setError(error.message || "فشل في تحديث الشركة.");
-    } finally {
-      setIsLoading(false);
+      console.error("Error updating company:", error);
     }
   };
 
   const handleConfirmDeleteCompany = async () => {
     if (!selectedCompany) return;
-    setIsLoading(true);
-    setError(null);
     try {
-      await deleteCompany(selectedCompany.id);
-      fetchCompaniesData();
+      await companyService.deleteCompany(selectedCompany.id);
+      refreshCompanies();
       setIsDeleteModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
         logout();
       }
-      setError(error.message || "فشل في حذف الشركة.");
-    } finally {
-      setIsLoading(false);
+      console.error("Error deleting company:", error);
     }
   };
-
   const handleOpenCreateModal = () => setIsCreateModalOpen(true);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
   const handleOpenUpdateModal = (company: Company) => {
@@ -155,6 +110,7 @@ const CompanyListPage: React.FC = () => {
     setIsDeleteModalOpen(true);
   };
   const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
+
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
@@ -164,8 +120,8 @@ const CompanyListPage: React.FC = () => {
     return (
       <div className="p-4 text-center text-red-500">
         <p>Error: {error}</p>
-        <button onClick={fetchCompaniesData} className="text-blue-500">
-        إعادة التحميل
+        <button onClick={refreshCompanies} className="text-blue-500">
+          إعادة التحميل
         </button>
       </div>
     );
@@ -187,14 +143,14 @@ const CompanyListPage: React.FC = () => {
             companies={companies}
             totalCount={totalCount}
             currentPage={currentPage}
-            companiesPerPage={companiesPerPage}
+            companiesPerPage={DEFAULT_PAGE_SIZE}
             onPageChange={handlePageChange}
             nextPageUrl={nextPageUrl}
             previousPageUrl={previousPageUrl}
             onEdit={handleOpenUpdateModal}
             onView={handleOpenReadModal}
             onDelete={handleOpenDeleteModal}
-            isLoading={isLoading}
+            isLoading={loading}
           />
         </div>
       </div>
