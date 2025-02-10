@@ -2,7 +2,7 @@ import apiClient from "./client";
 import { Company } from "@/types/models";
 import { PaginatedResponse } from "@utils/pagination";
 
-interface GetCompaniesParams {
+export interface GetCompaniesParams {
   page?: number;
   page_size?: number;
   search?: string;

@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { companyService } from "@api/companyService";
+import { companyService, GetCompaniesParams } from "@api/companyService";
 import { Company } from "@/types/models";
 import { PaginatedResponse, DEFAULT_PAGE_SIZE } from "@utils/pagination";
 import { useAuth } from "@contexts/AuthContext";
+import apiClient from "@/api/client"; // Import apiClient
 
 interface UseCompaniesProps {
   page?: number;
@@ -11,8 +12,10 @@ interface UseCompaniesProps {
   ordering?: string;
   contact_email?: string;
   address?: string;
-  parent_company?: number;
+  parent_company?: number | null; // Allow null for top-level companies
+  parentId?: number | null; // Add parentId for fetching sub-companies
 }
+
 const useCompanies = ({
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE,
@@ -20,7 +23,8 @@ const useCompanies = ({
   ordering = "",
   contact_email = "",
   address = "",
-  parent_company,
+  parent_company = null, // Default to null (top-level)
+  parentId = null, // Default to null (top-level)
 }: UseCompaniesProps = {}) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,21 +38,48 @@ const useCompanies = ({
     setLoading(true);
     setError(null);
     try {
-      const params = {
+      let response:
+        | PaginatedResponse<Company>
+        | { results: Company[]; count: number; next: null; previous: null }; // Union type
+
+      const params: GetCompaniesParams = {
+        // Use GetCompaniesParams here
         page,
         page_size: pageSize,
         search,
         ordering,
         contact_email,
         address,
-        parent_company,
       };
-      const response: PaginatedResponse<Company> =
-        await companyService.getCompanies(params);
+
+      if (parent_company !== undefined && parent_company !== null) {
+        params.parent_company = parent_company; // Assign directly, type is now correct
+      }
+
+      if (parentId) {
+        // Fetch sub-companies
+        const subCompanyResponse = await apiClient.get<Company[]>(
+          `/companies/${parentId}/subcompanies/`
+        );
+        // Manually create a PaginatedResponse-like structure.  Important for consistency.
+        response = {
+          results: subCompanyResponse.data,
+          count: subCompanyResponse.data.length,
+          next: null,
+          previous: null,
+        };
+      } else {
+        // Fetch top-level companies or filtered companies.  Use parent_company=null for top-level.
+        if (parent_company === null) {
+          params.parent_company = undefined; // Set to undefined for the API call
+        }
+        response = await companyService.getCompanies(params);
+      }
+
       setCompanies(response.results);
       setTotalCount(response.count);
-      setNextPageUrl(response.next);
-      setPreviousPageUrl(response.previous);
+      setNextPageUrl(response.next); // Will be null for sub-companies
+      setPreviousPageUrl(response.previous); // Will be null for sub-companies
     } catch (err: any) {
       if (err.message === "Session expired. Please log in again.") {
         logout();
@@ -65,6 +96,7 @@ const useCompanies = ({
     contact_email,
     address,
     parent_company,
+    parentId,
     logout,
   ]);
 

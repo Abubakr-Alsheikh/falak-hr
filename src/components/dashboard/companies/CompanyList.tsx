@@ -14,7 +14,7 @@ interface CompanyListProps {
   onEdit: (company: Company) => void;
   onView: (company: Company) => void;
   onDelete: (company: Company) => void;
-  isLoading: boolean; // Add isLoading prop
+  isLoading: boolean;
 }
 
 const CompanyList: React.FC<CompanyListProps> = ({
@@ -28,8 +28,11 @@ const CompanyList: React.FC<CompanyListProps> = ({
   onEdit,
   onView,
   onDelete,
-  isLoading, // Receive isLoading
+  isLoading,
 }) => {
+  // Filter out child companies that have parents.
+  const topLevelCompanies = companies.filter((c) => !c.parent_company);
+
   return (
     <>
       <div className="overflow-x-auto">
@@ -54,14 +57,14 @@ const CompanyList: React.FC<CompanyListProps> = ({
             </tr>
           </thead>
           <tbody>
-            {isLoading ? ( // Conditionally render loading indicator
+            {isLoading ? (
               <tr>
                 <td colSpan={5} className="p-4 text-center">
                   <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-primary-700"></div>
                 </td>
               </tr>
             ) : (
-              companies.map((company) => (
+              topLevelCompanies.map((company) => (
                 <CompanyListItem
                   key={company.id}
                   company={company}

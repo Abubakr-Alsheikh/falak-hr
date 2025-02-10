@@ -1,5 +1,3 @@
-// src/types/models.ts
-
 export interface Company {
   id: number;
   name: string;
@@ -9,6 +7,8 @@ export interface Company {
   parent_company: number | null;
   created_at?: string;
   updated_at?: string;
+  sub_companies?: Company[];
+  employee_count?: number;
 }
 
 export interface Employee {
