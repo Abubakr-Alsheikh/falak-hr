@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaTimes, FaEdit, FaTrashAlt } from "react-icons/fa";
 import { Company } from "@/types/models";
+import { companyService } from "@/api/companyService";
+import { useAuth } from "@contexts/AuthContext";
 
 interface ReadCompanyModalProps {
   isOpen: boolean;
@@ -17,6 +19,37 @@ const ReadCompanyModal: React.FC<ReadCompanyModalProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const [parentCompanyName, setParentCompanyName] = useState<string | null>(
+    null
+  );
+    const { logout } = useAuth();
+  // Fetch parent company name if it exists
+  useEffect(() => {
+    const fetchParentCompanyName = async () => {
+      if (company && company.parent_company) {
+        try {
+          const parentCompany = await companyService.getCompanyById(
+            company.parent_company
+          );
+          setParentCompanyName(parentCompany.name);
+        } catch (error: any) {
+          if (error.message === "Session expired. Please log in again.") {
+            logout();
+            return;
+          }
+          console.error("Error fetching parent company name:", error);
+          setParentCompanyName("Error loading name"); // Set an error message.
+        }
+      } else {
+        setParentCompanyName(null);
+      }
+    };
+
+    if (isOpen && company) {
+      fetchParentCompanyName();
+    }
+  }, [isOpen, company, logout]);
+
   if (!isOpen || !company) return null;
 
   return (
@@ -67,7 +100,7 @@ const ReadCompanyModal: React.FC<ReadCompanyModalProps> = ({
               الشركة الأم
             </dt>
             <dd className="mb-4 font-light text-gray-500 dark:text-gray-400 sm:mb-5">
-              {company.parent_company || "غير متوفر"}
+              {parentCompanyName !== null ? parentCompanyName : "غير متوفر"}
             </dd>
           </dl>
           <div className="flex items-center justify-between">
