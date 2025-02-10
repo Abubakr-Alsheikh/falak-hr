@@ -7,23 +7,21 @@ import LoadingScreen from "@components/common/LoadingScreen";
 import Button from "@/components/public/Button";
 
 const LoginPage: React.FC = () => {
-  const { login, isLoading, isAuthenticated } = useAuth();
+  const { login, isLoading, isAuthenticated, authError, setAuthError } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard", { replace: true }); // Use replace: true to prevent going back to login page with back button
+      navigate("/dashboard", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
+    setAuthError(null);
 
     const credentials: Credentials = { username: username, password };
 
@@ -31,7 +29,7 @@ const LoginPage: React.FC = () => {
       await login(credentials, rememberMe);
     } catch (err: any) {
       console.error("Login error:", err);
-      setError(
+      setAuthError(
         err.message ||
           "خطأ في اسم المستخدم أو كلمة المرور. يرجى المحاولة مرة أخرى."
       );
@@ -44,7 +42,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
-      <div className="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
+      <div className="mx-auto flex h-screen flex-col items-center justify-center px-6 py-8 lg:py-0">
         <a
           href="#"
           className="mb-6 flex items-center text-2xl font-semibold text-gray-900 dark:text-white"
@@ -59,7 +57,7 @@ const LoginPage: React.FC = () => {
               تسجيل الدخول إلى حسابك
             </h1>
 
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {authError && <p className="text-sm text-red-500">{authError}</p>}
 
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>

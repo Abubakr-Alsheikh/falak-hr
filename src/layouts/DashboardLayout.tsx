@@ -7,7 +7,7 @@ import { FiSettings } from "react-icons/fi"
 import { FaBuilding, FaUsers, FaTasks } from "react-icons/fa"
 
 const DashboardLayout: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string } | null>(
@@ -24,10 +24,6 @@ const DashboardLayout: React.FC = () => {
 
     fetchUserData();
   }, [isAuthenticated]);
-
-  const handleLogout = () => {
-    logout();
-  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -52,8 +48,8 @@ const DashboardLayout: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-gray-50 antialiased dark:bg-gray-900" dir="rtl">
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-gray-200 bg-white px-4 py-2.5 dark:border-gray-700 dark:bg-gray-800">
+    <div className="min-h-dvh bg-gray-50 antialiased dark:bg-gray-900" dir="rtl">
+      <nav className="fixed left-0 right-0 top-0 z-40 border-b border-gray-200 bg-white px-4 py-2.5 dark:border-gray-700 dark:bg-gray-800">
         <div className="flex flex-wrap items-center justify-between">
           <div className="flex items-center justify-start">
             <button
@@ -136,12 +132,12 @@ const DashboardLayout: React.FC = () => {
                 aria-labelledby="dropdown"
               >
                 <li>
-                  <button
-                    onClick={handleLogout}
+                  <Link
+                    to="/logout"
                     className="block w-full px-4 py-2 text-right text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                   >
                     <AiOutlineLogout className="ml-2 inline-block"/> تسجيل الخروج
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -149,7 +145,7 @@ const DashboardLayout: React.FC = () => {
         </div>
       </nav>
       <aside
-        className={`fixed top-0 right-0 z-40 w-64 h-screen pt-14 transition-transform ${
+        className={`fixed top-0 right-0 z-30 w-64 h-screen pt-14 transition-transform ${
           isSidebarOpen ? "" : "translate-x-full"
         } bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700`}
         aria-label="Sidenav"
@@ -196,7 +192,7 @@ const DashboardLayout: React.FC = () => {
           </ul>
         </div>
       </aside>
-      <main className="h-auto p-4 pt-20 md:mr-64">
+      <main className="h-full p-4 pt-20 md:mr-64">
         <Outlet />
       </main>
     </div>
