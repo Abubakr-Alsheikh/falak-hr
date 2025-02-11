@@ -54,10 +54,9 @@ const CompanyListPage: React.FC = () => {
     handleSearchChange(query);
   };
 
-  const handleCreateCompany = async (newCompany: Omit<Company, "id">) => {
+  const handleCreateCompany = async () => {
     try {
-      await companyService.createCompany(newCompany);
-      refreshCompanies(); // Use the refresh function
+      refreshCompanies();
       setIsCreateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
@@ -67,10 +66,9 @@ const CompanyListPage: React.FC = () => {
     }
   };
 
-  const handleUpdateCompany = async (updatedCompany: Company) => {
+  const handleUpdateCompany = async () => {
     try {
-      await companyService.updateCompany(updatedCompany.id, updatedCompany);
-      refreshCompanies(); // Use the refresh function
+      refreshCompanies();
       setIsUpdateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
