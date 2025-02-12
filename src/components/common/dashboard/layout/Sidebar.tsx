@@ -1,7 +1,7 @@
 // src/components/Dashboard/Sidebar.tsx
 import React from 'react';
 import { AiOutlineHome } from 'react-icons/ai';
-import { FaBuilding, FaUsers, FaTasks } from 'react-icons/fa';
+import { FaBuilding, FaUsers, FaTasks, FaEnvelope } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 interface SidebarProps {
@@ -15,6 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, onLinkClick }) => {
     { to: '/dashboard/companies', icon: <FaBuilding className="ml-3" />, label: 'الشركات' },
     { to: '/dashboard/employees', icon: <FaUsers className="ml-3" />, label: 'الموظفين' },
     { to: '/dashboard/tasks', icon: <FaTasks className="ml-3" />, label: 'المهام' },
+    { to: '/dashboard/inquiries', icon: <FaEnvelope className="ml-3" />, label: 'الاستفسارات' },
   ];
 
   return (
