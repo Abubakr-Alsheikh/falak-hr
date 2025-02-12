@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaEllipsisH, FaEdit, FaTimes, FaTrashAlt } from "react-icons/fa";
+import { FaEllipsisH, FaEdit, FaEye, FaTrashAlt } from "react-icons/fa";
 import { Company } from "@/types/models";
 
 interface CompanyActionsDropdownProps {
@@ -58,6 +58,18 @@ const CompanyActionsDropdown: React.FC<CompanyActionsDropdownProps> = ({
           <li>
             <button
               onClick={() => {
+                onView(company);
+                setOpenDropdown(null);
+              }}
+              className="flex w-full items-center px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+              <span className="ml-2"> معاينة</span>
+              <FaEye className="h-4 w-4" />
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => {
                 onEdit(company);
                 setOpenDropdown(null);
               }}
@@ -65,18 +77,6 @@ const CompanyActionsDropdown: React.FC<CompanyActionsDropdownProps> = ({
             >
               <span className="ml-2">تعديل</span>
               <FaEdit className="h-4 w-4" />
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => {
-                onView(company);
-                setOpenDropdown(null);
-              }}
-              className="flex w-full items-center px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-            >
-              <span className="ml-2"> معاينة</span>
-              <FaTimes className="h-4 w-4" />
             </button>
           </li>
           <li>

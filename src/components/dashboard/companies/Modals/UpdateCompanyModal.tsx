@@ -27,14 +27,20 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
   const [contactPhone, setContactPhone] = useState("");
   const [parentCompanySearch, setParentCompanySearch] = useState("");
   const [parentCompany, setParentCompany] = useState<Company | null>(null);
-  const [parentCompanyOptions, setParentCompanyOptions] = useState<Company[]>([]);
+  const [parentCompanyOptions, setParentCompanyOptions] = useState<Company[]>(
+    []
+  );
   const [loadingParentCompanies, setLoadingParentCompanies] = useState(false);
   const [parentCompanyDropdownVisible, setParentCompanyDropdownVisible] =
     useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+  const [generalError, setGeneralError] = useState<string | null>(null);
+  const [isParentCompanyValid, setIsParentCompanyValid] = useState<
+    boolean | null
+  >(null);
   const modalRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<DebounceInput>(null); // Correct ref type
-    const { logout } = useAuth();
+  const inputRef = useRef<DebounceInput>(null);
+  const { logout } = useAuth();
 
   // Fetch and set initial values when the modal opens or the company changes
   useEffect(() => {
@@ -44,85 +50,103 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
       setContactEmail(company.contact_email);
       setContactPhone(company.contact_phone);
       if (company.parent_company) {
-        // If there's a parent company, we need to fetch its details to display the name
+        // If there's a parent company, fetch its details to display the name
         fetchParentCompanyDetails(company.parent_company);
       } else {
         setParentCompany(null);
         setParentCompanySearch("");
+        setIsParentCompanyValid(null);
       }
+      // Reset errors when the modal is opened with a new company
+      setErrors({});
+      setGeneralError(null);
     }
   }, [company]);
 
-    const fetchParentCompanyDetails = async (parentId: number) => {
+  const fetchParentCompanyDetails = async (parentId: number) => {
     try {
       const parentCompanyData = await companyService.getCompanyById(parentId);
       setParentCompany(parentCompanyData);
       setParentCompanySearch(parentCompanyData.name);
-    } catch (error: any) {
-      if (error.message === "Session expired. Please log in again.") {
-        logout();
-        return;
-      }
+      setIsParentCompanyValid(true); // Existing parent, so it's valid
+    } catch (error) {
       console.error("Error fetching parent company details:", error);
-      setErrors({
-        parent_company: ["Failed to load parent company details."],
-      });
+      setGeneralError("Error fetching parent company details.");
+      setIsParentCompanyValid(false); // Assume invalid on error
     }
   };
 
-  const fetchParentCompanies = useCallback(
-    async (searchQuery: string) => {
-      if (!searchQuery) {
-        setParentCompanyOptions([]);
-        setLoadingParentCompanies(false);
-        return;
-      }
+  const fetchParentCompanies = useCallback(async (searchQuery: string) => {
+    if (!searchQuery) {
+      setParentCompanyOptions([]);
+      setLoadingParentCompanies(false);
+      setIsParentCompanyValid(null); // Reset validity
+      return;
+    }
 
-      setLoadingParentCompanies(true);
-      try {
-        const params = { search: searchQuery, page_size: 5 };
-        const response = await companyService.getCompanies(params);
-        setParentCompanyOptions(response.results);
-      } catch (error: any) {
-        if (error.message === "Session expired. Please log in again.") {
-          logout();
-        }
-        console.error("Error fetching parent companies:", error);
-        // Optionally set an error state to display to the user
-      } finally {
-        setLoadingParentCompanies(false);
-      }
-    },
-    [logout]
-  );
+    setLoadingParentCompanies(true);
+    try {
+      const params = { search: searchQuery, page_size: 5 };
+      const response = await companyService.getCompanies(params);
+      setParentCompanyOptions(response.results);
 
+      // Check if search term exactly matches
+      const exactMatch = response.results.find(
+        (company) => company.name.toLowerCase() === searchQuery.toLowerCase()
+      );
+      setIsParentCompanyValid(!!exactMatch); // Set based on exact match
+      if (exactMatch) {
+        setParentCompany(exactMatch);
+      }
+    } catch (error) {
+      console.error("Error fetching parent companies:", error);
+      setGeneralError("Error fetching parent companies.");
+      setIsParentCompanyValid(false); // Assume invalid on error
+    } finally {
+      setLoadingParentCompanies(false);
+    }
+  }, []);
+  // Effect to debounce fetching parent companies
   useEffect(() => {
     const timerId = setTimeout(() => {
-      fetchParentCompanies(parentCompanySearch);
+      if (parentCompanySearch) {
+        fetchParentCompanies(parentCompanySearch);
+      }
     }, 300);
 
     return () => clearTimeout(timerId);
   }, [parentCompanySearch, fetchParentCompanies]);
 
-  const handleSelectParentCompany = (company: Company) => {
-    setParentCompany(company);
-    setParentCompanySearch(company.name);
+  const handleSelectParentCompany = (selectedCompany: Company) => {
+    setParentCompany(selectedCompany);
+    setParentCompanySearch(selectedCompany.name);
     setParentCompanyDropdownVisible(false);
+    setIsParentCompanyValid(true); // Selected from options, it's valid
   };
 
-   const handleParentCompanyInputChange = (
+  const handleParentCompanyInputChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setParentCompanySearch(e.target.value);
-    setParentCompany(null); // Clear the selected parent company
+    setParentCompany(null);
     setParentCompanyDropdownVisible(true);
+    if (!e.target.value) {
+      setIsParentCompanyValid(null); // Empty input, reset validity
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setErrors({}); // Clear previous errors
+    setErrors({});
+    setGeneralError(null);
 
-    if (!company) return; // Ensure company is not null
+    if (!company) return;
+
+    // Parent company validation check (only if a parent company is being set)
+    if (parentCompanySearch && !isParentCompanyValid) {
+      setErrors({ parent_company: ["Please select a valid parent company."] });
+      return; // Prevent form submission
+    }
 
     try {
       const updatedCompany: Company = {
@@ -131,26 +155,40 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
         address,
         contact_email: contactEmail,
         contact_phone: contactPhone,
-        parent_company: parentCompany ? parentCompany.id : null, // Use ID or null
+        parent_company: parentCompany ? parentCompany.id : null,
       };
 
       await companyService.updateCompany(company.id, updatedCompany);
-      onUpdate(updatedCompany); // Pass the updated company data
-      onClose(); // Close after successful update
+      onUpdate(updatedCompany);
+      onClose();
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
-          logout();
-          return; // Prevent further error handling if session expired
+        logout();
+        return;
       }
       if (error instanceof AxiosError && error.response) {
         const errorData = error.response.data;
         if (errorData && typeof errorData === "object") {
-          setErrors(errorData);
+          const fieldErrors: { [key: string]: string[] } = {};
+          for (const key in errorData) {
+            if (Array.isArray(errorData[key])) {
+              fieldErrors[key] = errorData[key];
+            }
+          }
+          setErrors(fieldErrors);
+          if (
+            errorData.non_field_errors &&
+            Array.isArray(errorData.non_field_errors)
+          ) {
+            setGeneralError(errorData.non_field_errors.join(", "));
+          } else if (errorData.detail) {
+            setGeneralError(errorData.detail);
+          }
         } else {
-          setErrors({ general: [error.message || "An unexpected error occurred."] });
+          setGeneralError(error.message || "An unexpected error occurred.");
         }
       } else {
-        setErrors({ general: [error.message || "An unexpected error occurred."] });
+        setGeneralError(error.message || "An unexpected error occurred.");
       }
       console.error("Error updating company:", error);
     }
@@ -161,22 +199,25 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
       onDelete(company);
     }
   };
-    // Click-outside handler
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-                setParentCompanyDropdownVisible(false);
-            }
-        };
 
-        if (isOpen) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setParentCompanyDropdownVisible(false);
+      }
+    };
 
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [isOpen]);
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   if (!isOpen || !company) return null;
 
@@ -186,11 +227,12 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
       id="updateCompanyModal"
       tabIndex={-1}
       aria-hidden="true"
-      className="fixed left-0 right-0 top-0 z-50 flex h-full max-h-full w-full items-center justify-center overflow-y-auto bg-black bg-opacity-50 md:inset-0" // Added overflow-y-auto
+      className="fixed left-0 right-0 top-0 z-50 flex h-full max-h-full w-full items-center justify-center overflow-y-auto bg-black bg-opacity-50 md:inset-0"
       ref={modalRef}
     >
       <div className="relative max-h-full w-full max-w-2xl p-4">
         <div className="relative rounded-lg bg-white p-4 shadow dark:bg-gray-800 sm:p-5">
+          {/* Header and Close Button */}
           <div className="mb-4 flex items-center justify-between rounded-t border-b pb-4 dark:border-gray-600 sm:mb-5">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               تعديل الشركة
@@ -204,8 +246,11 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
               <span className="sr-only">إغلاق النافذة</span>
             </button>
           </div>
+
+          {/* Form */}
           <form onSubmit={handleSubmit}>
             <div className="mb-4 grid gap-4 sm:grid-cols-2">
+              {/* Name Input */}
               <div>
                 <label
                   htmlFor="name"
@@ -231,6 +276,7 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
                   </p>
                 )}
               </div>
+              {/* Address Input */}
               <div>
                 <label
                   htmlFor="address"
@@ -256,6 +302,7 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
                   </p>
                 )}
               </div>
+              {/* Contact Email Input */}
               <div>
                 <label
                   htmlFor="contactEmail"
@@ -281,6 +328,7 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
                   </p>
                 )}
               </div>
+              {/* Contact Phone Input */}
               <div>
                 <label
                   htmlFor="contactPhone"
@@ -306,6 +354,7 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
                   </p>
                 )}
               </div>
+              {/* Parent Company Input and Dropdown */}
               <div className="relative col-span-2">
                 <label
                   htmlFor="parentCompanySearch"
@@ -327,19 +376,29 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
                       100
                     );
                   }}
-                  onClick={() => setParentCompanyDropdownVisible(true)} // Show on click
+                  onClick={() => setParentCompanyDropdownVisible(true)}
                   className={`block w-full rounded-lg border ${
-                    errors.parent_company ? "border-red-500" : "border-gray-300"
+                    errors.parent_company ||
+                    (!isParentCompanyValid && parentCompanySearch)
+                      ? "border-red-500"
+                      : "border-gray-300"
                   } bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500`}
                   placeholder="ابحث عن الشركة الأم"
                   ref={inputRef}
                 />
+                {/* Parent Company Validation Message */}
                 {errors.parent_company && (
                   <p className="mt-1 text-sm text-red-500">
                     {errors.parent_company.join(", ")}
                   </p>
                 )}
+                {!isParentCompanyValid && parentCompanySearch && (
+                  <p className="mt-1 text-sm text-red-500">
+                    Please select a valid parent company from the list.
+                  </p>
+                )}
 
+                {/* Parent Company Dropdown */}
                 {parentCompanyDropdownVisible && (
                   <div className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
                     {loadingParentCompanies ? (
@@ -361,13 +420,13 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
                 )}
               </div>
             </div>
-            {errors.general && (
+            {/* General Error Display */}
+            {generalError && (
               <div className="mb-4 mt-4 rounded-md border border-red-500 bg-red-100 p-3 text-red-700">
-                {errors.general.map((error, index) => (
-                  <p key={index}>{error}</p>
-                ))}
+                <p>{generalError}</p>
               </div>
             )}
+            {/* Action Buttons */}
             <div className="flex items-center space-x-4">
               <button
                 type="submit"
