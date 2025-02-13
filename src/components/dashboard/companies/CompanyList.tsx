@@ -30,8 +30,6 @@ const CompanyList: React.FC<CompanyListProps> = ({
   onDelete,
   isLoading,
 }) => {
-  // Filter out child companies that have parents.
-  const topLevelCompanies = companies.filter((c) => !c.parent_company);
 
   return (
     <>
@@ -64,7 +62,7 @@ const CompanyList: React.FC<CompanyListProps> = ({
                 </td>
               </tr>
             ) : (
-              topLevelCompanies.map((company) => (
+              companies.map((company) => (
                 <CompanyListItem
                   key={company.id}
                   company={company}
