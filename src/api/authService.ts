@@ -15,7 +15,7 @@ export const authService = {
       } else {
         throw new Error(
           error.response?.data?.detail ||
-            `Login failed with status code: ${error.response?.status}. Please try again later.`
+            `فشل تسجيل الدخول مع رمز الحالة: ${error.response?.status}. يرجى المحاولة مرة أخرى لاحقًا. تفاصيل المشكلة: ${error.response?.data?.detail}`
         );
       }
     }
