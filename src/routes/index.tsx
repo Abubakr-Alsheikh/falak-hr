@@ -12,6 +12,7 @@ const ContactUs = lazy(() => import('@pages/public/contact/ContactUs'));
 const RemoteWork = lazy(() => import('@pages/public/remote/RemoteWork'));
 const LoginPage = lazy(() => import('@pages/auth/LoginPage'));
 const LogoutPage = lazy(() => import('@pages/auth/LogoutPage'));
+const SubscriptionPage = lazy(() => import('@pages/public/subscription/SubscriptionPage')); 
 
 // Dashboard Pages (Lazy Loaded)
 const DashboardOverview = lazy(() => import('@pages/dashboard/Overview'));
@@ -26,6 +27,7 @@ const AppRoutes = () => {
       <Route path="/about-us" element={<PublicLayout><AboutUs /></PublicLayout>} />
       <Route path="/contact-us" element={<PublicLayout><ContactUs /></PublicLayout>} />
       <Route path="/remote-work" element={<PublicLayout><RemoteWork /></PublicLayout>} />
+      <Route path="/subscription" element={<SubscriptionPage />} />
 
       {/* Auth Routes */}
       <Route path="/login" element={<LoginPage />} />
