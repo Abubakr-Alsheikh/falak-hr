@@ -132,11 +132,13 @@ const Navbar: React.FC = () => {
             animate="visible"
             variants={largeScreenVariants}
           >
-            <Button
-              text="اشترك معنا"
-              variant="secondary"
-              hideInSmallScreen={true}
-            />
+            <Link to="/subscription">
+              <Button
+                text="اشترك معنا"
+                variant="secondary"
+                hideInSmallScreen={true}
+              />
+            </Link>
             <Link to="/login">
               <Button text="تسجيل الدخول" variant="primary" className="mr-2" />
             </Link>

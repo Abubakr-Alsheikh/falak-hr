@@ -18,6 +18,7 @@ const SubscriptionPage = lazy(() => import('@pages/public/subscription/Subscript
 const DashboardOverview = lazy(() => import('@pages/dashboard/Overview'));
 const CompanyListPage = lazy(() => import('@pages/dashboard/CompanyPage'));
 const InquiriesPage = lazy(() => import('@pages/dashboard/InquiriesPage'));
+const SubscriptionRequestsPage = lazy(() => import('@pages/dashboard/SubscriptionRequestsPage'));
 
 const AppRoutes = () => {
   return (
@@ -38,6 +39,7 @@ const AppRoutes = () => {
         <Route index element={<DashboardOverview />} />
         <Route path="companies" element={<CompanyListPage />} />
         <Route path="inquiries" element={<InquiriesPage />} />
+        <Route path="subscription-requests" element={<SubscriptionRequestsPage />} />
       </Route>
 
       {/* 404 Page */}
