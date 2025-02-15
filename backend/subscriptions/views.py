@@ -1,13 +1,12 @@
-# backend/subscriptions/views.py
 from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import SubscriptionRequest
 from .serializers import SubscriptionRequestSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.db.models import Q
 
 
 class SubscriptionRequestListCreate(generics.ListCreateAPIView):
-    queryset = SubscriptionRequest.objects.all()
     serializer_class = SubscriptionRequestSerializer
 
     def get_permissions(self):
@@ -36,17 +35,25 @@ class SubscriptionRequestListCreate(generics.ListCreateAPIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({"message": "قائمة طلبات الاشتراك", "data": serializer.data})
-
     def get_queryset(self):
         """
         Optionally restricts the returned purchases to a given user,
         by filtering against a `username` query parameter in the URL.
+        Add search functionality.
         """
         queryset = SubscriptionRequest.objects.all()
+
+        # Apply staff filter first
         if not self.request.user.is_staff:
             queryset = queryset.filter(is_processed=False)
+
+        # Add search functionality
+        search_query = self.request.query_params.get('search')
+        if search_query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=search_query) |
+                Q(last_name__icontains=search_query) |
+                Q(email__icontains=search_query)
+            )
+
         return queryset

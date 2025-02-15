@@ -1,25 +1,32 @@
-import { SubscriptionRequest } from '@/types/subscription';
-import apiClient from './client';
+import apiClient from "./client";
+import { SubscriptionResponse, SuccesssResponse } from "@/types/subscription";
+import { PaginatedResponse } from "@utils/pagination";
+
+export interface GetSubscriptionRequestsParams {
+  page?: number;
+  page_size?: number; //
+  search?: string;
+  ordering?: string;
+  is_processed?: boolean;
+}
 
 const subscriptionService = {
-    createSubscriptionRequest: async (data: SubscriptionRequest) => {
-        try {
-            const response = await apiClient.post('/subscriptions/', data);
-            return response.data;  // Return the full response data
-        } catch (error) {
-            throw error; // Re-throw the error for handling in the component
-        }
-    },
+  getSubscriptionRequests: async (
+    params: GetSubscriptionRequestsParams = {}
+  ): Promise<PaginatedResponse<SubscriptionResponse>> => {
+    const response = await apiClient.get<
+      PaginatedResponse<SubscriptionResponse>
+    >("/subscriptions/", { params });
+    return response.data;
+  },
 
-    getSubscriptionRequests: async () => {  // For fetching all requests (admin/staff)
-        try {
-            const response = await apiClient.get('/subscriptions/');
-            return response.data; // Return the full response data
-        } catch (error) {
-            throw error;
-        }
-    },
-    // Add more methods as needed (e.g., getSubscriptionRequestById, updateSubscriptionRequest, etc.)
+  createSubscriptionRequest: async (data: any) => {
+    const response = await apiClient.post<SuccesssResponse>(
+      "/subscriptions/",
+      data
+    );
+    return response.data;
+  },
 };
 
 export default subscriptionService;

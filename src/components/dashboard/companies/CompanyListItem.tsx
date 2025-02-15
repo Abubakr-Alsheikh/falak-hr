@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Company } from "@/types/models";
-import CompanyActionsDropdown from "./CompanyActionsDropdown";
+import ActionsDropdown from "@/components/common/dashboard/page/ActionsDropdown";
 import SubCompanyList from "./SubCompanyList";
+import { FaEdit, FaEye, FaTrashAlt } from "react-icons/fa";
 
 interface CompanyListItemProps {
   company: Company;
@@ -29,6 +30,26 @@ const CompanyListItem: React.FC<CompanyListItemProps> = ({
   const indentStyle = {
     paddingRight: `${level * 10}px`,
   };
+
+  // Define actions for the dropdown
+  const actions = [
+    {
+      label: "معاينة",
+      icon: <FaEye className="h-4 w-4" />,
+      onClick: () => onView(company),
+    },
+    {
+      label: "تعديل",
+      icon: <FaEdit className="h-4 w-4" />,
+      onClick: () => onEdit(company),
+    },
+    {
+      label: "حذف",
+      icon: <FaTrashAlt className="h-4 w-4" />,
+      onClick: () => onDelete(company),
+      className: "text-red-500 dark:text-red-400",
+    },
+  ];
 
   return (
     <>
@@ -85,12 +106,8 @@ const CompanyListItem: React.FC<CompanyListItemProps> = ({
         <td className="px-4 py-3">{company.contact_email}</td>
         <td className="px-4 py-3">{company.contact_phone}</td>
         <td className="relative flex items-center justify-start px-4 py-3">
-          <CompanyActionsDropdown
-            company={company}
-            onEdit={onEdit}
-            onView={onView}
-            onDelete={onDelete}
-          />
+          {/* Use the generic ActionsDropdown */}
+          <ActionsDropdown actions={actions} />
         </td>
       </tr>
       {/* Sub-company List (Accordion) */}

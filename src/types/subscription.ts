@@ -17,3 +17,7 @@ export interface SubscriptionResponse extends SubscriptionRequest {
   user_type_display: string;
   subscription_type_display: string;
 }
+
+export interface SuccesssResponse {
+  message: string;
+}

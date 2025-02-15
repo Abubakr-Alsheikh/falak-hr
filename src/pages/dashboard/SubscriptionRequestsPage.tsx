@@ -1,45 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import subscriptionService from '@api/subscriptionService';
-import { SubscriptionResponse } from '@/types/subscription';
-import { format } from 'date-fns';
-import { ar } from 'date-fns/locale';
-import List from "@/components/common/dashboard/page/List"; // Assuming you have the List comp.
-import LoadingScreen from '@components/common/LoadingScreen'; // Assuming
+import React, { useState } from "react";
+import { SubscriptionResponse } from "@/types/subscription";
+import { format } from "date-fns";
+import { ar } from "date-fns/locale";
+import Table from "@/components/common/dashboard/page/Table";
+import Pagination from "@/components/common/dashboard/page/Pagination";
+import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
+import useSubscriptions from "@/hooks/useSubscriptions";
+import TableHeader from "@/components/common/dashboard/page/TableHeader";
+import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
 
 const SubscriptionRequestsPage: React.FC = () => {
-  const [requests, setRequests] = useState<SubscriptionResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0); // Add totalCount state
-  const [nextPageUrl, setNextPageUrl] = useState<string | null>(null); // Add nextPageUrl
-  const [previousPageUrl, setPreviousPageUrl] = useState<string | null>(null); // Add previousPageUrl
+  const [searchQuery, setSearchQuery] = useState("");
 
-
-   useEffect(() => {
-        const fetchRequests = async () => {
-            try {
-                const response = await subscriptionService.getSubscriptionRequests();
-                // Assuming your backend returns the data in the format {data: [...], count: x, next: y, previous: z }
-                setRequests(response.data); // Access the actual array of requests
-                setTotalCount(response.count || response.data.length); // Set from response
-                setNextPageUrl(response.next);
-                setPreviousPageUrl(response.previous);
-            } catch (err:any) {
-                setError(err.response?.data?.message || 'Failed to fetch requests.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchRequests();
-    }, [currentPage]); // Add currentPage as dependency
-
+  const {
+    subscriptions,
+    loading,
+    error,
+    totalCount,
+    nextPageUrl,
+    previousPageUrl,
+    refreshSubscriptions,
+  } = useSubscriptions({ page: currentPage, search: searchQuery });
 
   const handlePageChange = (newPage: number) => {
-        setCurrentPage(newPage);  // Update the current page
+    setCurrentPage(newPage);
   };
 
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
 
   const renderHeader = () => (
     <>
@@ -58,7 +49,7 @@ const SubscriptionRequestsPage: React.FC = () => {
       <th scope="col" className="px-4 py-3">
         تاريخ الطلب
       </th>
-        <th scope="col" className="px-4 py-3">
+      <th scope="col" className="px-4 py-3">
         الحالة
       </th>
     </>
@@ -66,7 +57,9 @@ const SubscriptionRequestsPage: React.FC = () => {
 
   const renderRow = (request: SubscriptionResponse) => (
     <tr className="border-b dark:border-gray-700" key={request.id}>
-      <td className="px-4 py-3">{request.first_name} {request.last_name}</td>
+      <td className="px-4 py-3">
+        {request.first_name} {request.last_name}
+      </td>
       <td className="px-4 py-3">{request.email}</td>
       <td className="px-4 py-3">{request.user_type_display}</td>
       <td className="px-4 py-3">{request.subscription_type_display}</td>
@@ -75,43 +68,43 @@ const SubscriptionRequestsPage: React.FC = () => {
           locale: ar,
         })}
       </td>
-        <td className="px-4 py-3">
-        {request.is_processed ? 'تمت معالجته' : 'قيد الانتظار'}
+      <td className="px-4 py-3">
+        {request.is_processed ? "تمت معالجته" : "قيد الانتظار"}
       </td>
     </tr>
   );
 
-
-    if (isLoading) {
-        return <LoadingScreen />; // Show while loading
-    }
-
-    if (error) {
-      return (
-          <div className="p-4 text-center text-red-500">
-              <p>Error: {error}</p>
-              {/* You might want a "Retry" button here */}
-          </div>
-      );
-    }
+  if (error) {
+    <ErrorDisplay message={error} onRetry={refreshSubscriptions} />;
+  }
 
   return (
-    <section className="bg-gray-50 p-3 antialiased dark:bg-gray-900 sm:p-5" dir="rtl">
+    <section
+      className="bg-gray-50 p-3 antialiased dark:bg-gray-900 sm:p-5"
+      dir="rtl"
+    >
       <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
         <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-          {/* Consider a title like:  <h2 className="p-4 text-lg font-semibold">Subscription Requests</h2> */}
-          <List
-            items={requests}
+          <TableHeader
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            title="طلبات الاشتراك"
+          />
+          <Table
+            items={subscriptions}
+            renderHeader={renderHeader}
+            renderRow={renderRow}
+            isLoading={loading}
+            noDataMessage="لا توجد طلبات اشتراك."
+            colSpan={6}
+          />
+          <Pagination
             totalCount={totalCount}
             currentPage={currentPage}
+            itemsPerPage={DEFAULT_PAGE_SIZE}
             onPageChange={handlePageChange}
             nextPageUrl={nextPageUrl}
             previousPageUrl={previousPageUrl}
-            renderHeader={renderHeader}
-            renderRow={renderRow}
-            isLoading={isLoading}
-            noDataMessage="لا توجد طلبات اشتراك."
-            itemsPerPage={10} // Set this to your desired page size
           />
         </div>
       </div>

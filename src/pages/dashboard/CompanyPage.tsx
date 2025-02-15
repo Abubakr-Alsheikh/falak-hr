@@ -1,9 +1,13 @@
 import React, { useState, useCallback } from "react";
+import { FaPlus } from "react-icons/fa";
 import useCompanies from "@hooks/useCompanies";
 import { companyService } from "@api/companyService";
 import { Company } from "@/types/models";
-import CompanyListHeader from "@components/dashboard/companies/CompanyListHeader";
-import CompanyList from "@components/dashboard/companies/CompanyList";
+import Table from "@components/common/dashboard/page/Table";
+import Pagination from "@components/common/dashboard/page/Pagination";
+import CompanyListItem from "@components/dashboard/companies/CompanyListItem";
+import HeaderHeader from "@/components/common/dashboard/page/TableHeader";
+import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
 import CreateCompanyModal from "@components/dashboard/companies/Modals/CreateCompanyModal";
 import UpdateCompanyModal from "@components/dashboard/companies/Modals/UpdateCompanyModal";
 import ReadCompanyModal from "@components/dashboard/companies/Modals/ReadCompanyModal";
@@ -11,9 +15,9 @@ import DeleteCompanyModal from "@components/dashboard/companies/Modals/DeleteCom
 import { useAuth } from "@contexts/AuthContext";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
 
-const CompanyListPage: React.FC = () => {
+const CompanyPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [localSearchQuery, setLocalSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // Use searchQuery
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
@@ -29,30 +33,12 @@ const CompanyListPage: React.FC = () => {
     nextPageUrl,
     previousPageUrl,
     refreshCompanies,
-  } = useCompanies({ page: currentPage, search: localSearchQuery });
+  } = useCompanies({ page: currentPage, search: searchQuery }); // Use searchQuery
 
-  // Debounce function
-  const debounce = (func: (query: string) => void, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return (query: string) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        func(query);
-      }, delay);
-    };
-  };
-  const handleSearchChange = useCallback(
-    debounce((query: string) => {
-      setCurrentPage(1);
-      setLocalSearchQuery(query);
-    }, 500),
-    []
-  );
-
-  const handleLocalSearchChange = (query: string) => {
-    setLocalSearchQuery(query);
-    handleSearchChange(query);
-  };
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to page 1 on search
+  }, []);
 
   const handleCreateCompany = async () => {
     try {
@@ -115,15 +101,40 @@ const CompanyListPage: React.FC = () => {
 
   // Error Handling Display
   if (error) {
-    return (
-      <div className="p-4 text-center text-red-500">
-        <p>Error: {error}</p>
-        <button onClick={refreshCompanies} className="text-blue-500">
-          إعادة التحميل
-        </button>
-      </div>
-    );
+    <ErrorDisplay message={error} onRetry={refreshCompanies} />;
   }
+
+  // Define the table header
+  const renderHeader = () => (
+    <>
+      <th scope="col" className="px-4 py-4">
+        اسم الشركة
+      </th>
+      <th scope="col" className="px-4 py-3">
+        العنوان
+      </th>
+      <th scope="col" className="px-4 py-3">
+        البريد الإلكتروني للتواصل
+      </th>
+      <th scope="col" className="px-4 py-3">
+        رقم الهاتف للتواصل
+      </th>
+      <th scope="col" className="px-4 py-3">
+        <span className="sr-only">الإجراءات</span>
+      </th>
+    </>
+  );
+
+  // Define how to render each row
+  const renderRow = (company: Company) => (
+    <CompanyListItem
+      key={company.id}
+      company={company}
+      onEdit={handleOpenUpdateModal}
+      onView={handleOpenReadModal}
+      onDelete={handleOpenDeleteModal}
+    />
+  );
 
   return (
     <section
@@ -132,23 +143,36 @@ const CompanyListPage: React.FC = () => {
     >
       <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
         <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-          <CompanyListHeader
-            onSearchChange={handleLocalSearchChange}
-            searchQuery={localSearchQuery}
-            onAddCompany={handleOpenCreateModal}
+          <HeaderHeader
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            title="الشركات"
+            rightSection={
+              <button
+                type="button"
+                onClick={handleOpenCreateModal}
+                className="flex items-center justify-center rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+              >
+                إضافة شركة
+                <FaPlus className="mr-2 h-3.5 w-3.5" />
+              </button>
+            }
           />
-          <CompanyList
-            companies={companies}
+          <Table
+            items={companies}
+            renderHeader={renderHeader}
+            renderRow={renderRow}
+            isLoading={loading}
+            noDataMessage="لا توجد شركات لعرضها."
+            colSpan={5}
+          />
+          <Pagination
             totalCount={totalCount}
             currentPage={currentPage}
-            companiesPerPage={DEFAULT_PAGE_SIZE}
+            itemsPerPage={DEFAULT_PAGE_SIZE}
             onPageChange={handlePageChange}
             nextPageUrl={nextPageUrl}
             previousPageUrl={previousPageUrl}
-            onEdit={handleOpenUpdateModal}
-            onView={handleOpenReadModal}
-            onDelete={handleOpenDeleteModal}
-            isLoading={loading}
           />
         </div>
       </div>
@@ -182,4 +206,4 @@ const CompanyListPage: React.FC = () => {
   );
 };
 
-export default CompanyListPage;
+export default CompanyPage;

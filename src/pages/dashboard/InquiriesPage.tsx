@@ -1,16 +1,17 @@
-// src/pages/dashboard/InquiriesPage.tsx
 import React, { useState, useCallback } from "react";
 import useInquiries from "@hooks/useInquiries";
-import { ContactMessage } from "@/api/inquiryService"; // Import type
+import { ContactMessage } from "@/api/inquiryService";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import InquiryListHeader from "@components/dashboard/inquiries/InquiryListHeader";
-import List from "@/components/common/dashboard/page/List";
+import Table from "@/components/common/dashboard/page/Table";
+import Pagination from "@/components/common/dashboard/page/Pagination";
+import TableHeader from "@/components/common/dashboard/page/TableHeader";
+import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
 
 const InquiriesPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [localSearchQuery, setLocalSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const {
     inquiries,
@@ -20,30 +21,12 @@ const InquiriesPage: React.FC = () => {
     nextPageUrl,
     previousPageUrl,
     refreshInquiries,
-  } = useInquiries({ page: currentPage, search: localSearchQuery });
+  } = useInquiries({ page: currentPage, search: searchQuery });
 
-  // Debounce function
-  const debounce = (func: (query: string) => void, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return (query: string) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        func(query);
-      }, delay);
-    };
-  };
-  const handleSearchChange = useCallback(
-    debounce((query: string) => {
-      setCurrentPage(1);
-      setLocalSearchQuery(query);
-    }, 500),
-    []
-  );
-
-  const handleLocalSearchChange = (query: string) => {
-    setLocalSearchQuery(query);
-    handleSearchChange(query);
-  };
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  }, []);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -83,17 +66,10 @@ const InquiriesPage: React.FC = () => {
     </tr>
   );
 
-  // Error Handling Display
   if (error) {
-    return (
-      <div className="p-4 text-center text-red-500">
-        <p>Error: {error}</p>
-        <button onClick={refreshInquiries} className="text-blue-500">
-          إعادة التحميل
-        </button>
-      </div>
-    );
+    <ErrorDisplay message={error} onRetry={refreshInquiries} />;
   }
+
   return (
     <section
       className="bg-gray-50 p-3 antialiased dark:bg-gray-900 sm:p-5"
@@ -101,22 +77,26 @@ const InquiriesPage: React.FC = () => {
     >
       <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
         <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-          <InquiryListHeader
-            onSearchChange={handleLocalSearchChange}
-            searchQuery={localSearchQuery}
+          <TableHeader
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            title="الاستفسارات"
           />
-          <List
+          <Table
             items={inquiries}
+            renderHeader={renderHeader}
+            renderRow={renderRow}
+            isLoading={loading}
+            noDataMessage="لا يوجد رسائل."
+            colSpan={5}
+          />
+          <Pagination
             totalCount={totalCount}
             currentPage={currentPage}
             itemsPerPage={DEFAULT_PAGE_SIZE}
             onPageChange={handlePageChange}
             nextPageUrl={nextPageUrl}
             previousPageUrl={previousPageUrl}
-            renderHeader={renderHeader}
-            renderRow={renderRow}
-            isLoading={loading}
-            noDataMessage="لا يوجد رسائل."
           />
         </div>
       </div>

@@ -16,7 +16,7 @@ const SubscriptionPage = lazy(() => import('@pages/public/subscription/Subscript
 
 // Dashboard Pages (Lazy Loaded)
 const DashboardOverview = lazy(() => import('@pages/dashboard/Overview'));
-const CompanyListPage = lazy(() => import('@pages/dashboard/CompanyPage'));
+const CompanyPage = lazy(() => import('@pages/dashboard/CompanyPage'));
 const InquiriesPage = lazy(() => import('@pages/dashboard/InquiriesPage'));
 const SubscriptionRequestsPage = lazy(() => import('@pages/dashboard/SubscriptionRequestsPage'));
 
@@ -37,9 +37,9 @@ const AppRoutes = () => {
       {/* Dashboard Routes (Protected) */}
       <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
         <Route index element={<DashboardOverview />} />
-        <Route path="companies" element={<CompanyListPage />} />
+        <Route path="companies" element={<CompanyPage />} />
         <Route path="inquiries" element={<InquiriesPage />} />
-        <Route path="subscription-requests" element={<SubscriptionRequestsPage />} />
+        <Route path="subscription" element={<SubscriptionRequestsPage />} />
       </Route>
 
       {/* 404 Page */}
