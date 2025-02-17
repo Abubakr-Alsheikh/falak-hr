@@ -187,7 +187,6 @@ const CompanyPage: React.FC = () => {
         isOpen={isUpdateModalOpen}
         onClose={handleCloseUpdateModal}
         onUpdate={handleUpdateCompany}
-        onDelete={handleOpenDeleteModal}
         company={selectedCompany}
       />
       <ReadCompanyModal

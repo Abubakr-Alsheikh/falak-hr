@@ -9,7 +9,6 @@ interface UpdateCompanyModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdate: (company: Company) => void;
-  onDelete: (company: Company) => void;
   company: Company | null;
 }
 
@@ -17,7 +16,6 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
   isOpen,
   onClose,
   onUpdate,
-  onDelete,
   company,
 }) => {
   const [parentCompanyNumber, setParentCompanyNumber] = useState<number>();
@@ -78,10 +76,6 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
     }
   };
 
-  const handleDelete = () => {
-    onDelete(company);
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -116,18 +110,6 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
             onSubmit={handleSubmit}
             isUpdate={true}
           />
-
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-4">
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="flex items-center rounded-lg border border-red-600 px-5 py-2.5 text-center text-sm font-medium text-red-600 hover:bg-red-600 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-            >
-              <span className="ml-2">حذف</span>
-              <FaTrashAlt className="h-5 w-5" />
-            </button>
-          </div>
         </div>
       </div>
     </div>
