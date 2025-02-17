@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     # Apps
     'companies',
     'users',
+    'projects',
     'tasks',
     'inquiries',
     'subscriptions',

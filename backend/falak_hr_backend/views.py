@@ -14,6 +14,7 @@ def api_root(request, format=None):
             'token_logout': reverse('token_logout', request=request, format=format),
             "companies": reverse("company-list", request=request, format=format),
             "users": reverse("userprofile-list", request=request, format=format),
+            "projects": reverse("project-list", request=request, format=format),
             "tasks": reverse("task-list", request=request, format=format),
             "inquiries": reverse("list_create_contact_messages", request=request, format=format),
             'subscriptions': reverse('subscription-request-list-create', request=request, format=format),
