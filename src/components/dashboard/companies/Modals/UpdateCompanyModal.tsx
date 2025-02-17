@@ -57,7 +57,8 @@ const UpdateCompanyModal: React.FC<UpdateCompanyModalProps> = ({
     contact_phone: Yup.string().required("رقم الهاتف مطلوب"),
   });
 
-  const handleSubmit = async (values: typeof initialValues, actions: any) => { // typeof initialValues
+  const handleSubmit = async (values: typeof initialValues, actions: any) => {
+    // typeof initialValues
     try {
       const updatedCompany = {
         ...company,

@@ -22,7 +22,7 @@ const ReadCompanyModal: React.FC<ReadCompanyModalProps> = ({
   const [parentCompanyName, setParentCompanyName] = useState<string | null>(
     null
   );
-    const { logout } = useAuth();
+  const { logout } = useAuth();
   // Fetch parent company name if it exists
   useEffect(() => {
     const fetchParentCompanyName = async () => {
