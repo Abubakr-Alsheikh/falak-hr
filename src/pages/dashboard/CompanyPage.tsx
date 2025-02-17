@@ -2,7 +2,6 @@ import React, { useState, useCallback } from "react";
 import { FaPlus } from "react-icons/fa";
 import useCompanies from "@hooks/useCompanies";
 import { companyService } from "@api/companyService";
-import { Company } from "@/types/models";
 import Table from "@components/common/dashboard/page/Table";
 import Pagination from "@components/common/dashboard/page/Pagination";
 import CompanyListItem from "@components/dashboard/companies/CompanyListItem";
@@ -14,6 +13,7 @@ import ReadCompanyModal from "@components/dashboard/companies/Modals/ReadCompany
 import DeleteCompanyModal from "@components/dashboard/companies/Modals/DeleteCompanyModal";
 import { useAuth } from "@contexts/AuthContext";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
+import { Company } from "@/types/company";
 
 const CompanyPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);

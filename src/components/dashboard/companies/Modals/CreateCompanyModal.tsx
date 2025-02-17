@@ -1,9 +1,9 @@
 import React from "react";
 import { FaTimes } from "react-icons/fa";
-import { Company } from "@/types/models";
 import * as Yup from "yup";
 import CompanyForm from "../forms/CompanyForm";
 import { companyService } from "@/api/companyService";
+import { Company } from "@/types/company";
 
 interface CreateCompanyModalProps {
     isOpen: boolean;

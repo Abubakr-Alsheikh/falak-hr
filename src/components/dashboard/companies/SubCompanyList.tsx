@@ -1,6 +1,6 @@
 import React from "react";
-import { Company } from "@/types/models";
 import CompanyListItem from "./CompanyListItem";
+import { Company } from "@/types/company";
 
 interface SubCompanyListProps {
   companies: Company[];

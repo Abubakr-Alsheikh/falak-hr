@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Company } from "@/types/models";
 import ActionsDropdown from "@/components/common/dashboard/page/ActionsDropdown";
 import SubCompanyList from "./SubCompanyList";
 import { FaEdit, FaEye, FaTrashAlt } from "react-icons/fa";
+import { Company } from "@/types/company";
 
 interface CompanyListItemProps {
   company: Company;

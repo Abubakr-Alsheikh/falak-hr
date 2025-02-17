@@ -1,5 +1,5 @@
+import { Company } from "@/types/company";
 import apiClient from "./client";
-import { Company } from "@/types/models";
 import { PaginatedResponse } from "@utils/pagination";
 
 export interface GetCompaniesParams {

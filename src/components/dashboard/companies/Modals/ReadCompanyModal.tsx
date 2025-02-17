@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FaTimes, FaEdit, FaTrashAlt } from "react-icons/fa";
-import { Company } from "@/types/models";
 import { companyService } from "@/api/companyService";
 import { useAuth } from "@contexts/AuthContext";
+import { Company } from "@/types/company";
 
 interface ReadCompanyModalProps {
   isOpen: boolean;

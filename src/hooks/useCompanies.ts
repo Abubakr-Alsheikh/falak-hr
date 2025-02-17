@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { companyService, GetCompaniesParams } from "@api/companyService";
-import { Company } from "@/types/models";
 import { PaginatedResponse, DEFAULT_PAGE_SIZE } from "@utils/pagination";
 import { useAuth } from "@contexts/AuthContext";
 import apiClient from "@/api/client"; // Import apiClient
+import { Company } from "@/types/company";
 
 interface UseCompaniesProps {
   page?: number;

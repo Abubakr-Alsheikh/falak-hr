@@ -1,6 +1,6 @@
+import { Company } from "@/types/company";
 import React, { useState, useRef, useEffect } from "react";
 import { FaEllipsisH, FaEdit, FaEye, FaTrashAlt } from "react-icons/fa";
-import { Company } from "@/types/models";
 
 interface CompanyActionsDropdownProps {
   company: Company;

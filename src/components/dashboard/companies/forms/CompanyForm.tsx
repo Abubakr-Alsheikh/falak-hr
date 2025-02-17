@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
-import { Company } from "@/types/models";
 import { DebounceInput } from "react-debounce-input";
 import { companyService } from "@api/companyService";
 import { FaSpinner } from "react-icons/fa";
+import { Company } from "@/types/company";
 
 interface CompanyFormProps {
   initialValues: {
