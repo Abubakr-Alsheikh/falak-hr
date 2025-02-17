@@ -13,7 +13,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/logout/', LogoutView.as_view(), name='token_logout'),
     path("api/companies/", include("companies.urls")),
-    path("api/employees/", include("employees.urls")),
+    path("api/users/", include("users.urls")),
     path("api/tasks/", include("tasks.urls")),
     path("api/inquiries/", include("inquiries.urls")),
     path("api/subscriptions/", include("subscriptions.urls")),

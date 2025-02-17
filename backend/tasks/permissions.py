@@ -1,28 +1,30 @@
 from rest_framework import permissions
-from employees.models import Employee
+from users.models import UserProfile  # Use UserProfile
 
 class IsAdminOrManagerOrAssignedEmployee(permissions.BasePermission):
     """
-    Allows admin, managers, and employees assigned to the task to access it.
+    Allows access to:
+    - Admins and Managers.
+    - Employees assigned to the task.
     """
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
         try:
-            employee = request.user.employee
-            return employee.role in ['admin', 'manager', 'employee'] # All roles can potentially access tasks
-        except Employee.DoesNotExist:
+            user_profile = request.user.userprofile  # Use userprofile
+            return user_profile.role in ['admin', 'manager', 'employee']
+        except UserProfile.DoesNotExist:
             return False
 
     def has_object_permission(self, request, view, obj):
         if not request.user or not request.user.is_authenticated:
             return False
         try:
-            user_employee = request.user.employee
-            if user_employee.role in ['admin', 'manager']:
-                return True # Admins and Managers can access any task
-            if user_employee.role == 'employee':
-                return user_employee in obj.assigned_to.all() # Employee can access only assigned tasks
+            user_profile = request.user.userprofile
+            if user_profile.role in ['admin', 'manager']:
+                return True  # Admins/Managers can access any task
+            if user_profile.role == 'employee':
+                return user_profile in obj.assigned_to.all()  # Check if assigned
             return False
-        except Employee.DoesNotExist:
+        except UserProfile.DoesNotExist:
             return False

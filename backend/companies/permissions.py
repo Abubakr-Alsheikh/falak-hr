@@ -1,33 +1,32 @@
 from rest_framework import permissions
-
-from employees.models import Employee
+from users.models import UserProfile  # Import UserProfile, not Employee
 
 class IsAdminUserOrReadOnly(permissions.BasePermission):
     """
-    Allows admin users full access. Read-only access for other authenticated users.
+    Allows admin users full access.  Read-only for authenticated users.
     """
     def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS: # SAFE_METHODS are GET, HEAD, OPTIONS
+        if request.method in permissions.SAFE_METHODS:  # GET, HEAD, OPTIONS
             return request.user and request.user.is_authenticated
-        return request.user and request.user.is_staff # is_staff is Django's admin user flag
+        return request.user and request.user.is_staff  # is_staff for Django admin
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
-            return True # Read permissions are allowed to any request
-        return request.user and request.user.is_staff # Only admin can modify
+            return True  # Read permissions allowed
+        return request.user and request.user.is_staff
 
 class IsAdminOrManager(permissions.BasePermission):
     """
-    Allows admin and manager users.
+    Allows access to admin and manager users.
     """
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
         try:
-            employee = request.user.employee # Assuming Employee model is linked to User via OneToOneField
-            return employee.role in ['admin', 'manager']
-        except Employee.DoesNotExist:
-            return False # If no Employee profile, deny access
+            user_profile = request.user.userprofile  # Use userprofile
+            return user_profile.role in ['admin', 'manager']
+        except UserProfile.DoesNotExist:
+            return False
 
     def has_object_permission(self, request, view, obj):
-        return self.has_permission(request, view) # Object level permission same as general permission for now
+        return self.has_permission(request, view)  # Same object-level permission

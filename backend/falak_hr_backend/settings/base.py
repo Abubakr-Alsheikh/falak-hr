@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'corsheaders',
     # Apps
     'companies',
-    'employees',
+    'users',
     'tasks',
     'inquiries',
     'subscriptions',

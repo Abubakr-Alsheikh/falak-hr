@@ -2,7 +2,7 @@ from rest_framework import viewsets, pagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from employees.serializers import EmployeeSerializer
+from users.serializers import UserProfileSerializer
 from .permissions import IsAdminUserOrReadOnly
 from .models import Company
 from .serializers import CompanySerializer
@@ -43,6 +43,6 @@ class CompanyViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"])
     def employees(self, request, pk=None):
         company = self.get_object()
-        employees = company.employees.all()
-        serializer = EmployeeSerializer(employees, many=True)
+        users = company.users.all()
+        serializer = UserProfileSerializer(users, many=True)
         return Response(serializer.data)

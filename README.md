@@ -1,11 +1,16 @@
-## Falak HR Backend API Endpoints Summary for Frontend Developers
+## Falak HR Backend API Documentation
 
-This document outlines the API endpoints for managing Companies, Employees, and Tasks. All endpoints are located under the base URL (assuming your Django development server): `http://localhost:8000/api/`.
+This document provides a comprehensive overview of the Falak HR backend API endpoints, designed for seamless integration with the frontend application.
+
+**Base URL:**  `http://localhost:8000/api/` (for local development) or your deployed server's base URL.
+
+**API Root:** `GET /api/` -  This endpoint provides a list of all available API endpoints, useful for self-discovery.
 
 **Authentication:**
 
 *   **All API endpoints (except token endpoints) are protected by JWT (JSON Web Token) authentication.**
-*   To access protected endpoints, you must include a valid **Access Token** in the `Authorization` header of your requests, using the `Bearer <your_access_token>` format.
+*   To access protected endpoints, you must include a valid **Access Token** in the `Authorization` header of your requests:  `Authorization: Bearer <your_access_token>`
+
 *   **Obtain Tokens:**
     *   Endpoint: `POST /api/token/`
     *   Request Body (JSON):
@@ -15,173 +20,123 @@ This document outlines the API endpoints for managing Companies, Employees, and 
             "password": "your_password"
         }
         ```
-    *   Response: Returns an `access` token and a `refresh` token in JSON format.
+    *   Response (JSON):
+        ```json
+        {
+            "refresh": "your_refresh_token",
+            "access": "your_access_token"
+        }
+        ```
+
 *   **Refresh Tokens:**
     *   Endpoint: `POST /api/token/refresh/`
     *   Request Body (JSON):
         ```json
         {
-            "refresh": "<your_refresh_token>"
+            "refresh": "your_refresh_token"
         }
         ```
-    *   Response: Returns a new `access` token (and potentially a new `refresh` token).
+    *   Response (JSON):
+        ```json
+        {
+            "access": "your_new_access_token"
+        }
+        ```
+*   **Logout:** (If Implemented `POST /api/token/logout/`)
+    * Request Body (JSON):
+      ```json
+      {
+          "refresh": "your_refresh_token"
+      }
+    ```
 
-**Companies Endpoints:**
+---
 
-*   **Base Endpoint:** `/api/companies/`
+**1. Companies Endpoints**
 
-    *   **`GET /api/companies/`**: **List Companies**
-        *   **Authentication Required:** Yes
-        *   **Functionality:** Retrieves a paginated list of all companies.
-        *   **Pagination:** Responses are paginated. Use `page` query parameter to navigate pages (e.g., `/api/companies/?page=2`). Default page size is set on the backend (e.g., 10). Pagination links are included in response headers and body.
-        *   **Filtering:**
-            *   `filterset_fields`:
-                *   `contact_email`: Filter companies by exact match of contact email (e.g., `?contact_email=info@example.com`).
-                *   `address`: Filter companies by exact match of address (e.g., `?address=Riyadh`).
-                *   `parent_company`: Filter companies by parent company ID (e.g., `?parent_company=123`).
-        *   **Search:**
-            *   `search_fields`:
-                *   `name`: Search company names (partial, case-insensitive match - using `icontains`). Example: `?search=Falak` will find "Falak HR Main Company".
-                *   `address`: Search company addresses (partial, case-insensitive match - using `icontains`).
-        *   **Ordering:**
-            *   `ordering_fields`:
-                *   `name`: Order companies by name (e.g., `?ordering=name` for ascending, `?ordering=-name` for descending).
-                *   `created_at`: Order companies by creation date (e.g., `?ordering=created_at`, `?ordering=-created_at`). Default ordering is by `name` (ascending).
-    *   **`POST /api/companies/`**: **Create Company**
-        *   **Authentication Required:** Yes (Permissions: `IsAdminUserOrReadOnly` - typically only admin users can create)
-        *   **Request Body (JSON):**
-            ```json
-            {
-                "name": "Company Name",
-                "parent_company": null,  // or company ID if sub-company
-                "address": "Company Address",
-                "contact_email": "email@example.com",
-                "contact_phone": "+1234567890"
-            }
-            ```
-        *   **Response:** Returns the newly created company object in JSON format with status code `201 Created`.
+*   **Base URL:** `/api/companies/`
 
-    *   **`GET /api/companies/{id}/`**: **Retrieve Company**
-        *   **Authentication Required:** Yes
-        *   **Path Parameter:** `{id}` - Company ID.
-        *   **Response:** Returns the company object with the specified ID in JSON format.
+| Method | Endpoint                     | Description                                         | Permissions                        | Request Body (Example)                                                     | Response (Success)                    |
+|--------|------------------------------|-----------------------------------------------------|------------------------------------|---------------------------------------------------------------------------|---------------------------------------|
+| GET    | `/api/companies/`            | List all companies (paginated, filterable, searchable). | `IsAuthenticated`                | N/A                                                                       | `200 OK`, List of Companies          |
+| POST   | `/api/companies/`            | Create a new company.                               | `IsAdminUserOrReadOnly`            | `{"name": "NewCo", "address": "...", ...}`                               | `201 Created`, New Company             |
+| GET    | `/api/companies/{id}/`       | Retrieve a specific company by ID.                 | `IsAuthenticated`                | N/A                                                                       | `200 OK`, Company                     |
+| PUT    | `/api/companies/{id}/`       | Update a company (full update).                   | `IsAdminUserOrReadOnly`            | Full Company data (same as POST)                                            | `200 OK`, Updated Company              |
+| PATCH  | `/api/companies/{id}/`       | Update a company (partial update).                | `IsAdminUserOrReadOnly`            | Partial Company data (e.g., `{"address": "New Address"}`)                 | `200 OK`, Updated Company              |
+| DELETE | `/api/companies/{id}/`       | Delete a company.                                   | `IsAdminUserOrReadOnly`            | N/A                                                                       | `204 No Content`                     |
+| GET    | `/api/companies/{id}/subcompanies/` | list the sub companies for companies         |   `IsAuthenticated`                  |  N/A                                                                       |  `200 Ok`, List of companies        |
+| GET   |  `/api/companies/{id}/employees/`       |  List Company Employees                         |        `IsAuthenticated`                |   N/A                                                                    |       `200 Ok`, List of User Profiles  |
 
-    *   **`PUT /api/companies/{id}/`**: **Update Company (Full Update)**
-        *   **Authentication Required:** Yes (Permissions: `IsAdminUserOrReadOnly` - typically only admin users can update)
-        *   **Path Parameter:** `{id}` - Company ID.
-        *   **Request Body (JSON):**  Send the complete updated company object in JSON format (similar structure to POST request).
-        *   **Response:** Returns the updated company object in JSON format.
+**Searching (Companies):**
 
-    *   **`PATCH /api/companies/{id}/`**: **Partial Update Company**
-        *   **Authentication Required:** Yes (Permissions: `IsAdminUserOrReadOnly` - typically only admin users can update)
-        *   **Path Parameter:** `{id}` - Company ID.
-        *   **Request Body (JSON):** Send only the fields you want to update in JSON format.
-        *   **Response:** Returns the updated company object in JSON format.
+*   Use the `search` query parameter: `?search=term`
+*   Searches: `name`, `address` (case-insensitive partial match)
 
-    *   **`DELETE /api/companies/{id}/`**: **Delete Company**
-        *   **Authentication Required:** Yes (Permissions: `IsAdminUserOrReadOnly` - typically only admin users can delete)
-        *   **Path Parameter:** `{id}` - Company ID.
-        *   **Response:** Returns status code `204 No Content` on successful deletion.
+**Ordering (Companies):**
 
-    *   **`GET /api/companies/{id}/subcompanies/`**: **List Sub-Companies**
-        *   **Authentication Required:** Yes
-        *   **Path Parameter:** `{id}` - Parent Company ID.
-        *   **Functionality:** Retrieves a list of sub-companies for the specified parent company.
-        *   **Response:** Returns a list of sub-company objects in JSON format.
+*   Use the `ordering` query parameter: `?ordering=field` (ascending) or `?ordering=-field` (descending)
+*   Orderable fields: `name`, `created_at`
+*   Default ordering: `name` (ascending)
 
-    *   **`GET /api/companies/{id}/employees/`**: **List Company Employees**
-        *   **Authentication Required:** Yes
-        *   **Path Parameter:** `{id}` - Company ID.
-        *   **Functionality:** Retrieves a list of employees belonging to the specified company.
-        *   **Response:** Returns a list of employee objects in JSON format.
+---
 
-**Employees Endpoints:**
+**2. Users Endpoints**
 
-*   **Base Endpoint:** `/api/employees/`
+*   **Base URL:** `/api/users/`
 
-    *   **`GET /api/employees/`**: **List Employees**
-        *   **Authentication Required:** Yes
-        *   **Functionality, Pagination, Filtering, Search, Ordering:** (Similar to Companies endpoint - pagination, filtering, search, and ordering can be implemented and configured for employees as well, though not explicitly defined in detail in this summary, assume similar capabilities can be added).
-    *   **`POST /api/employees/`**: **Create Employee**
-        *   **Authentication Required:** Yes (Permissions: `IsAuthenticated`, further permission control may be needed)
-        *   **Request Body (JSON):**
-            ```json
-            {
-                "user": {  // Nested User creation
-                    "username": "employee_username",
-                    "password": "employee_password",
-                    "email": "employee@example.com",
-                    "first_name": "Employee",
-                    "last_name": "One"
-                },
-                "company": 1,  // Company ID
-                "role": "employee", // or 'admin', 'manager'
-                "phone_number": "+1234567890",
-                "department": "Department Name",
-                "job_title": "Job Title"
-            }
-            ```
-        *   **Response:** Returns the newly created employee object in JSON format with status code `201 Created`.
-    *   **`GET /api/employees/{id}/`**: **Retrieve Employee**
-        *   **Authentication Required:** Yes (Permissions: `IsAdminOrManagerOrSelf` - Employees can access their own profile)
-        *   **Path Parameter:** `{id}` - Employee ID.
-    *   **`PUT /api/employees/{id}/`**: **Update Employee (Full Update)**
-        *   **Authentication Required:** Yes (Permissions: `IsAdminOrManagerOrSelf` and potentially role-based restrictions for updates)
-        *   **Path Parameter:** `{id}` - Employee ID.
-        *   **Request Body (JSON):**  Send the complete updated employee object (including nested `user` data if updating user details).
-    *   **`PATCH /api/employees/{id}/`**: **Partial Update Employee**
-        *   **Authentication Required:** Yes (Permissions: `IsAdminOrManagerOrSelf` and role-based restrictions)
-        *   **Path Parameter:** `{id}` - Employee ID.
-        *   **Request Body (JSON):** Send only fields to update.
-    *   **`DELETE /api/employees/{id}/`**: **Delete Employee**
-        *   **Authentication Required:** Yes (Permissions: Role-based restrictions, likely admin/manager only)
-        *   **Path Parameter:** `{id}` - Employee ID.
+| Method | Endpoint              | Description                                     | Permissions                   | Request Body (Example)                                                                             | Response (Success)           |
+|--------|-----------------------|-------------------------------------------------|-------------------------------|-------------------------------------------------------------------------------------------------------|---------------------------------|
+| GET    | `/api/users/`         | List all user profiles (paginated).               | `IsAdminOrManagerOrSelf`      | N/A                                                                                               | `200 OK`, List of User Profiles |
+| POST   | `/api/users/`         | Create a new user profile.                     | `IsAuthenticated`            | `{"user": {"username": "u", "password": "p", "email": "e@e.com"}, "company": 1, "role": "employee"}`     | `201 Created`, New User Profile |
+| GET    | `/api/users/{id}/`    | Retrieve a specific user profile by ID.         | `IsAdminOrManagerOrSelf`      | N/A                                                                                               | `200 OK`, User Profile           |
+| PUT    | `/api/users/{id}/`    | Update a user profile (full update).          | `IsAdminOrManagerOrSelf`      | Full UserProfile data (same as POST)                                                                  | `200 OK`, Updated User Profile   |
+| PATCH  | `/api/users/{id}/`    | Update a user profile (partial update).       | `IsAdminOrManagerOrSelf`      | Partial UserProfile data (e.g., `{"department": "New Dept"}`)                                        | `200 OK`, Updated User Profile   |
+| DELETE | `/api/users/{id}/`    | Delete a user profile.                         | Likely admin/manager only     | N/A                                                                                               | `204 No Content`                |
 
-**Tasks Endpoints:**
+**Searching (Users):**
 
-*   **Base Endpoint:** `/api/tasks/`
+*   Use the `search` query parameter: `?search=term`
+*   Searches:  `user__username`, `user__email`, `job_title`, `department` (case-insensitive partial match)
 
-    *   **`GET /api/tasks/`**: **List Tasks**
-        *   **Authentication Required:** Yes
-        *   **Functionality, Pagination, Filtering, Search, Ordering:** (Similar to Companies endpoint - pagination, filtering, search, and ordering can be implemented and configured for tasks as well, though not explicitly defined in detail in this summary, assume similar capabilities can be added).
-    *   **`POST /api/tasks/`**: **Create Task**
-        *   **Authentication Required:** Yes (Permissions: `IsAuthenticated`, role-based permissions needed for task creation)
-        *   **Request Body (JSON):**
-            ```json
-            {
-                "company": 1,  // Company ID
-                "assigned_to": [1, 2], // Array of Employee IDs
-                "title": "Task Title",
-                "description": "Task Description",
-                "status": "to_do", // or 'in_progress', 'completed', 'on_hold'
-                "due_date": "2024-01-15" // YYYY-MM-DD format (optional)
-            }
-            ```
-        *   **Response:** Returns the newly created task object in JSON format with status code `201 Created`.
-    *   **`GET /api/tasks/{id}/`**: **Retrieve Task**
-        *   **Authentication Required:** Yes (Permissions: `IsAdminOrManagerOrAssignedEmployee`)
-        *   **Path Parameter:** `{id}` - Task ID.
-    *   **`PUT /api/tasks/{id}/`**: **Update Task (Full Update)**
-        *   **Authentication Required:** Yes (Permissions: `IsAdminOrManagerOrAssignedEmployee` and role-based update restrictions)
-        *   **Path Parameter:** `{id}` - Task ID.
-        *   **Request Body (JSON):** Send the complete updated task object.
-    *   **`PATCH /api/tasks/{id}/`**: **Partial Update Task**
-        *   **Authentication Required:** Yes (Permissions: `IsAdminOrManagerOrAssignedEmployee` and role-based update restrictions)
-        *   **Path Parameter:** `{id}` - Task ID.
-        *   **Request Body (JSON):** Send only fields to update.
-    *   **`DELETE /api/tasks/{id}/`**: **Delete Task**
-        *   **Authentication Required:** Yes (Permissions: Role-based restrictions, likely admin/manager only)
-        *   **Path Parameter:** `{id}` - Task ID.
+**Ordering (Users):**
 
-**Response Format:**
+*   Implement as needed, similar to Companies.  Use the `ordering` query parameter.
 
-*   The API primarily returns responses in **JSON** format.
-*   List endpoints are **paginated**.
-*   Error responses will typically be in JSON format and include appropriate HTTP status codes (e.g., 400 Bad Request, 401 Unauthorized, 404 Not Found, 500 Internal Server Error).  You may have implemented a custom exception handler for more consistent error responses.
+---
 
-**What's Built for the Frontend:**
+**3. Tasks Endpoints**
 
-*   **Basic CRUD operations for Companies, Employees, and Tasks are implemented.**
-*   **JWT Authentication is set up and enforced for all main endpoints.**
-*   **Basic Role-Based Authorization is in place (though might need refinement).**
-*   **List endpoints are paginated, filterable, searchable, and orderable (basic implementation, further customization possible).**
+*   **Base URL:** `/api/tasks/`
+
+| Method | Endpoint           | Description                                  | Permissions                               | Request Body (Example)                                                                 | Response (Success)          |
+|--------|--------------------|----------------------------------------------|-------------------------------------------|------------------------------------------------------------------------------------------|-------------------------------|
+| GET    | `/api/tasks/`      | List all tasks (paginated, orderable).        | `IsAdminOrManagerOrAssignedEmployee`    | N/A                                                                                      | `200 OK`, List of Tasks     |
+| POST   | `/api/tasks/`      | Create a new task.                            | `IsAdminOrManagerOrAssignedEmployee`                       | `{"title": "T", "company": 1, "assigned_to": [1,2], "status": "to_do", "due_date": "2024-12-31"}` | `201 Created`, New Task        |
+| GET    | `/api/tasks/{id}/` | Retrieve a specific task by ID.              | `IsAdminOrManagerOrAssignedEmployee`    | N/A                                                                                      | `200 OK`, Task                |
+| PUT    | `/api/tasks/{id}/` | Update a task (full update).                 | `IsAdminOrManagerOrAssignedEmployee`    | Full Task data (same as POST)                                                             | `200 OK`, Updated Task         |
+| PATCH  | `/api/tasks/{id}/` | Update a task (partial update).              | `IsAdminOrManagerOrAssignedEmployee`    | Partial Task data (e.g., `{"status": "in_progress"}`)                                   | `200 OK`, Updated Task         |
+| DELETE | `/api/tasks/{id}/` | Delete a task.                                | Likely admin/manager only                | N/A                                                                                      | `204 No Content`             |
+
+**Filtering (Tasks):**
+
+*   Use query parameters: `?filter_field=value`
+*   Available filters: `company`, `assigned_to`, `status`
+
+**Ordering (Tasks):**
+
+*   Use the `ordering` query parameter: `?ordering=field` (ascending) or `?ordering=-field` (descending)
+*   Orderable fields:  `title`, `due_date`, `status`, `created_at`
+*   Default ordering: `-created_at` (most recent first)
+
+---
+
+**Error Handling:**
+
+*   Error responses will have appropriate HTTP status codes (e.g., `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `500 Internal Server Error`) and may include error details in the response body. A `400` error will often include details about invalid fields.
+
+**Pagination:**
+
+*   List endpoints (`GET /api/companies/`, `GET /api/users/`, `GET /api/tasks/`) are paginated.
+*   Use the `page` query parameter to specify the page number (e.g., `?page=2`).
+*   The default page size is defined in your Django settings (likely using `REST_FRAMEWORK` settings).
+*   Pagination information (next page, previous page, total count) is typically included in the response headers and/or body.  Check your specific pagination class for details.
