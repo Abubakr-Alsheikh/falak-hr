@@ -1,54 +1,63 @@
 ## Falak HR Backend API Documentation
 
-This document provides a comprehensive overview of the Falak HR backend API endpoints, designed for seamless integration with the frontend application.
+This document provides a comprehensive overview of the Falak HR backend API endpoints.
 
-**Base URL:**  `http://localhost:8000/api/` (for local development) or your deployed server's base URL.
+**Base URL:** `http://localhost:8000/api/` (for local development) or your deployed server's base URL.
 
-**API Root:** `GET /api/` -  This endpoint provides a list of all available API endpoints, useful for self-discovery.
+**API Root:** `GET /api/` - Provides a list of all available API endpoints (if implemented).
 
 **Authentication:**
 
-*   **All API endpoints (except token endpoints) are protected by JWT (JSON Web Token) authentication.**
-*   To access protected endpoints, you must include a valid **Access Token** in the `Authorization` header of your requests:  `Authorization: Bearer <your_access_token>`
+All API endpoints (except token endpoints) require JWT authentication.  Include a valid access token:
 
-*   **Obtain Tokens:**
-    *   Endpoint: `POST /api/token/`
+```
+Authorization: Bearer <your_access_token>
+```
+
+*   **Obtain Tokens (`POST /api/token/`):**
+
     *   Request Body (JSON):
+
         ```json
         {
-            "username": "your_username",
-            "password": "your_password"
-        }
-        ```
-    *   Response (JSON):
-        ```json
-        {
-            "refresh": "your_refresh_token",
-            "access": "your_access_token"
+            "username": "your_username",  // string, required
+            "password": "your_password"   // string, required
         }
         ```
 
-*   **Refresh Tokens:**
-    *   Endpoint: `POST /api/token/refresh/`
-    *   Request Body (JSON):
+    *   Response (JSON):
+
         ```json
         {
-            "refresh": "your_refresh_token"
+            "refresh": "your_refresh_token", // string
+            "access": "your_access_token"    // string
         }
         ```
-    *   Response (JSON):
+
+*   **Refresh Tokens (`POST /api/token/refresh/`):**
+
+    *   Request Body (JSON):
+
         ```json
         {
-            "access": "your_new_access_token"
+            "refresh": "your_refresh_token" // string, required
+        }
+        ```
+
+    *   Response (JSON):
+
+        ```json
+        {
+            "access": "your_new_access_token" // string
         }
         ```
 *   **Logout:** (If Implemented `POST /api/token/logout/`)
     * Request Body (JSON):
       ```json
       {
-          "refresh": "your_refresh_token"
+          "refresh": "your_refresh_token" // string, required
       }
-    ```
+        ```
 
 ---
 
@@ -56,31 +65,35 @@ This document provides a comprehensive overview of the Falak HR backend API endp
 
 *   **Base URL:** `/api/companies/`
 
-| Method | Endpoint                     | Description                                         | Permissions                        | Request Body (Example)                                                     | Response (Success)                    |
-|--------|------------------------------|-----------------------------------------------------|------------------------------------|---------------------------------------------------------------------------|---------------------------------------|
-| GET    | `/api/companies/`            | List all companies (paginated, filterable, searchable). | `IsAuthenticated`                | N/A                                                                       | `200 OK`, List of Companies          |
-| POST   | `/api/companies/`            | Create a new company.                               | `IsAdminUserOrReadOnly`            | `{"name": "NewCo", "address": "...", "contact_email": "email@example.com", "contact_phone": "123-456-7890"}`                               | `201 Created`, New Company             |
-| GET    | `/api/companies/{id}/`       | Retrieve a specific company by ID.                 | `IsAuthenticated`                | N/A                                                                       | `200 OK`, Company                     |
-| PUT    | `/api/companies/{id}/`       | Update a company (full update).                   | `IsAdminUserOrReadOnly`            | Full Company data (same as POST)                                            | `200 OK`, Updated Company              |
-| PATCH  | `/api/companies/{id}/`       | Update a company (partial update).                | `IsAdminUserOrReadOnly`            | Partial Company data (e.g., `{"address": "New Address"}`)                 | `200 OK`, Updated Company              |
-| DELETE | `/api/companies/{id}/`       | Delete a company.                                   | `IsAdminUserOrReadOnly`            | N/A                                                                       | `204 No Content`                     |
-| GET    | `/api/companies/{id}/subcompanies/` | list the sub companies for companies         |   `IsAuthenticated`                  |  N/A                                                                       |  `200 Ok`, List of companies        |
-| GET   |  `/api/companies/{id}/employees/`       |  List Company Employees                         |        `IsAuthenticated`                |   N/A                                                                    |       `200 Ok`, List of User Profiles  |
+| Method | Endpoint                      | Description                                           | Permissions          | Response (Success)                        | Response (Error)                                     |
+| :----- | :---------------------------- | :---------------------------------------------------- | :------------------- | :------------------------------------------ | :--------------------------------------------------- |
+| GET    | `/api/companies/`             | List all root-level companies (paginated).           | `IsAuthenticated`    | `200 OK`, List of Company objects           | `401`, `403`                                        |
+| POST   | `/api/companies/`             | Create a new company.                                | `IsAdminUserOrReadOnly` | `201 Created`, Created Company object     | `400` (validation errors), `401`, `403`             |
+| GET    | `/api/companies/{id}/`        | Retrieve a specific company by ID.                  | `IsAuthenticated`    | `200 OK`, Company object                    | `401`, `403`, `404`                                  |
+| PUT    | `/api/companies/{id}/`        | Update a company (full update).                    | `IsAdminUserOrReadOnly` | `200 OK`, Updated Company object            | `400` (validation errors), `401`, `403`, `404`     |
+| PATCH  | `/api/companies/{id}/`        | Update a company (partial update).                 | `IsAdminUserOrReadOnly` | `200 OK`, Updated Company object            | `400` (validation errors), `401`, `403`, `404`     |
+| DELETE | `/api/companies/{id}/`        | Delete a company.                                    | `IsAdminUserOrReadOnly` | `204 No Content`                            | `401`, `403`, `404`                                  |
+| GET    | `/api/companies/{id}/subcompanies/` | List sub-companies of a specific company.         | `IsAuthenticated`    | `200 OK`, List of Company objects           | `401`, `403`, `404` (if parent not found)         |
+| GET    | `/api/companies/{id}/employees/`    | List employees belonging to a specific company. | `IsAuthenticated`    | `200 OK`, List of UserProfile objects       | `401`, `403`, `404` (if company not found)        |
 
-**Filtering (Companies):**
+*   **Company Object (Request and Response):**
 
-*   Use the `parent_company` query parameter: `?parent_company=<id>` to filter subcompanies.
+    ```json
+    {
+        "id": 1,                                // integer, read-only
+        "name": "Company Name",                 // string (max_length=255), required, unique
+        "parent_company": null,                 // integer (Company ID) or null, optional
+        "address": "123 Main St",               // string, optional
+        "contact_email": "info@company.com",     // string (email format), optional
+        "contact_phone": "555-1212",            // string, optional
+        "created_at": "2024-10-27T10:00:00Z",  // datetime, read-only
+        "updated_at": "2024-10-27T11:30:00Z"   // datetime, read-only
+    }
+    ```
 
-**Searching (Companies):**
-
-*   Use the `search` query parameter: `?search=term`
-*   Searches: `name`, `address` (case-insensitive partial match)
-
-**Ordering (Companies):**
-
-*   Use the `ordering` query parameter: `?ordering=field` (ascending) or `?ordering=-field` (descending)
-*   Orderable fields: `name`, `created_at`
-*   Default ordering: `name` (ascending)
+*   **Filtering (Companies):**  `GET /api/companies/?parent_company={id}`
+*   **Searching (Companies):** `GET /api/companies/?search={term}` (Searches: `name`, `address`, `contact_email`, `contact_phone`)
+*   **Ordering (Companies):** `GET /api/companies/?ordering={field}` (Orderable: `name`, `created_at`; Default: `name`)
 
 ---
 
@@ -88,52 +101,87 @@ This document provides a comprehensive overview of the Falak HR backend API endp
 
 *   **Base URL:** `/api/users/`
 
-| Method | Endpoint              | Description                                     | Permissions                   | Request Body (Example)                                                                             | Response (Success)           |
-|--------|-----------------------|-------------------------------------------------|-------------------------------|-------------------------------------------------------------------------------------------------------|---------------------------------|
-| GET    | `/api/users/`         | List all user profiles (paginated).               | `IsAdminOrManagerOrSelf`      | N/A                                                                                               | `200 OK`, List of User Profiles |
-| POST   | `/api/users/`         | Create a new user profile.                     | `IsAuthenticated`            | `{"user": {"username": "u", "password": "p", "email": "e@e.com"}, "company": 1, "role": "employee"}`     | `201 Created`, New User Profile |
-| GET    | `/api/users/{id}/`    | Retrieve a specific user profile by ID.         | `IsAdminOrManagerOrSelf`      | N/A                                                                                               | `200 OK`, User Profile           |
-| PUT    | `/api/users/{id}/`    | Update a user profile (full update).          | `IsAdminOrManagerOrSelf`      | Full UserProfile data (same as POST)                                                                  | `200 OK`, Updated User Profile   |
-| PATCH  | `/api/users/{id}/`    | Update a user profile (partial update).       | `IsAdminOrManagerOrSelf`      | Partial UserProfile data (e.g., `{"department": "New Dept"}`)                                        | `200 OK`, Updated User Profile   |
-| DELETE | `/api/users/{id}/`    | Delete a user profile.                         | Likely admin/manager only     | N/A                                                                                               | `204 No Content`                |
+| Method | Endpoint             | Description                                     | Permissions               | Response (Success)                  | Response (Error)                         |
+| :----- | :------------------- | :---------------------------------------------- | :------------------------ | :-------------------------------------- | :--------------------------------------- |
+| GET    | `/api/users/`        | List all user profiles (paginated).              | `IsAdminOrManagerOrSelf`   | `200 OK`, List of UserProfile objects   | `401`, `403`                             |
+| POST   | `/api/users/`        | Create a new user profile.                     | `IsAuthenticated`         | `201 Created`, New UserProfile object  | `400` (validation errors), `401`, `403` |
+| GET    | `/api/users/{id}/`   | Retrieve a specific user profile by ID.         | `IsAdminOrManagerOrSelf`   | `200 OK`, UserProfile object            | `401`, `403`, `404`                      |
+| PUT    | `/api/users/{id}/`   | Update a user profile (full update).          | `IsAdminOrManagerOrSelf`   | `200 OK`, Updated UserProfile object    | `400` (validation errors), `401`, `403`, `404` |
+| PATCH  | `/api/users/{id}/`   | Update a user profile (partial update).       | `IsAdminOrManagerOrSelf`   | `200 OK`, Updated UserProfile object    | `400` (validation errors), `401`, `403`, `404` |
+| DELETE | `/api/users/{id}/`   | Delete a user profile.                         | Likely admin/manager only  | `204 No Content`                        | `401`, `403`, `404`                      |
 
-**Filtering (Users):**
+*   **UserProfile Object (Request and Response):**
 
-*   Use the `company` query parameter to filter by company:  `?company=<id>`
-*    Use the `role` query parameter to filter by User's role:  `?role=<"admin" or "manager" or "employee">`
-**Searching (Users):**
+    ```json
+    {
+        "id": 2,                                // integer, read-only
+        "user": {                              // Nested User object (from Django's auth.User)
+            "id": 3,                            // integer, read-only
+            "username": "johndoe",              // string, required, unique
+            "password": "hashed_password",      // string, write-only, required (set on user creation)
+            "email": "john.doe@example.com",    // string (email format), required
+            "first_name": "John",               // string, optional
+            "last_name": "Doe"                  // string, optional
+        },
+        "company": 1,                           // integer (Company ID), required
+        "role": "employee",                     // string (choices: "admin", "manager", "employee"), required, default: "employee"
+        "phone_number": "555-9876",             // string, optional
+        "department": "Marketing",              // string, optional
+        "job_title": "Marketing Specialist",     // string, optional
+        "created_at": "2024-10-27T12:00:00Z",  // datetime, read-only
+        "updated_at": "2024-10-27T13:45:00Z"   // datetime, read-only
+    }
+    ```
 
-*   Use the `search` query parameter: `?search=term`
-*   Searches:  `user__username`, `user__email`, `job_title`, `department` (case-insensitive partial match)
+    **Important Notes for User Creation (POST):**
+    *   You *must* provide the nested `user` object with `username`, `password`, and `email`.
+    *   You *must* provide the `company` ID.
+    *   The `role` defaults to "employee" if not provided.
+    * When updating a user, you can send the `user` ID directly, if you don't need to modify any of `user` fields.
 
-**Ordering (Users):**
-
-*   Implement as needed, similar to Companies.  Use the `ordering` query parameter.
-
+*   **Filtering (Users):**
+    *   `GET /api/users/?company={id}`
+    *   `GET /api/users/?role={role}`
+*   **Searching (Users):** `GET /api/users/?search={term}` (Searches: `user__username`, `user__email`, `job_title`, `department`)
+* **Ordering (Users):** Implement as needed, similar to Companies.  Use the `ordering` query parameter.
 
 ---
+
 **3. Projects Endpoints**
 
-* **Base URL:** `/api/projects/`
+*   **Base URL:** `/api/projects/`
 
-| Method | Endpoint              | Description                                         | Permissions                        | Request Body (Example)                                                                                                                                                    | Response (Success)                |
-|--------|-----------------------|-----------------------------------------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| GET    | `/api/projects/`       | List all projects (paginated, filterable).        | `IsAuthenticated`                | N/A                                                                                                                                                                  | `200 OK`, List of Projects       |
-| POST   | `/api/projects/`       | Create a new project.                              | `IsAuthenticated`                | `{"company": 1, "name": "Project Name", "description": "...", "start_date": "2024-01-15", "end_date": "2024-06-30", "status": "planning", "manager": 2, "team_members": [3, 4]}` | `201 Created`, New Project        |
-| GET    | `/api/projects/{id}/`  | Retrieve a specific project by ID.                | `IsAuthenticated`                | N/A                                                                                                                                                                  | `200 OK`, Project                |
-| PUT    | `/api/projects/{id}/`  | Update a project (full update).                  | `IsAuthenticated`                | Full Project data (same as POST)                                                                                                                                          | `200 OK`, Updated Project        |
-| PATCH  | `/api/projects/{id}/`  | Update a project (partial update).               | `IsAuthenticated`                | Partial Project data (e.g., `{"status": "in_progress"}`)                                                                                                               | `200 OK`, Updated Project        |
-| DELETE | `/api/projects/{id}/`  | Delete a project.                                  | `IsAuthenticated`                | N/A                                                                                                                                                                  | `204 No Content`                 |
+| Method | Endpoint             | Description                                       | Permissions         | Response (Success)               | Response (Error)                                     |
+| :----- | :------------------- | :------------------------------------------------ | :------------------ | :----------------------------------- | :--------------------------------------------------- |
+| GET    | `/api/projects/`      | List all projects (paginated, filterable).       | `IsAuthenticated`   | `200 OK`, List of Project objects    | `401`, `403`                                        |
+| POST   | `/api/projects/`      | Create a new project.                             | `IsAuthenticated`   | `201 Created`, New Project object   | `400` (validation errors), `401`, `403`           |
+| GET    | `/api/projects/{id}/` | Retrieve a specific project by ID.               | `IsAuthenticated`   | `200 OK`, Project object             | `401`, `403`, `404`                                  |
+| PUT    | `/api/projects/{id}/` | Update a project (full update).                 | `IsAuthenticated`   | `200 OK`, Updated Project object     | `400` (validation errors), `401`, `403`, `404`     |
+| PATCH  | `/api/projects/{id}/` | Update a project (partial update).              | `IsAuthenticated`   | `200 OK`, Updated Project object     | `400` (validation errors), `401`, `403`, `404`     |
+| DELETE | `/api/projects/{id}/` | Delete a project.                                 | `IsAuthenticated`   | `204 No Content`                     | `401`, `403`, `404`                                  |
 
-**Filtering (Projects):**
+* **Project Object (Request and Response):**
 
-*   Use the `company` query parameter to filter by company:  `?company=<id>`
+    ```json
+    {
+    "id": 1, // integer, read-only
+    "company": 1, // integer (Company ID), required
+    "name": "Project Alpha", // string (max_length=255), required
+    "description": "A very important project.", // string, optional
+    "start_date": "2024-11-01", // string (date format: YYYY-MM-DD), optional
+    "end_date": "2025-02-28", // string (date format: YYYY-MM-DD), optional
+    "status": "in_progress", // string (choices: "planning", "in_progress", "completed", "on_hold"), required, default: "planning"
+    "manager": 2, // integer (UserProfile ID), optional
+    "team_members": [3, 4, 5], // array of integers (UserProfile IDs), optional
+    "created_at": "2024-10-27T14:00:00Z", // datetime, read-only
+    "updated_at": "2024-10-27T15:15:00Z" // datetime, read-only
+    }
+    ```
 
-**Ordering (Projects):**
-
-* Use the `ordering` query parameter: `?ordering=field` (ascending) or `?ordering=-field` (descending).
-* Orderable fields:  `name`, `start_date`, `end_date`, `status`, `created_at`
-* Default ordering:  `-created_at` (most recent first)
+*   **Filtering (Projects):**
+    *   `GET /api/projects/?company={id}`
+*   **Ordering (Projects):**
+    *    `GET /api/projects/?ordering={field}` (Orderable: `name`, `start_date`, `end_date`, `status`, `created_at`; Default: `-created_at`)
 
 ---
 
@@ -141,35 +189,63 @@ This document provides a comprehensive overview of the Falak HR backend API endp
 
 *   **Base URL:** `/api/tasks/`
 
-| Method | Endpoint           | Description                                  | Permissions                               | Request Body (Example)                                                                 | Response (Success)          |
-|--------|--------------------|----------------------------------------------|-------------------------------------------|------------------------------------------------------------------------------------------|-------------------------------|
-| GET    | `/api/tasks/`      | List all tasks (paginated, filterable, orderable).        | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee`    | N/A                                                                                      | `200 OK`, List of Tasks     |
-| POST   | `/api/tasks/`      | Create a new task.  **Requires a `project` ID.**                            | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee`                       | `{"title": "Task Title", "project": 1, "assigned_to": [1,2], "status": "to_do", "due_date": "2024-12-31", "description": "Task description"}` | `201 Created`, New Task        |
-| GET    | `/api/tasks/{id}/` | Retrieve a specific task by ID.              | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee`    | N/A                                                                                      | `200 OK`, Task                |
-| PUT    | `/api/tasks/{id}/` | Update a task (full update).                 | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee`    | Full Task data (same as POST)                                                             | `200 OK`, Updated Task         |
-| PATCH  | `/api/tasks/{id}/` | Update a task (partial update).              | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee`    | Partial Task data (e.g., `{"status": "in_progress"}`)                                   | `200 OK`, Updated Task         |
-| DELETE | `/api/tasks/{id}/` | Delete a task.                                | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee`                | N/A                                                                                      | `204 No Content`             |
+| Method | Endpoint          | Description                                           | Permissions                                      | Response (Success)            | Response (Error)                                 |
+| :----- | :---------------- | :---------------------------------------------------- | :----------------------------------------------- | :-------------------------------- | :----------------------------------------------- |
+| GET    | `/api/tasks/`     | List all tasks (paginated, filterable, orderable).   | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee` | `200 OK`, List of Task objects   | `401`, `403`                                     |
+| POST   | `/api/tasks/`     | Create a new task.  Requires a `project` ID.         | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee` | `201 Created`, New Task object  | `400` (validation, missing project), `401`, `403` |
+| GET    | `/api/tasks/{id}/`| Retrieve a specific task by ID.                       | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee` | `200 OK`, Task object              | `401`, `403`, `404`                              |
+| PUT    | `/api/tasks/{id}/`| Update a task (full update).                          | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee` | `200 OK`, Updated Task object     | `400` (validation errors), `401`, `403`, `404`   |
+| PATCH  | `/api/tasks/{id}/`| Update a task (partial update).                       | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee` | `200 OK`, Updated Task object     | `400` (validation errors), `401`, `403`, `404`   |
+| DELETE | `/api/tasks/{id}/`| Delete a task.                                       | `IsAuthenticated, IsAdminOrManagerOrAssignedEmployee` | `204 No Content`                  | `401`, `403`, `404`                              |
 
-**Filtering (Tasks):**
+* **Task Object (Request and Response):**
 
-*   Use query parameters: `?project=<project_id>`
-*   Available filters: `project`, `assigned_to`, `status`
-
-**Ordering (Tasks):**
-
-*   Use the `ordering` query parameter: `?ordering=field` (ascending) or `?ordering=-field` (descending)
-*   Orderable fields:  `title`, `due_date`, `status`, `created_at`
-*   Default ordering: `-created_at` (most recent first)
+    ```json
+    {
+        "id": 3,                                // integer, read-only
+        "project": 1,                           // integer (Project ID), required
+        "assigned_to": [2, 4],                  // array of integers (UserProfile IDs), optional
+        "title": "Design UI Mockups",           // string (max_length=255), required
+        "description": "Create mockups for...",  // string, optional
+        "status": "to_do",                      // string (choices: "to_do", "in_progress", "completed", "on_hold"), required, default: "to_do"
+        "due_date": "2024-11-15",                // string (date format: YYYY-MM-DD), optional
+        "created_at": "2024-10-27T16:30:00Z",  // datetime, read-only
+        "updated_at": "2024-10-27T17:00:00Z"   // datetime, read-only
+    }
+    ```
+*   **Filtering (Tasks):**
+    *   `GET /api/tasks/?project={project_id}`
+    *   `GET /api/tasks/?assigned_to={user_id}`
+    *  `GET /api/tasks/?status={status}`
+*   **Ordering (Tasks):**
+    *   `GET /api/tasks/?ordering={field}` (Orderable: `title`, `due_date`, `status`, `created_at`; Default: `-created_at`)
 
 ---
 
 **Error Handling:**
 
-*   Error responses will have appropriate HTTP status codes (e.g., `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `500 Internal Server Error`) and may include error details in the response body. A `400` error will often include details about invalid fields.
+API responses use standard HTTP status codes:
+
+*   `2xx`: Success
+*   `400 Bad Request`: Invalid input, missing fields.  Response body will often include details.
+*   `401 Unauthorized`: Authentication required, or invalid credentials.
+*   `403 Forbidden`: User is authenticated but lacks permission.
+*   `404 Not Found`: Resource not found.
+*   `500 Internal Server Error`: Server error.
 
 **Pagination:**
 
-*   List endpoints (`GET /api/companies/`, `GET /api/users/`, `GET /api/tasks/`, `GET /api/projects/`) are paginated.
-*   Use the `page` query parameter to specify the page number (e.g., `?page=2`).
-*   The default page size is defined in your Django settings (likely using `REST_FRAMEWORK` settings).
-*   Pagination information (next page, previous page, total count) is typically included in the response headers and/or body.  Check your specific pagination class for details.
+List endpoints are paginated:
+
+*   Use the `page` query parameter (e.g., `?page=2`).
+*   Default page size is in Django settings (`REST_FRAMEWORK.PAGE_SIZE`).
+*   Pagination metadata (next/previous page URLs, total count) is in the response. Example:
+
+```json
+{
+    "count": 123,
+    "next": "http://localhost:8000/api/companies/?page=2",
+    "previous": null,
+    "results": [ /* ... array of objects ... */ ]
+}
+```
