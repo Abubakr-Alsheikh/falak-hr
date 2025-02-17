@@ -15,4 +15,4 @@ class CompanySerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_employee_count(self, obj):
-        return obj.employees.count()
+        return obj.users.count()
