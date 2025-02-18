@@ -7,13 +7,15 @@ import Pagination from "@components/common/dashboard/page/Pagination";
 import CompanyListItem from "@components/dashboard/companies/CompanyListItem";
 import HeaderHeader from "@/components/common/dashboard/page/TableHeader";
 import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
-import CreateCompanyModal from "@components/dashboard/companies/Modals/CreateCompanyModal";
-import UpdateCompanyModal from "@components/dashboard/companies/Modals/UpdateCompanyModal";
-import ReadCompanyModal from "@components/dashboard/companies/Modals/ReadCompanyModal";
-import DeleteCompanyModal from "@components/dashboard/companies/Modals/DeleteCompanyModal";
 import { useAuth } from "@contexts/AuthContext";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
 import { Company } from "@/types/company";
+import {
+  CreateCompanyModal,
+  DeleteCompanyModal,
+  ReadCompanyModal,
+  UpdateCompanyModal,
+} from "@/components/dashboard/companies/Modals";
 
 const CompanyPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
