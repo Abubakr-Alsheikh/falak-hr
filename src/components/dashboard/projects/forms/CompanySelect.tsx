@@ -4,9 +4,10 @@ import { Company } from "@/types/company";
 import { SelectField } from "@/components/common/dashboard/form/SelectField";
 
 interface CompanySelectProps {
-  initialCompanyId?: number | null;
-  errors?: any;
-  touched?: any;
+  initialCompanyId?: number;
+  onSelect: (companyId: number | undefined) => void;
+  errors?: string;
+  touched?: boolean;
   disabled?: boolean;
 }
 

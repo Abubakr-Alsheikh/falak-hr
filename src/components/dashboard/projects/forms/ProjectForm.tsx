@@ -6,14 +6,14 @@ import { InputField } from "@/components/common/dashboard/form/InputField";
 import { SubmitButton } from "@/components/common/dashboard/form/SubmitButton";
 import { ManagerSelect } from "./ManagerSelect";
 import { TeamMembersSelect } from "./TeamMembersSelect";
-import { CompanySelect } from "./CompanySelect"; // Import
+import { CompanySelect } from "./CompanySelect";
 import { Datepicker } from "flowbite-react";
 
 interface ProjectFormProps {
   initialValues: ProjectCreate | ProjectUpdate;
   onSubmit: (
     values: ProjectCreate | ProjectUpdate,
-    actions: FormikHelpers<ProjectCreate | ProjectUpdate>
+    actions: FormikHelpers<any>
   ) => Promise<void>;
   validationSchema: Yup.ObjectSchema<any>;
   isUpdate?: boolean;
@@ -27,29 +27,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   isUpdate = false,
   companyId,
 }) => {
-  const handleManagerSelect = (
-    managerId: number | null | string | undefined, // Include undefined
-    setFieldValue: (field: string, value: any) => void
-  ) => {
-    if (typeof managerId === "string") {
-      managerId = managerId === "" ? undefined : parseInt(managerId, 10);
-    }
-
-    setFieldValue("manager", managerId);
-  };
-
-  const handleTeamMembersSelect = (
-    memberIds: (string | number)[],
-    setFieldValue: (field: string, value: any) => void
-  ) => {
-    const numericMemberIds = memberIds
-      .map((id) => (typeof id === "string" ? parseInt(id, 10) : id))
-      .filter((id) => !isNaN(id));
-    setFieldValue("team_members", numericMemberIds);
-  };
-
   const handleStartDateChange = (
-    value: Date | undefined, // Correct type
+    value: Date | undefined,
     setFieldValue: (
       field: string,
       value: any,
@@ -63,7 +42,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   };
 
   const handleEndDateChange = (
-    value: Date | undefined, // Correct type
+    value: Date | undefined,
     setFieldValue: (
       field: string,
       value: any,
@@ -77,7 +56,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   };
 
   const handleCompanySelect = (
-    companyId: number | null | string | undefined, // Include undefined
+    companyId: number | null | string | undefined,
     setFieldValue: (field: string, value: any) => void
   ) => {
     if (typeof companyId === "string") {
@@ -124,9 +103,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             <ManagerSelect
               initialManagerId={initialValues.manager}
               companyId={companyId}
-              onSelect={(managerId) =>
-                handleManagerSelect(managerId, setFieldValue)
-              }
               errors={errors.manager}
               touched={touched.manager}
             />
@@ -152,11 +128,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                   values.start_date ? new Date(values.start_date) : undefined
                 }
                 onSelect={(value) =>
-                  handleStartDateChange(value, setFieldValue)
+                  handleStartDateChange(value as unknown as Date, setFieldValue)
                 }
-                language="ar"
               />
-
               {touched.start_date && errors.start_date ? (
                 <div className="mt-1 text-sm text-red-500">
                   {errors.start_date}
@@ -174,8 +148,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                 id="end_date"
                 name="end_date"
                 value={values.end_date ? new Date(values.end_date) : undefined}
-                onSelect={(value) => handleEndDateChange(value, setFieldValue)}
-                language="ar"
+                onSelect={(value) =>
+                  handleEndDateChange(value as unknown as Date, setFieldValue)
+                }
               />
               {touched.end_date && errors.end_date ? (
                 <div className="mt-1 text-sm text-red-500">
@@ -202,7 +177,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                 <option value="completed">مكتمل</option>
                 <option value="on_hold">في الانتظار</option>
               </Field>
-
               {touched.status && errors.status && (
                 <p className="mt-2 text-sm text-red-600">{errors.status}</p>
               )}

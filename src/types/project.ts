@@ -18,14 +18,14 @@ export interface Project {
 
 // Separate interface for project creation
 export interface ProjectCreate {
-  company: number;
   name: string;
-  description?: string;
-  start_date?: string;
-  end_date?: string;
-  status?: "planning" | "in_progress" | "completed" | "on_hold";
-  manager?: number;
-  team_members?: number[];
+  company: number;
+  description?: string | undefined;
+  start_date?: string | undefined;
+  end_date?: string | undefined;
+  status?: "planning" | "in_progress" | "completed" | "on_hold" | undefined;
+  manager?: number | undefined;
+  team_members?: number[] | undefined;
 }
 
 // Type for updating (PATCH is usually preferred for partial updates)
