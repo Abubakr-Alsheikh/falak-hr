@@ -1,4 +1,3 @@
-// src/components/common/dashboard/form/SelectField.tsx
 import React from "react";
 import { Field, ErrorMessage } from "formik";
 
@@ -8,6 +7,8 @@ interface SelectFieldProps {
   options: { value: string; label: string }[]; // Array of options
   errors?: string;
   touched?: boolean;
+  value?: string | number;
+  disabled?: boolean;
 }
 
 export const SelectField: React.FC<SelectFieldProps> = ({
@@ -16,6 +17,8 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   options,
   errors,
   touched,
+  value = "",
+  disabled = false,
 }) => (
   <div>
     <label
@@ -28,6 +31,8 @@ export const SelectField: React.FC<SelectFieldProps> = ({
       as="select"
       id={name}
       name={name}
+      value={value}
+      disabled={disabled}
       className={`block w-full rounded-lg border ${
         errors && touched ? "border-red-500" : "border-gray-300"
       } bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500`}

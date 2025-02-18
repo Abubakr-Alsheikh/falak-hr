@@ -20,6 +20,7 @@ const SubscriptionPage = lazy(
 const DashboardOverview = lazy(() => import("@pages/dashboard/Overview"));
 const CompanyPage = lazy(() => import("@pages/dashboard/CompanyPage"));
 const UserPage = lazy(() => import("@pages/dashboard/UserPage"));
+const ProjectPage = lazy(() => import("@pages/dashboard/ProjectPage"));
 const InquiriesPage = lazy(() => import("@pages/dashboard/InquiriesPage"));
 const SubscriptionRequestsPage = lazy(
   () => import("@pages/dashboard/SubscriptionRequestsPage")
@@ -79,6 +80,7 @@ const AppRoutes = () => {
         <Route index element={<DashboardOverview />} />
         <Route path="companies" element={<CompanyPage />} />
         <Route path="users" element={<UserPage />} />
+        <Route path="projects" element={<ProjectPage />} />
         <Route path="inquiries" element={<InquiriesPage />} />
         <Route path="subscription" element={<SubscriptionRequestsPage />} />
       </Route>
