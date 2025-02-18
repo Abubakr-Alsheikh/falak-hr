@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import subscriptionService from "@api/subscriptionService"; // Import the service
 import { SubscriptionRequest } from "@/types/subscription"; // Import the type
 import Button from "@/components/public/Button";
-import LoadingScreen from "@components/common/LoadingScreen";
+import LoadingScreen from "@/components/common/public/LoadingScreen";
 import { Link } from "react-router-dom";
 
 interface SubscriptionFormProps {
@@ -228,10 +228,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ onSuccess }) => {
         />
       </div>
       <div className="flex flex-row gap-2">
-      <Button type="submit" text="إرسال الطلب" />
-      <Link to="/">
-        <Button type="submit" text="عودة" variant="secondary" />
-      </Link>
+        <Button type="submit" text="إرسال الطلب" />
+        <Link to="/">
+          <Button type="submit" text="عودة" variant="secondary" />
+        </Link>
       </div>
     </form>
   );

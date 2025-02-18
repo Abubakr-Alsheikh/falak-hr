@@ -1,7 +1,7 @@
 // src/components/common/RouteTransition.tsx
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import LoadingScreen from '@components/common/LoadingScreen';
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import LoadingScreen from "@/components/common/public/LoadingScreen";
 
 interface RouteTransitionProps {
   children: React.ReactNode;
@@ -27,11 +27,13 @@ const RouteTransition: React.FC<RouteTransitionProps> = ({ children }) => {
     // Wait for all images and resources to load
     Promise.all([
       // Wait for the page to load
-      new Promise(resolve => setTimeout(resolve, 100)), // Small delay to ensure chunk loading starts
+      new Promise((resolve) => setTimeout(resolve, 100)), // Small delay to ensure chunk loading starts
       // Wait for all images
-      document.readyState === 'complete' 
-        ? Promise.resolve() 
-        : new Promise(resolve => window.addEventListener('load', resolve, { once: true }))
+      document.readyState === "complete"
+        ? Promise.resolve()
+        : new Promise((resolve) =>
+            window.addEventListener("load", resolve, { once: true })
+          ),
     ]).then(stopLoading);
 
     return () => {

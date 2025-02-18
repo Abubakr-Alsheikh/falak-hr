@@ -11,8 +11,8 @@ import {
 } from "react-icons/ai";
 import { IconType } from "react-icons";
 import logo from "@assets/footer-logo.png";
-import SocialIcons from "./SocialIcons";
 import FadeIn from "@components/animations/FadeIn";
+import SocialIcons from "./SocialIcons";
 
 interface FooterLink {
   label: string;

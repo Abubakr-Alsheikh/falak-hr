@@ -3,11 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@contexts/AuthContext";
 import { Credentials } from "@/types/auth";
 import logo from "@assets/logo.png";
-import LoadingScreen from "@components/common/LoadingScreen";
+import LoadingScreen from "@/components/common/public/LoadingScreen";
 import Button from "@/components/public/Button";
 
 const LoginPage: React.FC = () => {
-  const { login, isLoading, isAuthenticated, authError, setAuthError } = useAuth();
+  const { login, isLoading, isAuthenticated, authError, setAuthError } =
+    useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);

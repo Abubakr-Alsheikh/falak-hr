@@ -1,6 +1,6 @@
 import React from "react";
-import HeaderSection from "../public/HeaderSection";
-import FadeIn from "../animations/FadeIn";
+import HeaderSection from "../../public/HeaderSection";
+import FadeIn from "../../animations/FadeIn";
 import { motion } from "framer-motion";
 
 const PartnersSection: React.FC = () => {
@@ -55,7 +55,8 @@ const PartnersSection: React.FC = () => {
               href={partner.linkUrl}
               className="mb-5 mr-5 block rounded-2xl border border-gray-300 bg-gray-100 p-4 shadow-sm lg:mb-0"
               target="_blank"
-              whileTap={{ scale: 0.95 }} whileHover={{scale: 1.1}}
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.1 }}
             >
               <img
                 src={partner.imageUrl}

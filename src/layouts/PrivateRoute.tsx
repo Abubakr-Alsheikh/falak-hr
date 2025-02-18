@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@contexts/AuthContext";
-import LoadingScreen from "../components/common/LoadingScreen";
+import LoadingScreen from "../components/common/public/LoadingScreen";
 
 interface PrivateRouteProps {
   children: React.ReactNode;

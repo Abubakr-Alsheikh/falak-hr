@@ -32,9 +32,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, onLinkClick }) => {
       label: "المستخدمين",
     },
     {
-      to: "/dashboard/tasks",
+      to: "/dashboard/projects",
       icon: <FaTasks className="ml-3" />,
-      label: "المهام",
+      label: "المشاريع",
     },
     {
       to: "/dashboard/inquiries",

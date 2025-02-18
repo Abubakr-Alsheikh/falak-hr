@@ -15,7 +15,7 @@ import {
 } from "@utils/auth";
 import { useNavigate } from "react-router-dom";
 import { Tokens, Credentials } from "@/types/auth";
-import LoadingScreen from "@components/common/LoadingScreen";
+import LoadingScreen from "@/components/common/public/LoadingScreen";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -96,7 +96,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout, authError, setAuthError }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        isLoading,
+        login,
+        logout,
+        authError,
+        setAuthError,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

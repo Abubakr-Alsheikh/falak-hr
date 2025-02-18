@@ -172,7 +172,28 @@ Authorization: Bearer <your_access_token>
     "end_date": "2025-02-28", // string (date format: YYYY-MM-DD), optional
     "status": "in_progress", // string (choices: "planning", "in_progress", "completed", "on_hold"), required, default: "planning"
     "manager": 2, // integer (UserProfile ID), optional
+    "manager_name": "admin", // string, in the response, readonly
     "team_members": [3, 4, 5], // array of integers (UserProfile IDs), optional
+    "team_members_details": [ // string, in the response, readonly
+        {
+            "id": 2,
+            "user": {
+                "id": 2,
+                "username": "manager1",
+                "email": "manager1@example.com",
+                "first_name": "",
+                "last_name": ""
+            },
+            "company": 1,
+            "company_name": "Falak HR Main 3",
+            "role": "manager",
+            "phone_number": "",
+            "department": "",
+            "job_title": "",
+            "created_at": "2025-02-17T12:17:42.761015Z",
+            "updated_at": "2025-02-17T12:17:42.761015Z"
+        },
+    ],
     "created_at": "2024-10-27T14:00:00Z", // datetime, read-only
     "updated_at": "2024-10-27T15:15:00Z" // datetime, read-only
     }
