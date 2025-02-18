@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaTimes, FaTrashAlt } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import * as Yup from "yup";
 import { companyService } from "@api/companyService";
 import CompanyForm from "../forms/CompanyForm";

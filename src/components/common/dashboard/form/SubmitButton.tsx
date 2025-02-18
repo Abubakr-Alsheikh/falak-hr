@@ -3,12 +3,12 @@ import { FaSpinner } from "react-icons/fa";
 
 interface SubmitButtonProps {
   isSubmitting: boolean;
-  isUpdate?: boolean;
+  buttonText: string;
 }
 
 export const SubmitButton: React.FC<SubmitButtonProps> = ({
   isSubmitting,
-  isUpdate = false,
+  buttonText = "",
 }) => (
   <button
     type="submit"
@@ -21,7 +21,7 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({
         جاري الإرسال...
       </>
     ) : (
-      <>{isUpdate ? "تحديث الشركة" : "إضافة شركة جديدة"}</>
+      <>{buttonText ? buttonText : "أضف عنوان للزر"}</>
     )}
   </button>
 );

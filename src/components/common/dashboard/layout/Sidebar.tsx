@@ -27,9 +27,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, onLinkClick }) => {
       label: "الشركات",
     },
     {
-      to: "/dashboard/employees",
+      to: "/dashboard/users",
       icon: <FaUsers className="ml-3" />,
-      label: "الموظفين",
+      label: "المستخدمين",
     },
     {
       to: "/dashboard/tasks",

@@ -83,7 +83,10 @@ const CompanyForm: React.FC<CompanyFormProps> = ({
               touched={touched.parent_company}
             />
           </div>
-          <SubmitButton isSubmitting={isSubmitting} isUpdate={isUpdate} />
+          <SubmitButton
+            isSubmitting={isSubmitting}
+            buttonText={isUpdate ? "تحديث" : "إنشاء"}
+          />
         </Form>
       )}
     </Formik>
