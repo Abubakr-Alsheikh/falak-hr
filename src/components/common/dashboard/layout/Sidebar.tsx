@@ -3,7 +3,8 @@ import { AiOutlineHome } from "react-icons/ai";
 import {
   FaBuilding,
   FaUsers,
-  FaTasks,
+  FaProjectDiagram,
+  FaClipboardList,
   FaEnvelope,
   FaMoneyBillWave,
 } from "react-icons/fa";
@@ -33,8 +34,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, onLinkClick }) => {
     },
     {
       to: "/dashboard/projects",
-      icon: <FaTasks className="ml-3" />,
+      icon: <FaProjectDiagram className="ml-3" />,
       label: "المشاريع",
+    },
+    {
+      to: "/dashboard/tasks",
+      icon: <FaClipboardList className="ml-3" />,
+      label: "المهام",
     },
     {
       to: "/dashboard/inquiries",

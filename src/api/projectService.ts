@@ -5,9 +5,9 @@ import { PaginatedResponse } from "@utils/pagination";
 export interface GetProjectsParams {
   page?: number;
   page_size?: number;
-  search?: string; // Assuming a general search parameter is supported
+  search?: string;
   ordering?: string;
-  company?: number; // For filtering by company
+  company?: number;
 }
 
 export const projectService = {
