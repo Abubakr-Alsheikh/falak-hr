@@ -1,8 +1,10 @@
+# populate_db.py
 from django.core.management.base import BaseCommand
 from companies.models import Company
 from django.contrib.auth.models import User
 from users.models import UserProfile
 from tasks.models import Task
+from projects.models import Project  # Import Project
 import os
 from dotenv import load_dotenv
 
@@ -57,23 +59,48 @@ class Command(BaseCommand):
             user=user_employee1, company=company2, role="employee"
         )
 
-        # Create Tasks
-        task1 = Task.objects.create(
+        # --- Create Projects ---
+        project1 = Project.objects.create(
+            name="Falak HR Setup",
+            description="Initial setup and configuration of Falak HR",
             company=company1,
+            manager=employee_manager,  # Assign the manager
+            status="in_progress",  # Example status
+        )
+        project1.team_members.add(employee_admin, employee_manager)
+
+        project2 = Project.objects.create(
+            name="Remote Employee Onboarding",
+            description="Onboarding process for new remote employees",
+            company=company2,
+            manager=employee_manager,  # You can assign a different manager if needed
+            status="planning",
+        )
+        project2.team_members.add(employee1)
+
+        # Create Tasks (linked to projects)
+        task1 = Task.objects.create(
+            project=project1,  # Associate with project1
             title="Company Setup",
             description="Initial setup for Falak HR",
+            status="completed",
         )
         task1.assigned_to.add(employee_admin, employee_manager)
 
         task2 = Task.objects.create(
-            company=company2,
+            project=project2,  # Associate with project2
             title="Employee Onboarding",
             description="Onboarding new remote employees",
+            status="in_progress",
         )
         task2.assigned_to.add(employee1)
 
+        task3 = Task.objects.create(
+            project=project1,
+            title="Configure Payroll",
+            description="Set up the payroll system for Falak HR",
+            status="in_progress",
+        )
+        task3.assigned_to.add(employee_manager)
+
         self.stdout.write(self.style.SUCCESS("Database populated successfully!"))
-
-
-# Run command
-# py .\manage.py populate_db
