@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Formik, Form, FormikHelpers, Field } from "formik";
 import * as Yup from "yup";
 import { ProjectCreate, ProjectUpdate } from "@/types/project";
@@ -13,7 +13,7 @@ interface ProjectFormProps {
   initialValues: ProjectCreate | ProjectUpdate;
   onSubmit: (
     values: ProjectCreate | ProjectUpdate,
-    actions: FormikHelpers<any>
+    actions: FormikHelpers<ProjectCreate | ProjectUpdate>
   ) => Promise<void>;
   validationSchema: Yup.ObjectSchema<any>;
   isUpdate?: boolean;
@@ -27,43 +27,28 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   isUpdate = false,
   companyId,
 }) => {
-  const handleStartDateChange = (
-    value: Date | undefined,
-    setFieldValue: (
-      field: string,
-      value: any,
-      shouldValidate?: boolean | undefined
-    ) => void
-  ) => {
-    setFieldValue(
-      "start_date",
-      value ? value.toISOString().split("T")[0] : undefined
-    );
-  };
+  const handleStartDateChange = useCallback(
+    (
+      date: Date | undefined | null,
+      setFieldValue: (field: string, value: any) => void
+    ) => {
+      setFieldValue(
+        "start_date",
+        date ? date.toISOString().split("T")[0] : null
+      );
+    },
+    []
+  );
 
-  const handleEndDateChange = (
-    value: Date | undefined,
-    setFieldValue: (
-      field: string,
-      value: any,
-      shouldValidate?: boolean | undefined
-    ) => void
-  ) => {
-    setFieldValue(
-      "end_date",
-      value ? value.toISOString().split("T")[0] : undefined
-    );
-  };
-
-  const handleCompanySelect = (
-    companyId: number | null | string | undefined,
-    setFieldValue: (field: string, value: any) => void
-  ) => {
-    if (typeof companyId === "string") {
-      companyId = companyId === "" ? undefined : parseInt(companyId, 10);
-    }
-    setFieldValue("company", companyId);
-  };
+  const handleEndDateChange = useCallback(
+    (
+      date: Date | undefined,
+      setFieldValue: (field: string, value: any) => void
+    ) => {
+      setFieldValue("end_date", date ? date.toISOString().split("T")[0] : null);
+    },
+    []
+  );
 
   return (
     <Formik
@@ -78,12 +63,8 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             {!isUpdate && (
               <CompanySelect
                 initialCompanyId={companyId}
-                onSelect={(companyId) =>
-                  handleCompanySelect(companyId, setFieldValue)
-                }
-                errors={errors.company}
-                touched={touched.company}
                 disabled={!!companyId}
+                name="company"
               />
             )}
             <InputField
@@ -101,17 +82,13 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               touched={touched.description}
             />
             <ManagerSelect
-              initialManagerId={initialValues.manager}
-              companyId={companyId}
-              errors={errors.manager}
-              touched={touched.manager}
+              companyId={values.company as number | undefined}
+              name="manager"
             />
             <TeamMembersSelect
               initialTeamMembers={initialValues.team_members || []}
-              companyId={companyId}
+              companyId={values.company as number | undefined}
               name="team_members"
-              errors={errors.team_members}
-              touched={touched.team_members}
             />
 
             <div>
@@ -124,18 +101,19 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               <Datepicker
                 id="start_date"
                 name="start_date"
+                onSelect={(date) =>
+                  handleStartDateChange(date as unknown as Date, setFieldValue)
+                }
                 value={
                   values.start_date ? new Date(values.start_date) : undefined
                 }
-                onSelect={(value) =>
-                  handleStartDateChange(value as unknown as Date, setFieldValue)
-                }
               />
-              {touched.start_date && errors.start_date ? (
+
+              {touched.start_date && errors.start_date && (
                 <div className="mt-1 text-sm text-red-500">
                   {errors.start_date}
                 </div>
-              ) : null}
+              )}
             </div>
             <div>
               <label
@@ -147,16 +125,16 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               <Datepicker
                 id="end_date"
                 name="end_date"
-                value={values.end_date ? new Date(values.end_date) : undefined}
-                onSelect={(value) =>
-                  handleEndDateChange(value as unknown as Date, setFieldValue)
+                onSelect={(date) =>
+                  handleEndDateChange(date as unknown as Date, setFieldValue)
                 }
+                value={values.end_date ? new Date(values.end_date) : undefined}
               />
-              {touched.end_date && errors.end_date ? (
+              {touched.end_date && errors.end_date && (
                 <div className="mt-1 text-sm text-red-500">
                   {errors.end_date}
                 </div>
-              ) : null}
+              )}
             </div>
 
             <div>

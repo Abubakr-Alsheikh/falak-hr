@@ -1,87 +1,77 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { userService, GetUsersParams } from "@/api/userService";
 import { UserProfile } from "@/types/user";
-import { useFormikContext } from "formik"; // Import useFormikContext
+import { useFormikContext } from "formik";
 import { Dropdown } from "flowbite-react";
 
 interface TeamMembersSelectProps {
   initialTeamMembers: number[];
   companyId?: number;
-  name: string; // Add name prop for Formik
-  errors?: any;
-  touched?: any;
+  name: string;
 }
 
 export const TeamMembersSelect: React.FC<TeamMembersSelectProps> = ({
   initialTeamMembers,
   companyId,
   name,
-  errors,
-  touched,
 }) => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedMembers, setSelectedMembers] =
     useState<number[]>(initialTeamMembers);
   const [searchQuery, setSearchQuery] = useState("");
-  const { setFieldValue } = useFormikContext(); // Access Formik's setFieldValue
+  const { setFieldValue, errors, touched } = useFormikContext<any>();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const params: GetUsersParams = {
-          company: companyId,
-          search: searchQuery,
-        };
-        const response = await userService.getUsers(params);
-        setUsers(response.results);
-      } catch (error) {
-        console.error("Error fetching team members:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (companyId) {
-      fetchUsers();
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params: GetUsersParams = {
+        company: companyId,
+        search: searchQuery,
+      };
+      const response = await userService.getUsers(params);
+      setUsers(response.results);
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+    } finally {
+      setLoading(false);
     }
   }, [companyId, searchQuery]);
 
   useEffect(() => {
-    // Update Formik field when selectedMembers changes
+    if (companyId) {
+      fetchUsers();
+    }
+  }, [companyId, fetchUsers]);
+
+  useEffect(() => {
     setFieldValue(name, selectedMembers);
   }, [selectedMembers, setFieldValue, name]);
 
   const handleCheckboxChange = (memberId: number) => {
-    setSelectedMembers((prevSelected) => {
-      if (prevSelected.includes(memberId)) {
-        return prevSelected.filter((id) => id !== memberId);
-      } else {
-        return [...prevSelected, memberId];
-      }
-    });
+    setSelectedMembers((prevSelected) =>
+      prevSelected.includes(memberId)
+        ? prevSelected.filter((id) => id !== memberId)
+        : [...prevSelected, memberId]
+    );
   };
 
-  const handleSearchInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const filteredUsers = users.filter((user) =>
-    user.user.username.toLowerCase().includes(searchQuery.toLowerCase())
+  const handleSearchInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(event.target.value);
+    },
+    []
   );
 
   const renderLabel = () => {
     if (selectedMembers.length === 0) {
       return "اختر أعضاء الفريق";
-    } else if (selectedMembers.length === 1) {
+    }
+    if (selectedMembers.length === 1) {
       const selectedUser = users.find((user) => user.id === selectedMembers[0]);
       return selectedUser ? selectedUser.user.username : "عضو واحد محدد";
-    } else {
-      return `${selectedMembers.length} أعضاء محددين`;
     }
+    return `${selectedMembers.length} أعضاء محددين`;
   };
 
   return (
@@ -92,10 +82,7 @@ export const TeamMembersSelect: React.FC<TeamMembersSelectProps> = ({
       >
         أعضاء الفريق
       </label>
-      <Dropdown
-        label={renderLabel()}
-        dismissOnClick={false} // Keep dropdown open after selection
-      >
+      <Dropdown label={renderLabel()} dismissOnClick={false}>
         <Dropdown.Item>
           <div className="p-3">
             <label htmlFor="input-group-search" className="sr-only">
@@ -123,7 +110,7 @@ export const TeamMembersSelect: React.FC<TeamMembersSelectProps> = ({
                 type="text"
                 id="input-group-search"
                 className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                placeholder="Search user"
+                placeholder="ابحث عن مستخدم"
                 value={searchQuery}
                 onChange={handleSearchInputChange}
               />
@@ -137,7 +124,7 @@ export const TeamMembersSelect: React.FC<TeamMembersSelectProps> = ({
           </Dropdown.Item>
         ) : (
           <div className="h-48 overflow-y-auto px-3 pb-3 text-sm text-gray-700 dark:text-gray-200">
-            {filteredUsers.map((user) => (
+            {users.map((user) => (
               <Dropdown.Item key={user.id}>
                 <div className="flex items-center rounded-sm ps-2 hover:bg-gray-100 dark:hover:bg-gray-600">
                   <input
@@ -159,8 +146,9 @@ export const TeamMembersSelect: React.FC<TeamMembersSelectProps> = ({
           </div>
         )}
       </Dropdown>
-      {touched && errors && (
-        <p className="mt-2 text-sm text-red-600">{errors}</p>
+      {/* Convert Formik errors to string and check for truthiness */}
+      {touched[name] && errors[name] && (
+        <p className="mt-2 text-sm text-red-600">{String(errors[name])}</p>
       )}
     </div>
   );
