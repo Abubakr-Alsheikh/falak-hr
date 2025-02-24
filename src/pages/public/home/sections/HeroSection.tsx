@@ -1,7 +1,7 @@
 import React from "react";
 import { BsArrowLeft } from "react-icons/bs";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import Button from "@/components/public/Button";
+import Button from "@/components/common/public/Button";
 import FadeIn from "@components/animations/FadeIn";
 import SlideIn from "@components/animations/SlideIn";
 

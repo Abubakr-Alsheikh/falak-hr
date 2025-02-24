@@ -1,98 +1,105 @@
 import React, { useState, useCallback } from "react";
 import { FaPlus } from "react-icons/fa";
-import useCompanies from "@hooks/useCompanies";
-import { companyService } from "@api/companyService";
+import useProjects from "@hooks/useProjects";
+import { projectService } from "@api/projectService";
 import Table from "@components/common/dashboard/page/Table";
 import Pagination from "@components/common/dashboard/page/Pagination";
-import CompanyListItem from "@components/dashboard/companies/CompanyListItem";
-import HeaderHeader from "@/components/common/dashboard/page/TableHeader";
+import ProjectListItem from "@/pages/dashboard/projects/ProjectListItem";
+import TableHeader from "@/components/common/dashboard/page/TableHeader";
 import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
 import { useAuth } from "@contexts/AuthContext";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
-import { Company } from "@/types/company";
-import {
-  CreateCompanyModal,
-  DeleteCompanyModal,
-  ReadCompanyModal,
-  UpdateCompanyModal,
-} from "@/components/dashboard/companies/Modals";
+import { Project } from "@/types/project";
+import { useSearchParams } from "react-router-dom";
 
-const CompanyPage: React.FC = () => {
+import {
+  CreateProjectModal,
+  DeleteProjectModal,
+  ReadProjectModal,
+  UpdateProjectModal,
+} from "@/pages/dashboard/projects/Modals"; // Import modals
+
+const ProjectPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(""); // Use searchQuery
+  const [searchQuery, setSearchQuery] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const { logout } = useAuth();
+  const [searchParams] = useSearchParams();
+  const companyId = searchParams.get("company"); // Get company ID from query parameter
 
   const {
-    companies,
+    projects,
     loading,
     error,
     totalCount,
     nextPageUrl,
     previousPageUrl,
-    refreshCompanies,
-  } = useCompanies({ page: currentPage, search: searchQuery }); // Use searchQuery
+    refreshProjects,
+  } = useProjects({
+    page: currentPage,
+    search: searchQuery,
+    company: companyId ? parseInt(companyId, 10) : undefined,
+  });
 
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
     setCurrentPage(1); // Reset to page 1 on search
   }, []);
 
-  const handleCreateCompany = async () => {
+  const handleCreateProject = async () => {
     try {
-      refreshCompanies();
+      refreshProjects();
       setIsCreateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
         logout();
       }
-      console.error("Error creating company:", error);
+      console.error("Error creating project:", error);
     }
   };
-
-  const handleUpdateCompany = async () => {
+  const handleUpdateProject = async () => {
     try {
-      refreshCompanies();
+      refreshProjects();
       setIsUpdateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
         logout();
       }
-      console.error("Error updating company:", error);
+      console.error("Error updating project:", error);
     }
   };
-
-  const handleConfirmDeleteCompany = async () => {
-    if (!selectedCompany) return;
+  const handleConfirmDeleteProject = async () => {
+    if (!selectedProject) return;
     try {
-      await companyService.deleteCompany(selectedCompany.id);
-      refreshCompanies();
+      await projectService.deleteProject(selectedProject.id);
+      refreshProjects();
       setIsDeleteModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
         logout();
       }
-      console.error("Error deleting company:", error);
+      console.error("Error deleting project:", error);
     }
   };
+
   const handleOpenCreateModal = () => setIsCreateModalOpen(true);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
-  const handleOpenUpdateModal = (company: Company) => {
-    setSelectedCompany(company);
+  const handleOpenUpdateModal = (project: Project) => {
+    setSelectedProject(project);
     setIsUpdateModalOpen(true);
   };
   const handleCloseUpdateModal = () => setIsUpdateModalOpen(false);
-  const handleOpenReadModal = (company: Company) => {
-    setSelectedCompany(company);
+  const handleOpenReadModal = (project: Project) => {
+    setSelectedProject(project);
     setIsReadModalOpen(true);
   };
   const handleCloseReadModal = () => setIsReadModalOpen(false);
-  const handleOpenDeleteModal = (company: Company) => {
-    setSelectedCompany(company);
+  const handleOpenDeleteModal = (project: Project) => {
+    setSelectedProject(project);
     setIsDeleteModalOpen(true);
   };
   const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
@@ -103,23 +110,29 @@ const CompanyPage: React.FC = () => {
 
   // Error Handling Display
   if (error) {
-    <ErrorDisplay message={error} onRetry={refreshCompanies} />;
+    return <ErrorDisplay message={error} onRetry={refreshProjects} />;
   }
 
   // Define the table header
   const renderHeader = () => (
     <>
       <th scope="col" className="px-4 py-4">
-        اسم الشركة
+        اسم المشروع
       </th>
       <th scope="col" className="px-4 py-3">
-        العنوان
+        الوصف
       </th>
       <th scope="col" className="px-4 py-3">
-        البريد الإلكتروني للتواصل
+        اسم المدير
       </th>
       <th scope="col" className="px-4 py-3">
-        رقم الهاتف للتواصل
+        تاريخ البداية
+      </th>
+      <th scope="col" className="px-4 py-3">
+        تاريخ النهاية
+      </th>
+      <th scope="col" className="px-4 py-3">
+        الحالة
       </th>
       <th scope="col" className="px-4 py-3">
         <span className="sr-only">الإجراءات</span>
@@ -128,10 +141,10 @@ const CompanyPage: React.FC = () => {
   );
 
   // Define how to render each row
-  const renderRow = (company: Company) => (
-    <CompanyListItem
-      key={company.id}
-      company={company}
+  const renderRow = (project: Project) => (
+    <ProjectListItem
+      key={project.id}
+      project={project}
       onEdit={handleOpenUpdateModal}
       onView={handleOpenReadModal}
       onDelete={handleOpenDeleteModal}
@@ -145,28 +158,28 @@ const CompanyPage: React.FC = () => {
     >
       <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
         <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-          <HeaderHeader
+          <TableHeader
+            title="المشاريع"
             searchQuery={searchQuery}
             onSearchChange={handleSearchChange}
-            title="الشركات"
             rightSection={
               <button
                 type="button"
                 onClick={handleOpenCreateModal}
                 className="flex items-center justify-center rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
-                إضافة شركة
-                <FaPlus className="mr-2 h-3.5 w-3.5" />
+                إضافة مشروع
+                <FaPlus className="mr-2 h-3.5 w-3.5" />{" "}
               </button>
             }
           />
           <Table
-            items={companies}
+            items={projects}
             renderHeader={renderHeader}
             renderRow={renderRow}
             isLoading={loading}
-            noDataMessage="لا توجد شركات لعرضها."
-            colSpan={5}
+            noDataMessage="لا توجد مشاريع لعرضها."
+            colSpan={7} // Adjusted colSpan for the added columns
           />
           <Pagination
             totalCount={totalCount}
@@ -180,31 +193,32 @@ const CompanyPage: React.FC = () => {
       </div>
 
       {/* Modals */}
-      <CreateCompanyModal
+      <CreateProjectModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseCreateModal}
-        onCreate={handleCreateCompany}
+        onCreate={handleCreateProject}
+        companyId={companyId ? parseInt(companyId, 10) : undefined} // Pass company ID
       />
-      <UpdateCompanyModal
+      <UpdateProjectModal
         isOpen={isUpdateModalOpen}
         onClose={handleCloseUpdateModal}
-        onUpdate={handleUpdateCompany}
-        company={selectedCompany}
+        onUpdate={handleUpdateProject}
+        project={selectedProject}
       />
-      <ReadCompanyModal
+      <ReadProjectModal
         isOpen={isReadModalOpen}
         onClose={handleCloseReadModal}
-        company={selectedCompany}
+        project={selectedProject}
         onEdit={handleOpenUpdateModal}
         onDelete={handleOpenDeleteModal}
       />
-      <DeleteCompanyModal
+      <DeleteProjectModal
         isOpen={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
-        onConfirm={handleConfirmDeleteCompany}
+        onConfirm={handleConfirmDeleteProject}
       />
     </section>
   );
 };
 
-export default CompanyPage;
+export default ProjectPage;

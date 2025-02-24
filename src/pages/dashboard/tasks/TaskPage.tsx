@@ -4,7 +4,7 @@ import useTasks from "@hooks/useTasks";
 import { taskService } from "@api/taskService";
 import Table from "@components/common/dashboard/page/Table";
 import Pagination from "@components/common/dashboard/page/Pagination";
-import TaskListItem from "@components/dashboard/tasks/TaskListItem";
+import TaskListItem from "@/pages/dashboard/tasks/TaskListItem";
 import TableHeader from "@/components/common/dashboard/page/TableHeader";
 import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
 import { useAuth } from "@contexts/AuthContext";
@@ -17,7 +17,7 @@ import {
   DeleteTaskModal,
   ReadTaskModal,
   UpdateTaskModal,
-} from "@/components/dashboard/tasks/Modals";
+} from "@/pages/dashboard/tasks/Modals";
 
 const TaskPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);

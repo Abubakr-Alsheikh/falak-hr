@@ -1,51 +1,50 @@
-// src/pages/dashboard/UserPage.tsx
 import React, { useState, useCallback } from "react";
 import { FaPlus } from "react-icons/fa";
-import useUsers from "@hooks/useUsers";
-import { userService } from "@api/userService";
+import useCompanies from "@hooks/useCompanies";
+import { companyService } from "@api/companyService";
 import Table from "@components/common/dashboard/page/Table";
 import Pagination from "@components/common/dashboard/page/Pagination";
-import TableHeader from "@components/common/dashboard/page/TableHeader";
-import ErrorDisplay from "@components/common/dashboard/page/ErrorDisplay";
+import CompanyListItem from "@/pages/dashboard/companies/CompanyListItem";
+import HeaderHeader from "@/components/common/dashboard/page/TableHeader";
+import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
 import { useAuth } from "@contexts/AuthContext";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
-import { UserProfile } from "@/types/user";
-import UserListItem from "@/components/dashboard/users/UserListItem";
-import CreateUserModal from "@/components/dashboard/users/Modals/CreateUserModal";
-import UpdateUserModal from "@/components/dashboard/users/Modals/UpdateUserModal";
-import ReadUserModal from "@/components/dashboard/users/Modals/ReadUserModal";
-import DeleteUserModal from "@/components/dashboard/users/Modals/DeleteUserModal";
+import { Company } from "@/types/company";
+import {
+  CreateCompanyModal,
+  DeleteCompanyModal,
+  ReadCompanyModal,
+  UpdateCompanyModal,
+} from "@/pages/dashboard/companies/Modals";
 
-const UserPage: React.FC = () => {
+const CompanyPage: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(""); // Use searchQuery
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const { logout } = useAuth();
 
   const {
-    users,
+    companies,
     loading,
     error,
     totalCount,
     nextPageUrl,
     previousPageUrl,
-    refreshUsers,
-    updateParams, // Use the updateParams function from the hook
-  } = useUsers({ page: 1, search: "" }); // Initial params
+    refreshCompanies,
+  } = useCompanies({ page: currentPage, search: searchQuery }); // Use searchQuery
 
-  const handleSearchChange = useCallback(
-    (query: string) => {
-      // Update the search parameter and reset the page to 1
-      updateParams({ search: query, page: 1 });
-    },
-    [updateParams]
-  );
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to page 1 on search
+  }, []);
 
-  const handleCreateUser = useCallback(async () => {
+  const handleCreateCompany = async () => {
     try {
-      refreshUsers();
+      refreshCompanies();
       setIsCreateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
@@ -53,11 +52,11 @@ const UserPage: React.FC = () => {
       }
       console.error("Error creating company:", error);
     }
-  }, [logout, refreshUsers]);
+  };
 
-  const handleUpdateUser = useCallback(async () => {
+  const handleUpdateCompany = async () => {
     try {
-      refreshUsers();
+      refreshCompanies();
       setIsUpdateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
@@ -65,13 +64,13 @@ const UserPage: React.FC = () => {
       }
       console.error("Error updating company:", error);
     }
-  }, [logout, refreshUsers]);
+  };
 
-  const handleConfirmDeleteUser = useCallback(async () => {
-    if (!selectedUser) return;
+  const handleConfirmDeleteCompany = async () => {
+    if (!selectedCompany) return;
     try {
-      await userService.deleteUser(selectedUser.id);
-      refreshUsers();
+      await companyService.deleteCompany(selectedCompany.id);
+      refreshCompanies();
       setIsDeleteModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
@@ -79,68 +78,60 @@ const UserPage: React.FC = () => {
       }
       console.error("Error deleting company:", error);
     }
-  }, [logout, refreshUsers, selectedUser]);
-
+  };
   const handleOpenCreateModal = () => setIsCreateModalOpen(true);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
-  const handleOpenUpdateModal = (user: UserProfile) => {
-    setSelectedUser(user);
+  const handleOpenUpdateModal = (company: Company) => {
+    setSelectedCompany(company);
     setIsUpdateModalOpen(true);
   };
   const handleCloseUpdateModal = () => setIsUpdateModalOpen(false);
-  const handleOpenReadModal = (user: UserProfile) => {
-    setSelectedUser(user);
+  const handleOpenReadModal = (company: Company) => {
+    setSelectedCompany(company);
     setIsReadModalOpen(true);
   };
   const handleCloseReadModal = () => setIsReadModalOpen(false);
-  const handleOpenDeleteModal = (user: UserProfile) => {
-    setSelectedUser(user);
+  const handleOpenDeleteModal = (company: Company) => {
+    setSelectedCompany(company);
     setIsDeleteModalOpen(true);
   };
   const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
 
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      // Update the page parameter
-      updateParams({ page: newPage });
-    },
-    [updateParams]
-  );
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   // Error Handling Display
   if (error) {
-    return <ErrorDisplay message={error} onRetry={refreshUsers} />;
+    <ErrorDisplay message={error} onRetry={refreshCompanies} />;
   }
 
   // Define the table header
   const renderHeader = () => (
     <>
       <th scope="col" className="px-4 py-4">
-        اسم المستخدم
+        اسم الشركة
       </th>
       <th scope="col" className="px-4 py-3">
-        البريد الإلكتروني
+        العنوان
       </th>
       <th scope="col" className="px-4 py-3">
-        الدور
+        البريد الإلكتروني للتواصل
       </th>
       <th scope="col" className="px-4 py-3">
-        القسم
+        رقم الهاتف للتواصل
       </th>
       <th scope="col" className="px-4 py-3">
-        المسمى الوظيفي
-      </th>
-      <th scope="col" className="px-4 py-3">
-        الإجراءات
+        <span className="sr-only">الإجراءات</span>
       </th>
     </>
   );
 
   // Define how to render each row
-  const renderRow = (user: UserProfile) => (
-    <UserListItem
-      key={user.id}
-      user={user}
+  const renderRow = (company: Company) => (
+    <CompanyListItem
+      key={company.id}
+      company={company}
       onEdit={handleOpenUpdateModal}
       onView={handleOpenReadModal}
       onDelete={handleOpenDeleteModal}
@@ -154,33 +145,32 @@ const UserPage: React.FC = () => {
     >
       <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
         <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-          <TableHeader
-            searchQuery={""} //Removed the searchQuery state variable
+          <HeaderHeader
+            searchQuery={searchQuery}
             onSearchChange={handleSearchChange}
-            title="المستخدمون"
+            title="الشركات"
             rightSection={
               <button
                 type="button"
                 onClick={handleOpenCreateModal}
                 className="flex items-center justify-center rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
-                {/* Margins adjusted for RTL */}
-                إضافة مستخدم
-                <FaPlus className="mr-2 h-3.5 w-3.5" />{" "}
+                إضافة شركة
+                <FaPlus className="mr-2 h-3.5 w-3.5" />
               </button>
             }
           />
           <Table
-            items={users}
+            items={companies}
             renderHeader={renderHeader}
             renderRow={renderRow}
             isLoading={loading}
-            noDataMessage="لا يوجد مستخدمون لعرضهم."
-            colSpan={6}
+            noDataMessage="لا توجد شركات لعرضها."
+            colSpan={5}
           />
           <Pagination
             totalCount={totalCount}
-            currentPage={1} //Removed currentPage state variable
+            currentPage={currentPage}
             itemsPerPage={DEFAULT_PAGE_SIZE}
             onPageChange={handlePageChange}
             nextPageUrl={nextPageUrl}
@@ -190,31 +180,31 @@ const UserPage: React.FC = () => {
       </div>
 
       {/* Modals */}
-      <CreateUserModal
+      <CreateCompanyModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseCreateModal}
-        onCreate={handleCreateUser}
+        onCreate={handleCreateCompany}
       />
-      <UpdateUserModal
+      <UpdateCompanyModal
         isOpen={isUpdateModalOpen}
         onClose={handleCloseUpdateModal}
-        onUpdate={handleUpdateUser}
-        user={selectedUser}
+        onUpdate={handleUpdateCompany}
+        company={selectedCompany}
       />
-      <ReadUserModal
+      <ReadCompanyModal
         isOpen={isReadModalOpen}
         onClose={handleCloseReadModal}
-        user={selectedUser}
+        company={selectedCompany}
         onEdit={handleOpenUpdateModal}
         onDelete={handleOpenDeleteModal}
       />
-      <DeleteUserModal
+      <DeleteCompanyModal
         isOpen={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
-        onConfirm={handleConfirmDeleteUser}
+        onConfirm={handleConfirmDeleteCompany}
       />
     </section>
   );
 };
 
-export default UserPage;
+export default CompanyPage;

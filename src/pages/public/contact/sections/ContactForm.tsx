@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Button from "@/components/public/Button";
+import Button from "@/components/common/public/Button";
 import ContactFormInput from "./ContactFormInput";
 import ContactFormTextArea from "./ContactFormTextArea";
-import HeaderSection from "@/components/public/HeaderSection";
+import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import { createContactMessage } from "@api/inquiries";
 

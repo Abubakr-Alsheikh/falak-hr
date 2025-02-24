@@ -2,10 +2,10 @@ import React from "react";
 import futuristicCityscapeImage from "@assets/AboutPage/futuristic cityscape.png";
 import digitalInterfaceImage from "@assets/AboutPage/digital interface.png";
 import FourDistinctImage from "@assets/AboutPage/Four distinct.png";
-import HeaderSection from "@/components/public/HeaderSection";
-import AboutCard from "@/components/public/AboutCard";
+import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import SlideIn from "@components/animations/SlideIn";
+import AboutCard from "@/components/public/AboutCard";
 
 const AboutUsContent: React.FC = () => {
   const cards = [

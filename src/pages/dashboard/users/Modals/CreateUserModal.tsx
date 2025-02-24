@@ -1,4 +1,3 @@
-// src/components/dashboard/users/Modals/CreateUserModal.tsx
 import React from "react";
 import * as Yup from "yup";
 import UserForm from "../forms/UserForm";

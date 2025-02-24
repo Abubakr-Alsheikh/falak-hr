@@ -2,8 +2,8 @@ import React from "react";
 import remoteWorkImage from "@assets/AboutSection/remote work.jpg";
 import workSectionImage from "@assets/AboutSection/work section.jpg";
 import trainingSessionImage from "@assets/AboutSection/training session.png";
-import AboutCard from "@/components/public/Card";
-import HeaderSection from "@/components/public/HeaderSection";
+import AboutCard from "@/components/common/public/Card";
+import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import SlideIn from "@components/animations/SlideIn";
 
