@@ -4,7 +4,7 @@ import ContactFormInput from "./ContactFormInput";
 import ContactFormTextArea from "./ContactFormTextArea";
 import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
-import { createContactMessage } from "@api/inquiries";
+import { inquiryService } from "@api/inquiryService";
 
 const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -30,7 +30,7 @@ const ContactForm: React.FC = () => {
     setSubmitSuccess(false);
 
     try {
-      await createContactMessage(formData);
+      await inquiryService.createContactMessage(formData);
       setSubmitSuccess(true);
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error: any) {
