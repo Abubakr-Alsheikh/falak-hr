@@ -1,4 +1,3 @@
-// src/components/dashboard/users/Modals/ReadUserModal.tsx
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { UserProfile } from "@/types/user";

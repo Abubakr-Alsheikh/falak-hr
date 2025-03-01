@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import useInquiries from "@hooks/useInquiries";
-import { ContactMessage } from "@/api/inquiryService";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
+import { GetContactMessage } from "@/api/inquiryService";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import Table from "@/components/common/dashboard/page/Table";
@@ -52,7 +52,7 @@ const InquiriesPage: React.FC = () => {
     </>
   );
 
-  const renderRow = (inquiry: ContactMessage) => (
+  const renderRow = (inquiry: GetContactMessage) => (
     <tr className="border-b dark:border-gray-700" key={inquiry.id}>
       <td className="px-4 py-3">{inquiry.name}</td>
       <td className="px-4 py-3">{inquiry.email}</td>

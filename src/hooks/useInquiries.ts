@@ -1,6 +1,5 @@
-// src/hooks/useInquiries.ts
 import { useState, useEffect, useCallback } from "react";
-import { inquiryService, ContactMessage } from "@api/inquiryService";
+import { GetContactMessage, inquiryService } from "@api/inquiryService";
 import { PaginatedResponse } from "@/utils/pagination";
 
 interface UseInquiriesProps {
@@ -9,7 +8,7 @@ interface UseInquiriesProps {
 }
 
 const useInquiries = ({ page, search = "" }: UseInquiriesProps) => {
-  const [inquiries, setInquiries] = useState<ContactMessage[]>([]);
+  const [inquiries, setInquiries] = useState<GetContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
@@ -20,7 +19,7 @@ const useInquiries = ({ page, search = "" }: UseInquiriesProps) => {
     setLoading(true);
     setError(null);
     try {
-      const response: PaginatedResponse<ContactMessage> =
+      const response: PaginatedResponse<GetContactMessage> =
         await inquiryService.getInquiries(page, search);
       setInquiries(response.results);
       setTotalCount(response.count);

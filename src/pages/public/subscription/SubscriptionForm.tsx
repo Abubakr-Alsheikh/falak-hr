@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import subscriptionService from "@api/subscriptionService"; // Import the service
 import { SubscriptionRequest } from "@/types/subscription"; // Import the type
-import Button from "@/components/public/Button";
+import Button from "@/components/common/public/Button";
 import LoadingScreen from "@/components/common/public/LoadingScreen";
 import { Link } from "react-router-dom";
 

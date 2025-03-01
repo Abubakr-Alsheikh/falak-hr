@@ -10,21 +10,29 @@ const Home = lazy(() => import("@pages/public/home/Home"));
 const AboutUs = lazy(() => import("@pages/public/about/AboutUs"));
 const ContactUs = lazy(() => import("@pages/public/contact/ContactUs"));
 const RemoteWork = lazy(() => import("@pages/public/remote/RemoteWork"));
-const LoginPage = lazy(() => import("@pages/auth/LoginPage"));
-const LogoutPage = lazy(() => import("@pages/auth/LogoutPage"));
 const SubscriptionPage = lazy(
   () => import("@pages/public/subscription/SubscriptionPage")
 );
 
+// Auth Pages (Lazy Loaded)
+const LoginPage = lazy(() => import("@pages/auth/LoginPage"));
+const LogoutPage = lazy(() => import("@pages/auth/LogoutPage"));
+
 // Dashboard Pages (Lazy Loaded)
 const DashboardOverview = lazy(() => import("@pages/dashboard/Overview"));
-const CompanyPage = lazy(() => import("@pages/dashboard/CompanyPage"));
-const UserPage = lazy(() => import("@pages/dashboard/UserPage"));
-const ProjectPage = lazy(() => import("@pages/dashboard/ProjectPage"));
-const TaskPage = lazy(() => import("@pages/dashboard/TaskPage"));
-const InquiriesPage = lazy(() => import("@pages/dashboard/InquiriesPage"));
+const CompanyPage = lazy(
+  () => import("@/pages/dashboard/companies/CompanyPage")
+);
+const UserPage = lazy(() => import("@/pages/dashboard/users/UserPage"));
+const ProjectPage = lazy(
+  () => import("@/pages/dashboard/projects/ProjectPage")
+);
+const TaskPage = lazy(() => import("@/pages/dashboard/tasks/TaskPage"));
+const InquiriesPage = lazy(
+  () => import("@/pages/dashboard/inquiries/InquiriesPage")
+);
 const SubscriptionRequestsPage = lazy(
-  () => import("@pages/dashboard/SubscriptionRequestsPage")
+  () => import("@/pages/dashboard/subscriptions/SubscriptionRequestsPage")
 );
 
 const AppRoutes = () => {

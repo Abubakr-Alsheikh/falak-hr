@@ -1,150 +1,147 @@
 import React, { useState, useCallback } from "react";
 import { FaPlus } from "react-icons/fa";
-import useProjects from "@hooks/useProjects";
-import { projectService } from "@api/projectService";
+import useUsers from "@hooks/useUsers";
+import { userService } from "@api/userService";
 import Table from "@components/common/dashboard/page/Table";
 import Pagination from "@components/common/dashboard/page/Pagination";
-import ProjectListItem from "@components/dashboard/projects/ProjectListItem";
-import TableHeader from "@/components/common/dashboard/page/TableHeader";
-import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
+import TableHeader from "@components/common/dashboard/page/TableHeader";
+import ErrorDisplay from "@components/common/dashboard/page/ErrorDisplay";
 import { useAuth } from "@contexts/AuthContext";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
-import { Project } from "@/types/project";
-import { useSearchParams } from "react-router-dom";
-
+import { UserProfile } from "@/types/user";
+import UserListItem from "@/pages/dashboard/users/UserListItem";
 import {
-  CreateProjectModal,
-  DeleteProjectModal,
-  ReadProjectModal,
-  UpdateProjectModal,
-} from "@/components/dashboard/projects/Modals"; // Import modals
+  CreateUserModal,
+  UpdateUserModal,
+  ReadUserModal,
+  DeleteUserModal,
+} from "@/pages/dashboard/users/Modals";
 
-const ProjectPage: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
+const UserPage: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const { logout } = useAuth();
-  const [searchParams] = useSearchParams();
-  const companyId = searchParams.get("company"); // Get company ID from query parameter
 
   const {
-    projects,
+    users,
     loading,
     error,
     totalCount,
     nextPageUrl,
     previousPageUrl,
-    refreshProjects,
-  } = useProjects({
-    page: currentPage,
-    search: searchQuery,
-    company: companyId ? parseInt(companyId, 10) : undefined,
-  });
+    refreshUsers,
+    updateParams, // Use the updateParams function from the hook
+  } = useUsers({ page: 1, search: "" }); // Initial params
 
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query);
-    setCurrentPage(1); // Reset to page 1 on search
-  }, []);
+  const handleSearchChange = useCallback(
+    (query: string) => {
+      // Update the search parameter and reset the page to 1
+      updateParams({ search: query, page: 1 });
+    },
+    [updateParams]
+  );
 
-  const handleCreateProject = async () => {
+  const handleCreateUser = useCallback(async () => {
     try {
-      refreshProjects();
+      refreshUsers();
       setIsCreateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
         logout();
       }
-      console.error("Error creating project:", error);
+      console.error("Error creating company:", error);
     }
-  };
-  const handleUpdateProject = async () => {
+  }, [logout, refreshUsers]);
+
+  const handleUpdateUser = useCallback(async () => {
     try {
-      refreshProjects();
+      refreshUsers();
       setIsUpdateModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
         logout();
       }
-      console.error("Error updating project:", error);
+      console.error("Error updating company:", error);
     }
-  };
-  const handleConfirmDeleteProject = async () => {
-    if (!selectedProject) return;
+  }, [logout, refreshUsers]);
+
+  const handleConfirmDeleteUser = useCallback(async () => {
+    if (!selectedUser) return;
     try {
-      await projectService.deleteProject(selectedProject.id);
-      refreshProjects();
+      await userService.deleteUser(selectedUser.id);
+      refreshUsers();
       setIsDeleteModalOpen(false);
     } catch (error: any) {
       if (error.message === "Session expired. Please log in again.") {
         logout();
       }
-      console.error("Error deleting project:", error);
+      console.error("Error deleting company:", error);
     }
-  };
+  }, [logout, refreshUsers, selectedUser]);
 
   const handleOpenCreateModal = () => setIsCreateModalOpen(true);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
-  const handleOpenUpdateModal = (project: Project) => {
-    setSelectedProject(project);
+  const handleOpenUpdateModal = (user: UserProfile) => {
+    setSelectedUser(user);
     setIsUpdateModalOpen(true);
   };
   const handleCloseUpdateModal = () => setIsUpdateModalOpen(false);
-  const handleOpenReadModal = (project: Project) => {
-    setSelectedProject(project);
+  const handleOpenReadModal = (user: UserProfile) => {
+    setSelectedUser(user);
     setIsReadModalOpen(true);
   };
   const handleCloseReadModal = () => setIsReadModalOpen(false);
-  const handleOpenDeleteModal = (project: Project) => {
-    setSelectedProject(project);
+  const handleOpenDeleteModal = (user: UserProfile) => {
+    setSelectedUser(user);
     setIsDeleteModalOpen(true);
   };
   const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-  };
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      // Update the page parameter
+      updateParams({ page: newPage });
+    },
+    [updateParams]
+  );
 
   // Error Handling Display
   if (error) {
-    return <ErrorDisplay message={error} onRetry={refreshProjects} />;
+    return <ErrorDisplay message={error} onRetry={refreshUsers} />;
   }
 
   // Define the table header
   const renderHeader = () => (
     <>
       <th scope="col" className="px-4 py-4">
-        اسم المشروع
+        اسم المستخدم
       </th>
       <th scope="col" className="px-4 py-3">
-        الوصف
+        البريد الإلكتروني
       </th>
       <th scope="col" className="px-4 py-3">
-        اسم المدير
+        الدور
       </th>
       <th scope="col" className="px-4 py-3">
-        تاريخ البداية
+        القسم
       </th>
       <th scope="col" className="px-4 py-3">
-        تاريخ النهاية
+        المسمى الوظيفي
       </th>
       <th scope="col" className="px-4 py-3">
-        الحالة
-      </th>
-      <th scope="col" className="px-4 py-3">
-        <span className="sr-only">الإجراءات</span>
+        الإجراءات
       </th>
     </>
   );
 
   // Define how to render each row
-  const renderRow = (project: Project) => (
-    <ProjectListItem
-      key={project.id}
-      project={project}
+  const renderRow = (user: UserProfile) => (
+    <UserListItem
+      key={user.id}
+      user={user}
       onEdit={handleOpenUpdateModal}
       onView={handleOpenReadModal}
       onDelete={handleOpenDeleteModal}
@@ -159,31 +156,32 @@ const ProjectPage: React.FC = () => {
       <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
         <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
           <TableHeader
-            title="المشاريع"
-            searchQuery={searchQuery}
+            searchQuery={""} //Removed the searchQuery state variable
             onSearchChange={handleSearchChange}
+            title="المستخدمون"
             rightSection={
               <button
                 type="button"
                 onClick={handleOpenCreateModal}
                 className="flex items-center justify-center rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
-                إضافة مشروع
+                {/* Margins adjusted for RTL */}
+                إضافة مستخدم
                 <FaPlus className="mr-2 h-3.5 w-3.5" />{" "}
               </button>
             }
           />
           <Table
-            items={projects}
+            items={users}
             renderHeader={renderHeader}
             renderRow={renderRow}
             isLoading={loading}
-            noDataMessage="لا توجد مشاريع لعرضها."
-            colSpan={7} // Adjusted colSpan for the added columns
+            noDataMessage="لا يوجد مستخدمون لعرضهم."
+            colSpan={6}
           />
           <Pagination
             totalCount={totalCount}
-            currentPage={currentPage}
+            currentPage={1} //Removed currentPage state variable
             itemsPerPage={DEFAULT_PAGE_SIZE}
             onPageChange={handlePageChange}
             nextPageUrl={nextPageUrl}
@@ -193,32 +191,31 @@ const ProjectPage: React.FC = () => {
       </div>
 
       {/* Modals */}
-      <CreateProjectModal
+      <CreateUserModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseCreateModal}
-        onCreate={handleCreateProject}
-        companyId={companyId ? parseInt(companyId, 10) : undefined} // Pass company ID
+        onCreate={handleCreateUser}
       />
-      <UpdateProjectModal
+      <UpdateUserModal
         isOpen={isUpdateModalOpen}
         onClose={handleCloseUpdateModal}
-        onUpdate={handleUpdateProject}
-        project={selectedProject}
+        onUpdate={handleUpdateUser}
+        user={selectedUser}
       />
-      <ReadProjectModal
+      <ReadUserModal
         isOpen={isReadModalOpen}
         onClose={handleCloseReadModal}
-        project={selectedProject}
+        user={selectedUser}
         onEdit={handleOpenUpdateModal}
         onDelete={handleOpenDeleteModal}
       />
-      <DeleteProjectModal
+      <DeleteUserModal
         isOpen={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
-        onConfirm={handleConfirmDeleteProject}
+        onConfirm={handleConfirmDeleteUser}
       />
     </section>
   );
 };
 
-export default ProjectPage;
+export default UserPage;

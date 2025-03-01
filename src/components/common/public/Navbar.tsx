@@ -8,7 +8,7 @@ import {
 } from "react-icons/ai";
 import { IconType } from "react-icons";
 import { motion } from "framer-motion";
-import Button from "@/components/public/Button";
+import Button from "@/components/common/public/Button";
 import logo from "@assets/logo.png";
 
 interface NavItem {

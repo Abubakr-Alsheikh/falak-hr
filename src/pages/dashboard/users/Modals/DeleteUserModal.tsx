@@ -1,4 +1,3 @@
-// src/components/dashboard/users/Modals/DeleteUserModal.tsx
 import Modal from "@/components/common/dashboard/page/Modal";
 import React from "react";
 import { FaCheck, FaBan } from "react-icons/fa";

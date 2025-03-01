@@ -1,5 +1,5 @@
 import React from "react";
-import HeaderSection from "../../public/HeaderSection";
+import HeaderSection from "./HeaderSection";
 import FadeIn from "../../animations/FadeIn";
 import { motion } from "framer-motion";
 

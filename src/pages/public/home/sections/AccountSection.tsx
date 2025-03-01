@@ -1,10 +1,10 @@
 import React from "react";
 import remoteFirstImage from "@assets/HomeAccountSection/home-remote-1.png";
 import remoteSecondImage from "@assets/HomeAccountSection/home-remote-2.png";
-import AccountCard from "@/components/public/AccountCard";
-import HeaderSection from "@/components/public/HeaderSection";
+import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import ScaleUp from "@components/animations/ScaleUp";
+import AccountCard from "@/components/public/AccountCard";
 
 const AccountSection: React.FC = () => {
   const accountData = [

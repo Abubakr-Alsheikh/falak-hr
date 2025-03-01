@@ -7,10 +7,10 @@ import {
   AiOutlineInbox,
   AiOutlineCloud,
 } from "react-icons/ai";
-import FeatureCard from "@/components/public/FeatureCard";
-import HeaderSection from "@/components/public/HeaderSection";
+import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import ScaleUp from "@components/animations/ScaleUp";
+import FeatureCard from "@/components/public/FeatureCard";
 
 const RemoteFeaturesSection: React.FC = () => {
   const features = [
@@ -55,16 +55,16 @@ const RemoteFeaturesSection: React.FC = () => {
   return (
     <section className="bg-white dark:bg-gray-900">
       <div className="mx-auto max-w-screen-xl px-4">
-          <FadeIn direction="up">
-              <HeaderSection
-                  title="خدماتنا وحلولنا"
-                  text="نقدم في فلك مجموعة متكاملة من الخدمات والحلول الرقمية التي تمكن الشركات من إدارة عملياتها بكفاءة وفعالية، مع التركيز على تبسيط الإجراءات وأتمتة المهام لتقليل التكاليف التشغيلية."
-              />
-          </FadeIn>
+        <FadeIn direction="up">
+          <HeaderSection
+            title="خدماتنا وحلولنا"
+            text="نقدم في فلك مجموعة متكاملة من الخدمات والحلول الرقمية التي تمكن الشركات من إدارة عملياتها بكفاءة وفعالية، مع التركيز على تبسيط الإجراءات وأتمتة المهام لتقليل التكاليف التشغيلية."
+          />
+        </FadeIn>
 
         <div className="mt-12 space-y-8 md:grid md:grid-cols-2 md:gap-12 md:space-y-0 lg:grid-cols-3">
           {features.map((feature, index) => (
-             <ScaleUp key={index} delay={index * 0.15}>
+            <ScaleUp key={index} delay={index * 0.15}>
               <FeatureCard
                 title={feature.title}
                 description={feature.description}

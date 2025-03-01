@@ -3,10 +3,10 @@ import calendarHighlighting from "@assets/RemoteWorkExplain/calendar highlightin
 import collaborativePlanning from "@assets/RemoteWorkExplain/collaborative planning.png";
 import knowledgeableInstructor from "@assets/RemoteWorkExplain/knowledgeable instructor.png";
 import groupOfIndividuals from "@assets/RemoteWorkExplain/group of individuals.png";
-import AboutCard from "@/components/public/AboutCard";
-import HeaderSection from "@/components/public/HeaderSection";
+import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import SlideIn from "@components/animations/SlideIn";
+import AboutCard from "@/components/public/AboutCard";
 
 const RemoteWorkExplain: React.FC = () => {
   const cards = [

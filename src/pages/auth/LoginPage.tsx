@@ -4,7 +4,7 @@ import { useAuth } from "@contexts/AuthContext";
 import { Credentials } from "@/types/auth";
 import logo from "@assets/logo.png";
 import LoadingScreen from "@/components/common/public/LoadingScreen";
-import Button from "@/components/public/Button";
+import Button from "@/components/common/public/Button";
 
 const LoginPage: React.FC = () => {
   const { login, isLoading, isAuthenticated, authError, setAuthError } =
