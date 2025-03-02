@@ -5,7 +5,7 @@ import FourDistinctImage from "@assets/AboutPage/Four distinct.png";
 import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import SlideIn from "@components/animations/SlideIn";
-import AboutCard from "@/components/public/AboutCard";
+import AboutCard from "@/components/common/public/AboutCard";
 
 const AboutUsContent: React.FC = () => {
   const cards = [

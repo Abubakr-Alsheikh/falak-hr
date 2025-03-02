@@ -6,7 +6,7 @@ import groupOfIndividuals from "@assets/RemoteWorkExplain/group of individuals.p
 import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import SlideIn from "@components/animations/SlideIn";
-import AboutCard from "@/components/public/AboutCard";
+import AboutCard from "@/components/common/public/AboutCard";
 
 const RemoteWorkExplain: React.FC = () => {
   const cards = [
