@@ -23,7 +23,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/components/common/dashboard/theme-provider";
+
 const DashboardLayout: React.FC = () => {
+  const { setTheme } = useTheme();
   return (
     <SidebarProvider>
       <AppSidebar side="right" />
@@ -43,15 +46,15 @@ const DashboardLayout: React.FC = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => console.log("light")}>
+                <DropdownMenuItem onClick={() => setTheme("light")}>
                   <Sun />
                   وضع الضوء
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => console.log("dark")}>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
                   <Moon />
                   وضع المظلم
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => console.log("system")}>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
                   <Computer />
                   تلقائي
                 </DropdownMenuItem>
