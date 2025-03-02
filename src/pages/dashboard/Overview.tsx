@@ -130,7 +130,7 @@ const DashboardOverview: React.FC = () => {
                   dataKey="value"
                   label={(entry) => entry.name}
                 >
-                  {projectsData.map((entry, index) => (
+                  {projectsData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
