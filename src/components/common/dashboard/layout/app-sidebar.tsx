@@ -20,10 +20,10 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
-import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
+import { NavMain } from "@/components/common/dashboard/layout/nav-main";
+import { NavProjects } from "@/components/common/dashboard/layout/nav-projects";
+import { NavUser } from "@/components/common/dashboard/layout/nav-user";
+import { TeamSwitcher } from "@/components/common/dashboard/layout/team-switcher";
 import {
   Sidebar,
   SidebarContent,

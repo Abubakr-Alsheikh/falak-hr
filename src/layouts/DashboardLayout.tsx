@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { AppSidebar } from "@components/app-sidebar";
+import { AppSidebar } from "@/components/common/dashboard/layout/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
