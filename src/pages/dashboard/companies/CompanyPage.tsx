@@ -157,7 +157,7 @@ const CompanyPage: React.FC = () => {
   }
 
   return (
-    <section className="container p-3 antialiased sm:p-5" dir="rtl">
+    <section className="p-3 antialiased sm:p-5" dir="rtl">
       <div className="mx-auto rounded-lg border shadow-lg">
         <DataTableToolbar
           table={table}
