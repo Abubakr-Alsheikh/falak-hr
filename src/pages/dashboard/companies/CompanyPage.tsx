@@ -11,24 +11,24 @@ import {
 } from "@tanstack/react-table";
 import { ArrowUpDown, Edit, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import useCompanies from "@hooks/useCompanies";
+import useCompanies from "@/hooks/useCompanies";
 import { Company } from "@/types/company";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
 import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
-import {
-  CreateCompanyModal,
-  DeleteCompanyModal,
-  ReadCompanyModal,
-  UpdateCompanyModal,
-} from "@/pages/dashboard/companies/Modals";
 import {
   DataTableToolbar,
   DataTable,
   DataTablePagination,
   ActionsDropdown,
 } from "@/components/common/dashboard/table";
+import {
+  CreateCompanyModal,
+  DeleteCompanyModal,
+  ReadCompanyModal,
+  UpdateCompanyModal,
+} from "@/pages/dashboard/companies/Modals";
+import { useModal } from "@/hooks/useModal";
 
-// Constants for column labels
 const COLUMN_LABELS: Record<string, string> = {
   name: "اسم الشركة",
   address: "العنوان",
@@ -41,32 +41,6 @@ const CompanyPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-
-  // Modal states and handlers
-  const [modalState, setModalState] = useState<{
-    create: boolean;
-    update: boolean;
-    read: boolean;
-    delete: boolean;
-  }>({
-    create: false,
-    update: false,
-    read: false,
-    delete: false,
-  });
-
-  const openModal = useCallback(
-    (type: keyof typeof modalState, company?: Company) => {
-      if (company) setSelectedCompany(company);
-      setModalState((prev) => ({ ...prev, [type]: true }));
-    },
-    []
-  );
-
-  const closeModal = useCallback((type: keyof typeof modalState) => {
-    setModalState((prev) => ({ ...prev, [type]: false }));
-  }, []);
 
   const {
     companies,
@@ -83,7 +57,10 @@ const CompanyPage: React.FC = () => {
       sorting.length > 0 ? `${sorting[0].desc ? "-" : ""}${sorting[0].id}` : "",
   });
 
-  // Handlers for CRUD operations
+  const { openModal, closeModal, modalState, selectedItem } =
+    useModal<Company>();
+
+  // Handlers for CRUD operations - kept for consistency and potential future use
   const handleActionComplete = useCallback(() => {
     refreshCompanies();
   }, [refreshCompanies]);
@@ -109,7 +86,7 @@ const CompanyPage: React.FC = () => {
         cell: ({ row }: { row: Row<Company> }) => (
           <div>{row.getValue(accessorKey)}</div>
         ),
-        enableColumnFilter: accessorKey !== "name" ? true : false,
+        enableColumnFilter: accessorKey !== "name" ? true : false, // Consider simplifying this logic
       })),
       {
         id: "actions",
@@ -182,7 +159,6 @@ const CompanyPage: React.FC = () => {
           pageSize={DEFAULT_PAGE_SIZE}
           noDataMessage="لا توجد شركات لعرضها."
         />
-
         <DataTablePagination
           currentPage={currentPage}
           totalCount={totalCount}
@@ -201,24 +177,24 @@ const CompanyPage: React.FC = () => {
         onClose={() => closeModal("create")}
         onCreate={handleActionComplete}
       />
+      <ReadCompanyModal
+        isOpen={modalState.read}
+        onClose={() => closeModal("read")}
+        company={selectedItem}
+        onEdit={() => openModal("update", selectedItem!)}
+        onDelete={() => openModal("delete", selectedItem!)}
+      />
       <UpdateCompanyModal
         isOpen={modalState.update}
         onClose={() => closeModal("update")}
         onUpdate={handleActionComplete}
-        company={selectedCompany}
-      />
-      <ReadCompanyModal
-        isOpen={modalState.read}
-        onClose={() => closeModal("read")}
-        company={selectedCompany}
-        onEdit={() => openModal("update", selectedCompany!)}
-        onDelete={() => openModal("delete", selectedCompany!)}
+        company={selectedItem}
       />
       <DeleteCompanyModal
         isOpen={modalState.delete}
         onClose={() => closeModal("delete")}
         onConfirm={handleActionComplete}
-        company={selectedCompany}
+        company={selectedItem}
       />
     </section>
   );
