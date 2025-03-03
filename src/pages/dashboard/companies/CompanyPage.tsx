@@ -4,7 +4,6 @@ import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-  RowSelectionState,
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
@@ -40,7 +39,6 @@ const CompanyPage: React.FC = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   // Pass ordering to useCompanies
   const {
@@ -195,8 +193,7 @@ const CompanyPage: React.FC = () => {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: { sorting, columnFilters, columnVisibility, rowSelection },
+    state: { sorting, columnFilters, columnVisibility },
   });
 
   if (error) {
@@ -229,8 +226,6 @@ const CompanyPage: React.FC = () => {
             setColumnFilters={setColumnFilters}
             columnVisibility={columnVisibility}
             setColumnVisibility={setColumnVisibility}
-            rowSelection={rowSelection}
-            setRowSelection={setRowSelection}
             pageSize={DEFAULT_PAGE_SIZE}
             noDataMessage="لا توجد شركات لعرضها."
           />
