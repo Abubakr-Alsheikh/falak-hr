@@ -179,6 +179,13 @@ const CompanyPage: React.FC = () => {
     [handleOpenReadModal, handleOpenUpdateModal, handleOpenDeleteModal]
   );
 
+  const companyColumnLabels: Record<string, string> = {
+    name: "اسم الشركة",
+    address: "العنوان",
+    contact_email: "البريد الإلكتروني للتواصل",
+    contact_phone: "رقم الهاتف للتواصل",
+  };
+
   const table = useReactTable({
     data: companies,
     columns,
@@ -207,6 +214,7 @@ const CompanyPage: React.FC = () => {
             searchPlaceholder="ابحث عن شركة..."
             onAddClick={handleOpenCreateModal}
             onSearch={setSearchQuery}
+            columnLabels={companyColumnLabels}
           />
           <DataTable
             data={companies}

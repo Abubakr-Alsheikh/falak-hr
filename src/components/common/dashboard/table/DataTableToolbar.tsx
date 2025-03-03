@@ -1,3 +1,4 @@
+// src/components/common/dashboard/table/DataTableToolbar.tsx
 import React, { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ interface DataTableToolbarProps<TData> {
   searchPlaceholder: string;
   onAddClick?: () => void;
   onSearch: (query: string) => void;
+  columnLabels?: Record<string, string>; // Add this prop
 }
 export function DataTableToolbar<TData>({
   table,
@@ -25,6 +27,7 @@ export function DataTableToolbar<TData>({
   searchPlaceholder,
   onAddClick,
   onSearch,
+  columnLabels = {}, // Provide a default empty object
 }: DataTableToolbarProps<TData>) {
   const [searchValue, setSearchValue] = useState("");
 
@@ -42,7 +45,7 @@ export function DataTableToolbar<TData>({
   };
 
   return (
-    <div className="flex flex-col items-center justify-between space-y-3 p-4 md:flex-row md:space-x-4 md:space-y-0">
+    <div className="flex flex-col items-center justify-between p-4 md:flex-row">
       <div className="flex w-full flex-col items-center md:flex-row md:space-x-4">
         <h1 className="ml-3 text-xl font-semibold text-gray-900 dark:text-white">
           {title}
@@ -50,7 +53,8 @@ export function DataTableToolbar<TData>({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              الاعمدة <ChevronDown className="ml-2 h-4 w-4" />
+              الاعمدة الظاهرة
+              <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -58,6 +62,8 @@ export function DataTableToolbar<TData>({
               .getAllColumns()
               .filter((column) => column.getCanHide())
               .map((column) => {
+                const label = columnLabels[column.id] || column.id;
+
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
@@ -67,7 +73,7 @@ export function DataTableToolbar<TData>({
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {label}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -80,9 +86,9 @@ export function DataTableToolbar<TData>({
           className="w-full"
         />
       </div>
-      <div className="flex gap-2">
+      <div className="flex w-full gap-2 md:w-fit">
         {onAddClick && (
-          <Button onClick={onAddClick}>
+          <Button onClick={onAddClick} className="w-full">
             {addButtonText}
             <Plus className="h-4 w-4" />
           </Button>
@@ -92,7 +98,7 @@ export function DataTableToolbar<TData>({
   );
 }
 
-// Helper function for debouncing
+// Helper function for debouncing (no changes needed)
 function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
