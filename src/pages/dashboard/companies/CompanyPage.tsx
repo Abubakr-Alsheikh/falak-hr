@@ -6,6 +6,8 @@ import {
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
+  Column,
+  Row,
 } from "@tanstack/react-table";
 import { ArrowUpDown, Edit, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,25 +21,53 @@ import {
   ReadCompanyModal,
   UpdateCompanyModal,
 } from "@/pages/dashboard/companies/Modals";
-import { companyService } from "@api/companyService";
-import { DataTableToolbar } from "@/components/common/dashboard/table/DataTableToolbar";
-import { DataTable } from "@/components/common/dashboard/table/DataTable";
-import { DataTablePagination } from "@/components/common/dashboard/table/DataTablePagination";
-import { ActionsDropdown } from "@/components/common/dashboard/table/ActionsDropdown";
+import {
+  DataTableToolbar,
+  DataTable,
+  DataTablePagination,
+  ActionsDropdown,
+} from "@/components/common/dashboard/table";
+
+// Constants for column labels
+const COLUMN_LABELS: Record<string, string> = {
+  name: "اسم الشركة",
+  address: "العنوان",
+  contact_email: "البريد الإلكتروني للتواصل",
+  contact_phone: "رقم الهاتف للتواصل",
+};
 
 const CompanyPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isReadModalOpen, setIsReadModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
 
-  // Pass ordering to useCompanies
+  // Modal states and handlers
+  const [modalState, setModalState] = useState<{
+    create: boolean;
+    update: boolean;
+    read: boolean;
+    delete: boolean;
+  }>({
+    create: false,
+    update: false,
+    read: false,
+    delete: false,
+  });
+
+  const openModal = useCallback(
+    (type: keyof typeof modalState, company?: Company) => {
+      if (company) setSelectedCompany(company);
+      setModalState((prev) => ({ ...prev, [type]: true }));
+    },
+    []
+  );
+
+  const closeModal = useCallback((type: keyof typeof modalState) => {
+    setModalState((prev) => ({ ...prev, [type]: false }));
+  }, []);
+
   const {
     companies,
     loading,
@@ -53,133 +83,64 @@ const CompanyPage: React.FC = () => {
       sorting.length > 0 ? `${sorting[0].desc ? "-" : ""}${sorting[0].id}` : "",
   });
 
-  const handleCreateCompany = useCallback(() => {
+  // Handlers for CRUD operations
+  const handleActionComplete = useCallback(() => {
     refreshCompanies();
-    setIsCreateModalOpen(false);
   }, [refreshCompanies]);
 
-  const handleUpdateCompany = useCallback(() => {
-    refreshCompanies();
-    setIsUpdateModalOpen(false);
-  }, [refreshCompanies]);
-
-  const handleConfirmDeleteCompany = useCallback(async () => {
-    if (!selectedCompany) return;
-    await companyService.deleteCompany(selectedCompany.id);
-    refreshCompanies();
-    setIsDeleteModalOpen(false);
-  }, [refreshCompanies, selectedCompany]);
-
-  const handleOpenCreateModal = () => setIsCreateModalOpen(true);
-  const handleCloseCreateModal = () => setIsCreateModalOpen(false);
-  const handleOpenUpdateModal = useCallback((company: Company) => {
-    setSelectedCompany(company);
-    setIsUpdateModalOpen(true);
-  }, []);
-  const handleCloseUpdateModal = () => setIsUpdateModalOpen(false);
-  const handleOpenReadModal = useCallback((company: Company) => {
-    setSelectedCompany(company);
-    setIsReadModalOpen(true);
-  }, []);
-  const handleCloseReadModal = () => setIsReadModalOpen(false);
-  const handleOpenDeleteModal = useCallback((company: Company) => {
-    setSelectedCompany(company);
-    setIsDeleteModalOpen(true);
-  }, []);
-  const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
-
-  // Reset page to 1 when search query changes AND sorting changes
+  // Reset page to 1 when search query or sorting changes
   React.useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, sorting]);
 
+  // Column definitions
   const columns = useMemo<ColumnDef<Company>[]>(
     () => [
-      {
-        accessorKey: "name",
-        header: ({ column }) => (
+      ...Object.entries(COLUMN_LABELS).map(([accessorKey, header]) => ({
+        accessorKey,
+        header: ({ column }: { column: Column<Company> }) => (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            اسم الشركة <ArrowUpDown className="ml-2 h-4 w-4" />
+            {header} <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         ),
-        cell: ({ row }) => <div>{row.getValue("name")}</div>,
-        enableColumnFilter: false,
-      },
-      {
-        accessorKey: "address",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            العنوان <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+        cell: ({ row }: { row: Row<Company> }) => (
+          <div>{row.getValue(accessorKey)}</div>
         ),
-        cell: ({ row }) => <div>{row.getValue("address")}</div>,
-      },
-      {
-        accessorKey: "contact_email",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            البريد الإلكتروني للتواصل <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        ),
-        cell: ({ row }) => <div>{row.getValue("contact_email")}</div>,
-      },
-      {
-        accessorKey: "contact_phone",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            رقم الهاتف للتواصل <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        ),
-        cell: ({ row }) => <div>{row.getValue("contact_phone")}</div>,
-      },
+        enableColumnFilter: accessorKey !== "name" ? true : false,
+      })),
       {
         id: "actions",
         enableHiding: false,
-        cell: ({ row }) => {
-          const company = row.original;
-          const companyActions = [
-            {
-              label: "معاينة",
-              onClick: handleOpenReadModal,
-              icon: <Eye className="h-4 w-4" />,
-            },
-            {
-              label: "تعديل",
-              onClick: handleOpenUpdateModal,
-              icon: <Edit className="h-4 w-4" />,
-            },
-            {
-              label: "حذف",
-              onClick: handleOpenDeleteModal,
-              icon: <Trash2 className="h-4 w-4" />,
-              className: "text-red-500",
-            },
-          ];
-          return <ActionsDropdown data={company} actions={companyActions} />;
-        },
+        cell: ({ row }) => (
+          <ActionsDropdown
+            data={row.original}
+            actions={[
+              {
+                label: "معاينة",
+                onClick: () => openModal("read", row.original),
+                icon: <Eye className="h-4 w-4" />,
+              },
+              {
+                label: "تعديل",
+                onClick: () => openModal("update", row.original),
+                icon: <Edit className="h-4 w-4" />,
+              },
+              {
+                label: "حذف",
+                onClick: () => openModal("delete", row.original),
+                icon: <Trash2 className="h-4 w-4" />,
+                className: "text-red-500",
+              },
+            ]}
+          />
+        ),
       },
     ],
-    [handleOpenReadModal, handleOpenUpdateModal, handleOpenDeleteModal]
+    [openModal]
   );
-
-  const companyColumnLabels: Record<string, string> = {
-    name: "اسم الشركة",
-    address: "العنوان",
-    contact_email: "البريد الإلكتروني للتواصل",
-    contact_phone: "رقم الهاتف للتواصل",
-  };
 
   const table = useReactTable({
     data: companies,
@@ -196,70 +157,68 @@ const CompanyPage: React.FC = () => {
   }
 
   return (
-    <section className="p-3 antialiased sm:p-5" dir="rtl">
-      <div className="mx-auto">
-        <div className="relative overflow-hidden rounded-lg border shadow-lg">
-          <DataTableToolbar
-            table={table}
-            title="الشركات"
-            addButtonText="إضافة شركة"
-            searchPlaceholder="ابحث عن شركة..."
-            onAddClick={handleOpenCreateModal}
-            onSearch={setSearchQuery}
-            columnLabels={companyColumnLabels}
-          />
-          <DataTable
-            data={companies}
-            columns={columns}
-            isLoading={loading}
-            totalCount={totalCount}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-            sorting={sorting}
-            setSorting={setSorting}
-            columnVisibility={columnVisibility}
-            setColumnVisibility={setColumnVisibility}
-            pageSize={DEFAULT_PAGE_SIZE}
-            noDataMessage="لا توجد شركات لعرضها."
-          />
+    <section className="container p-3 antialiased sm:p-5" dir="rtl">
+      <div className="mx-auto rounded-lg border shadow-lg">
+        <DataTableToolbar
+          table={table}
+          title="الشركات"
+          addButtonText="إضافة شركة"
+          searchPlaceholder="ابحث عن شركة..."
+          onAddClick={() => openModal("create")}
+          onSearch={setSearchQuery}
+          columnLabels={COLUMN_LABELS}
+        />
+        <DataTable
+          data={companies}
+          columns={columns}
+          isLoading={loading}
+          totalCount={totalCount}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          sorting={sorting}
+          setSorting={setSorting}
+          columnVisibility={columnVisibility}
+          setColumnVisibility={setColumnVisibility}
+          pageSize={DEFAULT_PAGE_SIZE}
+          noDataMessage="لا توجد شركات لعرضها."
+        />
 
-          <DataTablePagination
-            currentPage={currentPage}
-            totalCount={totalCount}
-            itemsPerPage={DEFAULT_PAGE_SIZE}
-            onPreviousPage={() =>
-              setCurrentPage((prev) => Math.max(prev - 1, 1))
-            }
-            onNextPage={() => setCurrentPage((prev) => prev + 1)}
-            canPreviousPage={!!previousPageUrl}
-            canNextPage={!!nextPageUrl}
-            isLoading={loading}
-          />
-        </div>
+        <DataTablePagination
+          currentPage={currentPage}
+          totalCount={totalCount}
+          itemsPerPage={DEFAULT_PAGE_SIZE}
+          onPreviousPage={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          onNextPage={() => setCurrentPage((prev) => prev + 1)}
+          canPreviousPage={!!previousPageUrl}
+          canNextPage={!!nextPageUrl}
+          isLoading={loading}
+        />
       </div>
+
       {/* Modals */}
       <CreateCompanyModal
-        isOpen={isCreateModalOpen}
-        onClose={handleCloseCreateModal}
-        onCreate={handleCreateCompany}
+        isOpen={modalState.create}
+        onClose={() => closeModal("create")}
+        onCreate={handleActionComplete}
       />
       <UpdateCompanyModal
-        isOpen={isUpdateModalOpen}
-        onClose={handleCloseUpdateModal}
-        onUpdate={handleUpdateCompany}
+        isOpen={modalState.update}
+        onClose={() => closeModal("update")}
+        onUpdate={handleActionComplete}
         company={selectedCompany}
       />
       <ReadCompanyModal
-        isOpen={isReadModalOpen}
-        onClose={handleCloseReadModal}
+        isOpen={modalState.read}
+        onClose={() => closeModal("read")}
         company={selectedCompany}
-        onEdit={handleOpenUpdateModal}
-        onDelete={handleOpenDeleteModal}
+        onEdit={() => openModal("update", selectedCompany!)}
+        onDelete={() => openModal("delete", selectedCompany!)}
       />
       <DeleteCompanyModal
-        isOpen={isDeleteModalOpen}
-        onClose={handleCloseDeleteModal}
-        onConfirm={handleConfirmDeleteCompany}
+        isOpen={modalState.delete}
+        onClose={() => closeModal("delete")}
+        onConfirm={handleActionComplete}
+        company={selectedCompany}
       />
     </section>
   );
