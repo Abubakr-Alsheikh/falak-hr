@@ -83,8 +83,8 @@ export function DataTableToolbar<TData>({
       <div className="flex gap-2">
         {onAddClick && (
           <Button onClick={onAddClick}>
-            <Plus className="h-4 w-4" />
             {addButtonText}
+            <Plus className="h-4 w-4" />
           </Button>
         )}
       </div>

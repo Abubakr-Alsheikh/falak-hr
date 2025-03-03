@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -8,7 +8,6 @@ import {
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import { ArrowUpDown, Edit, Eye, Trash2 } from "lucide-react";
@@ -23,7 +22,6 @@ import {
   ReadCompanyModal,
   UpdateCompanyModal,
 } from "@/pages/dashboard/companies/Modals";
-import { useAuth } from "@contexts/AuthContext";
 import { companyService } from "@api/companyService";
 import { DataTableToolbar } from "@/components/common/dashboard/table/DataTableToolbar";
 import { DataTable } from "@/components/common/dashboard/table/DataTable";
@@ -32,21 +30,19 @@ import { ActionsDropdown } from "@/components/common/dashboard/table/ActionsDrop
 
 const CompanyPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(""); // Keep this for the backend search
+  const [searchQuery, setSearchQuery] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isReadModalOpen, setIsReadModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-  const { logout } = useAuth();
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+
+  // Pass ordering to useCompanies
   const {
     companies,
     loading,
@@ -58,149 +54,99 @@ const CompanyPage: React.FC = () => {
   } = useCompanies({
     page: currentPage,
     search: searchQuery,
+    ordering:
+      sorting.length > 0 ? `${sorting[0].desc ? "-" : ""}${sorting[0].id}` : "",
   });
 
-  const handleCreateCompany = async () => {
-    try {
-      refreshCompanies();
-      setIsCreateModalOpen(false);
-    } catch (error: any) {
-      if (error.message === "Session expired. Please log in again.") {
-        logout();
-      }
-      console.error("Error creating company:", error);
-    }
-  };
+  const handleCreateCompany = useCallback(() => {
+    refreshCompanies();
+    setIsCreateModalOpen(false);
+  }, [refreshCompanies]);
 
-  const handleUpdateCompany = async () => {
-    try {
-      refreshCompanies();
-      setIsUpdateModalOpen(false);
-    } catch (error: any) {
-      if (error.message === "Session expired. Please log in again.") {
-        logout();
-      }
-      console.error("Error updating company:", error);
-    }
-  };
+  const handleUpdateCompany = useCallback(() => {
+    refreshCompanies();
+    setIsUpdateModalOpen(false);
+  }, [refreshCompanies]);
 
-  const handleConfirmDeleteCompany = async () => {
+  const handleConfirmDeleteCompany = useCallback(async () => {
     if (!selectedCompany) return;
-    try {
-      await companyService.deleteCompany(selectedCompany.id);
-      refreshCompanies();
-      setIsDeleteModalOpen(false);
-    } catch (error: any) {
-      if (error.message === "Session expired. Please log in again.") {
-        logout();
-      }
-      console.error("Error deleting company:", error);
-    }
-  };
+    await companyService.deleteCompany(selectedCompany.id);
+    refreshCompanies();
+    setIsDeleteModalOpen(false);
+  }, [refreshCompanies, selectedCompany]);
+
   const handleOpenCreateModal = () => setIsCreateModalOpen(true);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
-
-  const handleOpenUpdateModal = useCallback(
-    (company: Company) => {
-      setSelectedCompany(company);
-      setIsUpdateModalOpen(true);
-    },
-    [setSelectedCompany, setIsUpdateModalOpen]
-  );
+  const handleOpenUpdateModal = useCallback((company: Company) => {
+    setSelectedCompany(company);
+    setIsUpdateModalOpen(true);
+  }, []);
   const handleCloseUpdateModal = () => setIsUpdateModalOpen(false);
-
-  const handleOpenReadModal = useCallback(
-    (company: Company) => {
-      setSelectedCompany(company);
-      setIsReadModalOpen(true);
-    },
-    [setSelectedCompany, setIsReadModalOpen]
-  );
+  const handleOpenReadModal = useCallback((company: Company) => {
+    setSelectedCompany(company);
+    setIsReadModalOpen(true);
+  }, []);
   const handleCloseReadModal = () => setIsReadModalOpen(false);
-
-  const handleOpenDeleteModal = useCallback(
-    (company: Company) => {
-      setSelectedCompany(company);
-      setIsDeleteModalOpen(true);
-    },
-    [setSelectedCompany, setIsDeleteModalOpen]
-  );
+  const handleOpenDeleteModal = useCallback((company: Company) => {
+    setSelectedCompany(company);
+    setIsDeleteModalOpen(true);
+  }, []);
   const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
 
-  // Reset page to 1 when search query changes
-  useEffect(() => {
+  // Reset page to 1 when search query changes AND sorting changes
+  React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, sorting]);
 
   const columns = useMemo<ColumnDef<Company>[]>(
     () => [
       {
         accessorKey: "name",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              اسم الشركة
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            اسم الشركة <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
         cell: ({ row }) => <div>{row.getValue("name")}</div>,
         enableColumnFilter: false,
       },
       {
         accessorKey: "address",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              العنوان
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            العنوان <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
         cell: ({ row }) => <div>{row.getValue("address")}</div>,
       },
       {
         accessorKey: "contact_email",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              البريد الإلكتروني للتواصل
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            البريد الإلكتروني للتواصل <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
         cell: ({ row }) => <div>{row.getValue("contact_email")}</div>,
       },
       {
         accessorKey: "contact_phone",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              رقم الهاتف للتواصل
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            رقم الهاتف للتواصل <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
         cell: ({ row }) => <div>{row.getValue("contact_phone")}</div>,
       },
       {
@@ -238,18 +184,12 @@ const CompanyPage: React.FC = () => {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
+    state: { sorting, columnFilters, columnVisibility, rowSelection },
   });
 
   if (error) {

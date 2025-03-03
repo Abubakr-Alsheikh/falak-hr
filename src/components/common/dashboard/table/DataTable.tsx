@@ -5,7 +5,6 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
   SortingState,
   ColumnFiltersState,
@@ -39,7 +38,6 @@ interface DataTableProps<TData> {
   setRowSelection: OnChangeFn<RowSelectionState>;
   pageSize: number;
   noDataMessage: string;
-  onDataChange?: () => void; //
 }
 
 export function DataTable<TData>({
@@ -59,7 +57,6 @@ export function DataTable<TData>({
   setRowSelection,
   pageSize,
   noDataMessage,
-  onDataChange,
 }: DataTableProps<TData>) {
   const [internalCurrentPage, setInternalCurrentPage] = useState(currentPage);
 
@@ -68,7 +65,6 @@ export function DataTable<TData>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -99,11 +95,6 @@ export function DataTable<TData>({
       onPageChange(table.getState().pagination.pageIndex + 1);
     }
   }, [table, internalCurrentPage, onPageChange]);
-
-  // Call onDataChange when sorting, filtering, or pagination changes.
-  useEffect(() => {
-    onDataChange?.();
-  }, [sorting, columnFilters, table, onDataChange]);
 
   return (
     <div className="mx-3 rounded-md border">
