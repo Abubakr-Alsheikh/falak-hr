@@ -1,13 +1,11 @@
 import React, { useState, useCallback, useMemo } from "react";
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
   VisibilityState,
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
-  getFilteredRowModel,
 } from "@tanstack/react-table";
 import { ArrowUpDown, Edit, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,7 +35,6 @@ const CompanyPage: React.FC = () => {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
 
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   // Pass ordering to useCompanies
@@ -189,11 +186,9 @@ const CompanyPage: React.FC = () => {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    state: { sorting, columnFilters, columnVisibility },
+    state: { sorting, columnVisibility },
   });
 
   if (error) {
@@ -222,8 +217,6 @@ const CompanyPage: React.FC = () => {
             onPageChange={setCurrentPage}
             sorting={sorting}
             setSorting={setSorting}
-            columnFilters={columnFilters}
-            setColumnFilters={setColumnFilters}
             columnVisibility={columnVisibility}
             setColumnVisibility={setColumnVisibility}
             pageSize={DEFAULT_PAGE_SIZE}
