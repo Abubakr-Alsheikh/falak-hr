@@ -51,8 +51,6 @@ const recentActivities = [
 const DashboardOverview: React.FC = () => {
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-2xl font-bold">نظرة عامة على لوحة التحكم</h1>
-
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* Companies Card */}
         <Card>

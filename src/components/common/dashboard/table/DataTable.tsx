@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -103,11 +104,15 @@ export function DataTable<TData>({
         </TableHeader>
         <TableBody>
           {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                جاري التحميل...
-              </TableCell>
-            </TableRow>
+            Array.from({ length: 10 }).map((_, index) => (
+              <TableRow key={index}>
+                {columns.map((_, colIndex) => (
+                  <TableCell key={colIndex}>
+                    <Skeleton className="h-8 w-full" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
           ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
