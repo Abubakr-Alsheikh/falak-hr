@@ -1,113 +1,213 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import {
+  ColumnDef,
+  SortingState,
+  VisibilityState,
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  Column,
+  Row,
+} from "@tanstack/react-table";
+import { ArrowUpDown, Eye, CheckCircle, XCircle } from "lucide-react"; // Import icons
+import { Button } from "@/components/ui/button";
+import useSubscriptions from "@/hooks/useSubscriptions";
 import { SubscriptionResponse } from "@/types/subscription";
+import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
+import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
+import {
+  DataTableToolbar,
+  DataTable,
+  DataTablePagination,
+  ActionsDropdown,
+} from "@/components/common/dashboard/table"; // Import DataTable components
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import Table from "@/components/common/dashboard/page/Table";
-import Pagination from "@/components/common/dashboard/page/Pagination";
-import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
-import useSubscriptions from "@/hooks/useSubscriptions";
-import TableHeader from "@/components/common/dashboard/page/TableHeader";
-import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
+import { ReadSubscriptionRequestModal } from "@/pages/dashboard/subscriptions/Modals";
+import { useModal } from "@/hooks/useModal";
+
+const COLUMN_LABELS: Record<string, string> = {
+  first_name: "الاسم الأول",
+  last_name: "اسم العائلة",
+  email: "البريد الإلكتروني",
+  user_type_display: "نوع المستخدم",
+  subscription_type_display: "نوع الاشتراك",
+  request_date: "تاريخ الطلب",
+  is_processed: "الحالة",
+};
 
 const SubscriptionRequestsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const {
     subscriptions,
     loading,
     error,
     totalCount,
+    refreshSubscriptions,
     nextPageUrl,
     previousPageUrl,
-    refreshSubscriptions,
-  } = useSubscriptions({ page: currentPage, search: searchQuery });
+  } = useSubscriptions({
+    page: currentPage,
+    search: searchQuery,
+    ordering:
+      sorting.length > 0 ? `${sorting[0].desc ? "-" : ""}${sorting[0].id}` : "",
+  });
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-  };
+  const { openModal, closeModal, modalState, selectedItem } =
+    useModal<SubscriptionResponse>();
 
-  const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
+  // Reset page to 1 when search query changes
+  React.useEffect(() => {
     setCurrentPage(1);
-  };
+  }, [searchQuery, sorting]);
 
-  const renderHeader = () => (
-    <>
-      <th scope="col" className="px-4 py-4">
-        الاسم
-      </th>
-      <th scope="col" className="px-4 py-3">
-        البريد الإلكتروني
-      </th>
-      <th scope="col" className="px-4 py-3">
-        نوع المستخدم
-      </th>
-      <th scope="col" className="px-4 py-3">
-        نوع الاشتراك
-      </th>
-      <th scope="col" className="px-4 py-3">
-        تاريخ الطلب
-      </th>
-      <th scope="col" className="px-4 py-3">
-        الحالة
-      </th>
-    </>
+  const columns = useMemo<ColumnDef<SubscriptionResponse>[]>(
+    () => [
+      {
+        accessorKey: "first_name",
+        header: ({ column }: { column: Column<SubscriptionResponse> }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {COLUMN_LABELS["first_name"]}{" "}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
+        cell: ({ row }: { row: Row<SubscriptionResponse> }) => (
+          <div>
+            {row.original.first_name} {row.original.last_name}
+          </div>
+        ),
+      },
+      ...Object.entries(COLUMN_LABELS)
+        .filter(([key]) => key !== "first_name") // Exclude first_name, already handled
+        .map(([accessorKey, header]) => ({
+          accessorKey,
+          header: ({ column }: { column: Column<SubscriptionResponse> }) => (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              {header} <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          ),
+          cell: ({ row }: { row: Row<SubscriptionResponse> }) => {
+            if (accessorKey === "request_date") {
+              return (
+                <div>
+                  {format(
+                    new Date(row.getValue(accessorKey)),
+                    "dd/MM/yyyy HH:mm",
+                    {
+                      locale: ar,
+                    }
+                  )}
+                </div>
+              );
+            }
+            if (accessorKey === "is_processed") {
+              return (
+                <div className="flex items-center">
+                  {row.getValue(accessorKey) ? (
+                    <>
+                      <CheckCircle className="mr-1 h-4 w-4 text-green-500" />
+                      <span>تمت معالجته</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="mr-1 h-4 w-4 text-red-500" />
+                      <span>قيد الانتظار</span>
+                    </>
+                  )}
+                </div>
+              );
+            }
+            return <div>{row.getValue(accessorKey)}</div>;
+          },
+        })),
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => (
+          <ActionsDropdown
+            data={row.original}
+            actions={[
+              {
+                label: "معاينة",
+                onClick: () => openModal("read", row.original),
+                icon: <Eye className="h-4 w-4" />,
+              },
+            ]}
+          />
+        ),
+      },
+    ],
+    [openModal]
   );
 
-  const renderRow = (request: SubscriptionResponse) => (
-    <tr className="border-b dark:border-gray-700" key={request.id}>
-      <td className="px-4 py-3">
-        {request.first_name} {request.last_name}
-      </td>
-      <td className="px-4 py-3">{request.email}</td>
-      <td className="px-4 py-3">{request.user_type_display}</td>
-      <td className="px-4 py-3">{request.subscription_type_display}</td>
-      <td className="px-4 py-3">
-        {format(new Date(request.request_date), "dd/MM/yyyy HH:mm", {
-          locale: ar,
-        })}
-      </td>
-      <td className="px-4 py-3">
-        {request.is_processed ? "تمت معالجته" : "قيد الانتظار"}
-      </td>
-    </tr>
-  );
+  const table = useReactTable({
+    data: subscriptions,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
+    state: { sorting, columnVisibility },
+    debugTable: true,
+  });
 
   if (error) {
-    <ErrorDisplay message={error} onRetry={refreshSubscriptions} />;
+    return <ErrorDisplay message={error} onRetry={refreshSubscriptions} />;
   }
 
   return (
-    <section
-      className="bg-gray-50 p-3 antialiased dark:bg-gray-900 sm:p-5"
-      dir="rtl"
-    >
-      <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
-        <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-          <TableHeader
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-            title="طلبات الاشتراك"
-          />
-          <Table
-            items={subscriptions}
-            renderHeader={renderHeader}
-            renderRow={renderRow}
-            isLoading={loading}
-            noDataMessage="لا توجد طلبات اشتراك."
-            colSpan={6}
-          />
-          <Pagination
-            totalCount={totalCount}
-            currentPage={currentPage}
-            itemsPerPage={DEFAULT_PAGE_SIZE}
-            onPageChange={handlePageChange}
-            nextPageUrl={nextPageUrl}
-            previousPageUrl={previousPageUrl}
-          />
-        </div>
+    <section className="p-3 antialiased sm:p-5">
+      <div className="mx-auto rounded-lg border shadow-lg">
+        <DataTableToolbar
+          table={table}
+          title="طلبات الاشتراك"
+          searchPlaceholder="ابحث عن طلب اشتراك..."
+          onSearch={setSearchQuery}
+          columnLabels={COLUMN_LABELS}
+        />
+        <DataTable
+          data={subscriptions}
+          columns={columns}
+          isLoading={loading}
+          totalCount={totalCount}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          sorting={sorting}
+          setSorting={setSorting}
+          columnVisibility={columnVisibility}
+          setColumnVisibility={setColumnVisibility}
+          pageSize={DEFAULT_PAGE_SIZE}
+          noDataMessage="لا توجد طلبات اشتراك لعرضها."
+        />
+        <DataTablePagination
+          currentPage={currentPage}
+          totalCount={totalCount}
+          itemsPerPage={DEFAULT_PAGE_SIZE}
+          onPreviousPage={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          onNextPage={() => setCurrentPage((prev) => prev + 1)}
+          canPreviousPage={!!previousPageUrl}
+          canNextPage={!!nextPageUrl}
+          isLoading={loading}
+        />
       </div>
+      {/* Modals */}
+      <ReadSubscriptionRequestModal
+        isOpen={modalState.read}
+        onClose={() => closeModal("read")}
+        subscription={selectedItem}
+      />
     </section>
   );
 };
