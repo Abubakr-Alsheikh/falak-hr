@@ -9,7 +9,7 @@ import { FormikHelpers } from "formik";
 interface UpdateTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: () => Promise<void>;
+  onUpdate: () => void;
   task: Task | null;
 }
 

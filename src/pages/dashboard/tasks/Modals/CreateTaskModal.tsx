@@ -9,7 +9,7 @@ import { FormikHelpers } from "formik";
 interface CreateTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: () => Promise<void>;
+  onCreate: () => void;
   projectId?: number;
 }
 
