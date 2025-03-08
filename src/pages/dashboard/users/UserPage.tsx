@@ -1,218 +1,226 @@
-import React, { useState, useCallback } from "react";
-import { FaPlus } from "react-icons/fa";
-import useUsers from "@hooks/useUsers";
-import { userService } from "@api/userService";
-import Table from "@components/common/dashboard/page/Table";
-import Pagination from "@components/common/dashboard/page/Pagination";
-import TableHeader from "@components/common/dashboard/page/TableHeader";
-import ErrorDisplay from "@components/common/dashboard/page/ErrorDisplay";
-import { useAuth } from "@contexts/AuthContext";
+import React, { useState, useCallback, useMemo } from "react";
+import {
+  ColumnDef,
+  SortingState,
+  VisibilityState,
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  Column,
+  Row,
+} from "@tanstack/react-table";
+import { ArrowUpDown, Edit, Eye, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import useUsers from "@/hooks/useUsers";
+import { UserProfile, User } from "@/types/user";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
-import { UserProfile } from "@/types/user";
-import UserListItem from "@/pages/dashboard/users/UserListItem";
+import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
+import {
+  DataTableToolbar,
+  DataTable,
+  DataTablePagination,
+  ActionsDropdown,
+} from "@/components/common/dashboard/table";
 import {
   CreateUserModal,
-  UpdateUserModal,
-  ReadUserModal,
   DeleteUserModal,
+  ReadUserModal,
+  UpdateUserModal,
 } from "@/pages/dashboard/users/Modals";
+import { useModal } from "@/hooks/useModal";
+
+const COLUMN_LABELS: Record<string, string> = {
+  user: "اسم المستخدم", // Now refers to the nested User object
+  company: "الشركة",
+  role: "الدور",
+  phone_number: "رقم الهاتف",
+  department: "القسم",
+  job_title: "المسمى الوظيفي",
+};
 
 const UserPage: React.FC = () => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isReadModalOpen, setIsReadModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
-  const { logout } = useAuth();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const {
     users,
     loading,
     error,
     totalCount,
+    refreshUsers,
     nextPageUrl,
     previousPageUrl,
-    refreshUsers,
-    updateParams, // Use the updateParams function from the hook
-  } = useUsers({ page: 1, search: "" }); // Initial params
+    updateParams,
+  } = useUsers({ page: currentPage, search: searchQuery });
 
-  const handleSearchChange = useCallback(
-    (query: string) => {
-      // Update the search parameter and reset the page to 1
-      updateParams({ search: query, page: 1 });
-    },
-    [updateParams]
+  const { openModal, closeModal, modalState, selectedItem } =
+    useModal<UserProfile>();
+
+  const handleActionComplete = useCallback(() => {
+    refreshUsers();
+  }, [refreshUsers]);
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+    updateParams({ page: currentPage });
+  }, [searchQuery, sorting, currentPage, updateParams]);
+
+  const columns = useMemo<ColumnDef<UserProfile>[]>(
+    () => [
+      ...Object.entries(COLUMN_LABELS).map(([accessorKey, header]) => ({
+        accessorKey,
+        header: ({ column }: { column: Column<UserProfile> }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {header} <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
+        cell: ({ row }: { row: Row<UserProfile> }) => {
+          const value = row.original[accessorKey as keyof UserProfile];
+
+          // 1. Handle undefined/null first:
+          if (value === null || value === undefined) {
+            return <div>-</div>;
+          }
+
+          // 2. Handle the User object:
+          if (accessorKey === "user") {
+            if (typeof value === "object" && "username" in value) {
+              return <div>{(value as User).username}</div>;
+            } else {
+              // Debugging: Log the unexpected value
+              console.warn("Unexpected value for 'user':", value);
+              return <div>Error: Invalid User Data</div>; // Or some other fallback
+            }
+          }
+
+          //3. handle company
+          if (accessorKey === "company" && typeof value === "number") {
+            return <div>{value}</div>; // Or fetch and display company name
+          }
+
+          // 4. Handle strings and numbers directly:
+          if (typeof value === "string" || typeof value === "number") {
+            return <div>{value}</div>;
+          }
+
+          return <div>Error: Unexpected Data Type</div>;
+        },
+        enableColumnFilter: true,
+      })),
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => (
+          <ActionsDropdown
+            data={row.original}
+            actions={[
+              {
+                label: "معاينة",
+                onClick: () => openModal("read", row.original),
+                icon: <Eye className="h-4 w-4" />,
+              },
+              {
+                label: "تعديل",
+                onClick: () => openModal("update", row.original),
+                icon: <Edit className="h-4 w-4" />,
+              },
+              {
+                label: "حذف",
+                onClick: () => openModal("delete", row.original),
+                icon: <Trash2 className="h-4 w-4" />,
+                className: "text-red-500",
+              },
+            ]}
+          />
+        ),
+      },
+    ],
+    [openModal]
   );
 
-  const handleCreateUser = useCallback(async () => {
-    try {
-      refreshUsers();
-      setIsCreateModalOpen(false);
-    } catch (error: any) {
-      if (error.message === "Session expired. Please log in again.") {
-        logout();
-      }
-      console.error("Error creating company:", error);
-    }
-  }, [logout, refreshUsers]);
+  const table = useReactTable({
+    data: users,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
+    state: { sorting, columnVisibility },
+    manualPagination: true,
+    pageCount: Math.ceil(totalCount / DEFAULT_PAGE_SIZE),
+  });
 
-  const handleUpdateUser = useCallback(async () => {
-    try {
-      refreshUsers();
-      setIsUpdateModalOpen(false);
-    } catch (error: any) {
-      if (error.message === "Session expired. Please log in again.") {
-        logout();
-      }
-      console.error("Error updating company:", error);
-    }
-  }, [logout, refreshUsers]);
-
-  const handleConfirmDeleteUser = useCallback(async () => {
-    if (!selectedUser) return;
-    try {
-      await userService.deleteUser(selectedUser.id);
-      refreshUsers();
-      setIsDeleteModalOpen(false);
-    } catch (error: any) {
-      if (error.message === "Session expired. Please log in again.") {
-        logout();
-      }
-      console.error("Error deleting company:", error);
-    }
-  }, [logout, refreshUsers, selectedUser]);
-
-  const handleOpenCreateModal = () => setIsCreateModalOpen(true);
-  const handleCloseCreateModal = () => setIsCreateModalOpen(false);
-  const handleOpenUpdateModal = (user: UserProfile) => {
-    setSelectedUser(user);
-    setIsUpdateModalOpen(true);
-  };
-  const handleCloseUpdateModal = () => setIsUpdateModalOpen(false);
-  const handleOpenReadModal = (user: UserProfile) => {
-    setSelectedUser(user);
-    setIsReadModalOpen(true);
-  };
-  const handleCloseReadModal = () => setIsReadModalOpen(false);
-  const handleOpenDeleteModal = (user: UserProfile) => {
-    setSelectedUser(user);
-    setIsDeleteModalOpen(true);
-  };
-  const handleCloseDeleteModal = () => setIsDeleteModalOpen(false);
-
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      // Update the page parameter
-      updateParams({ page: newPage });
-    },
-    [updateParams]
-  );
-
-  // Error Handling Display
   if (error) {
     return <ErrorDisplay message={error} onRetry={refreshUsers} />;
   }
 
-  // Define the table header
-  const renderHeader = () => (
-    <>
-      <th scope="col" className="px-4 py-4">
-        اسم المستخدم
-      </th>
-      <th scope="col" className="px-4 py-3">
-        البريد الإلكتروني
-      </th>
-      <th scope="col" className="px-4 py-3">
-        الدور
-      </th>
-      <th scope="col" className="px-4 py-3">
-        القسم
-      </th>
-      <th scope="col" className="px-4 py-3">
-        المسمى الوظيفي
-      </th>
-      <th scope="col" className="px-4 py-3">
-        الإجراءات
-      </th>
-    </>
-  );
-
-  // Define how to render each row
-  const renderRow = (user: UserProfile) => (
-    <UserListItem
-      key={user.id}
-      user={user}
-      onEdit={handleOpenUpdateModal}
-      onView={handleOpenReadModal}
-      onDelete={handleOpenDeleteModal}
-    />
-  );
-
   return (
-    <section
-      className="bg-gray-50 p-3 antialiased dark:bg-gray-900 sm:p-5"
-      dir="rtl"
-    >
-      <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
-        <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-          <TableHeader
-            searchQuery={""} //Removed the searchQuery state variable
-            onSearchChange={handleSearchChange}
-            title="المستخدمون"
-            rightSection={
-              <button
-                type="button"
-                onClick={handleOpenCreateModal}
-                className="flex items-center justify-center rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-              >
-                {/* Margins adjusted for RTL */}
-                إضافة مستخدم
-                <FaPlus className="mr-2 h-3.5 w-3.5" />{" "}
-              </button>
-            }
-          />
-          <Table
-            items={users}
-            renderHeader={renderHeader}
-            renderRow={renderRow}
-            isLoading={loading}
-            noDataMessage="لا يوجد مستخدمون لعرضهم."
-            colSpan={6}
-          />
-          <Pagination
-            totalCount={totalCount}
-            currentPage={1} //Removed currentPage state variable
-            itemsPerPage={DEFAULT_PAGE_SIZE}
-            onPageChange={handlePageChange}
-            nextPageUrl={nextPageUrl}
-            previousPageUrl={previousPageUrl}
-          />
-        </div>
+    <section className="p-3 antialiased sm:p-5">
+      <div className="mx-auto rounded-lg border shadow-lg">
+        <DataTableToolbar
+          table={table}
+          title="المستخدمون"
+          addButtonText="إضافة مستخدم"
+          searchPlaceholder="ابحث عن مستخدم..."
+          onAddClick={() => openModal("create")}
+          onSearch={setSearchQuery}
+          columnLabels={COLUMN_LABELS}
+        />
+        <DataTable
+          data={users}
+          columns={columns}
+          isLoading={loading}
+          totalCount={totalCount}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          sorting={sorting}
+          setSorting={setSorting}
+          columnVisibility={columnVisibility}
+          setColumnVisibility={setColumnVisibility}
+          pageSize={DEFAULT_PAGE_SIZE}
+          noDataMessage="لا يوجد مستخدمون لعرضهم."
+        />
+        <DataTablePagination
+          currentPage={currentPage}
+          totalCount={totalCount}
+          itemsPerPage={DEFAULT_PAGE_SIZE}
+          onPreviousPage={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          onNextPage={() => setCurrentPage((prev) => prev + 1)}
+          canPreviousPage={!!previousPageUrl}
+          canNextPage={!!nextPageUrl}
+          isLoading={loading}
+        />
       </div>
 
       {/* Modals */}
       <CreateUserModal
-        isOpen={isCreateModalOpen}
-        onClose={handleCloseCreateModal}
-        onCreate={handleCreateUser}
-      />
-      <UpdateUserModal
-        isOpen={isUpdateModalOpen}
-        onClose={handleCloseUpdateModal}
-        onUpdate={handleUpdateUser}
-        user={selectedUser}
+        isOpen={modalState.create}
+        onClose={() => closeModal("create")}
+        onCreate={handleActionComplete}
       />
       <ReadUserModal
-        isOpen={isReadModalOpen}
-        onClose={handleCloseReadModal}
-        user={selectedUser}
-        onEdit={handleOpenUpdateModal}
-        onDelete={handleOpenDeleteModal}
+        isOpen={modalState.read}
+        onClose={() => closeModal("read")}
+        user={selectedItem}
+        onEdit={() => openModal("update", selectedItem!)}
+        onDelete={() => openModal("delete", selectedItem!)}
+      />
+      <UpdateUserModal
+        isOpen={modalState.update}
+        onClose={() => closeModal("update")}
+        onUpdate={handleActionComplete}
+        user={selectedItem}
       />
       <DeleteUserModal
-        isOpen={isDeleteModalOpen}
-        onClose={handleCloseDeleteModal}
-        onConfirm={handleConfirmDeleteUser}
+        isOpen={modalState.delete}
+        onClose={() => closeModal("delete")}
+        onConfirm={handleActionComplete}
+        user={selectedItem}
       />
     </section>
   );

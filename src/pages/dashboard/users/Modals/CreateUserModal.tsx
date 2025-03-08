@@ -9,7 +9,7 @@ import Modal from "@/components/common/dashboard/page/Modal";
 interface CreateUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: () => Promise<void>;
+  onCreate: () => void;
 }
 
 const CreateUserModal: React.FC<CreateUserModalProps> = ({

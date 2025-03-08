@@ -13,7 +13,7 @@ import Modal from "@/components/common/dashboard/page/Modal";
 interface UpdateUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: () => Promise<void>; // onUpdate is now async
+  onUpdate: () => void;
   user: UserProfile | null;
 }
 
