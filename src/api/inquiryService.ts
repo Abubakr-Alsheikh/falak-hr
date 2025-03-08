@@ -19,17 +19,29 @@ interface ContactMessageData {
 
 const inquiryService = {
   getInquiries: async (
-    page: number = 1,
-    search: string = ""
+    page: number,
+    pageSize: number,
+    search: string = "",
+    ordering: string = ""
   ): Promise<PaginatedResponse<GetContactMessage>> => {
     const response = await apiClient.get<PaginatedResponse<GetContactMessage>>(
       "/inquiries/",
       {
-        params: { page, search },
+        params: {
+          page,
+          pageSize,
+          search,
+          ordering,
+        },
       }
     );
     return response.data;
   },
+
+  async deleteInquiry(inquiryId: number): Promise<void> {
+    await apiClient.delete(`/inquiries/${inquiryId}/`);
+  },
+
   //create
   createContactMessage: async (data: ContactMessageData) => {
     try {
