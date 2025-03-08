@@ -1,37 +1,55 @@
 import { useState, useCallback } from "react";
 
-type ModalState = {
+interface ModalState<T> {
   create: boolean;
   update: boolean;
   read: boolean;
   delete: boolean;
-};
+  props?: Record<string, any>;
+  item?: T | null;
+}
 
-const initialModalState: ModalState = {
-  create: false,
-  update: false,
-  read: false,
-  delete: false,
-};
-
-export const useModal = <T>() => {
-  const [modalState, setModalState] = useState<ModalState>(initialModalState);
+function useModal<T>() {
+  const [modalState, setModalState] = useState<ModalState<T>>({
+    create: false,
+    update: false,
+    read: false,
+    delete: false,
+    props: undefined, // Initialize props
+  });
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
-  const openModal = useCallback((type: keyof ModalState, item?: T) => {
-    if (item) {
-      setSelectedItem(item);
-    }
-    setModalState((prev) => ({ ...prev, [type]: true }));
-  }, []);
+  const openModal = useCallback(
+    (
+      modalType: keyof Omit<ModalState<T>, "item" | "props">,
+      item?: T,
+      props?: Record<string, any>
+    ) => {
+      setModalState((prev) => ({
+        ...prev,
+        create: false,
+        read: false,
+        update: false,
+        delete: false,
+        [modalType]: true,
+        props: props,
+      }));
+      setSelectedItem(item || null);
+    },
+    []
+  );
 
-  const closeModal = useCallback((type: keyof ModalState) => {
-    setModalState((prev) => ({ ...prev, [type]: false }));
-    // Clear selected item only when closing specific modals, not all.
-    if (type === "create" || type === "update" || type === "delete") {
-      setSelectedItem(null);
-    }
-  }, []);
+  const closeModal = useCallback(
+    (modalType: keyof Omit<ModalState<T>, "item" | "props">) => {
+      setModalState((prev) => ({
+        ...prev,
+        [modalType]: false,
+      }));
+    },
+    []
+  );
 
-  return { openModal, closeModal, modalState, selectedItem, setSelectedItem };
-};
+  return { modalState, openModal, closeModal, selectedItem, setSelectedItem };
+}
+
+export { useModal };
