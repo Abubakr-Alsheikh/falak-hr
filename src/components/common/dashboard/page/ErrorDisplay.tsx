@@ -1,18 +1,31 @@
 import React from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
 
 interface ErrorDisplayProps {
   message: string;
-  onRetry: () => void;
+  onRetry?: () => void;
 }
 
 const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ message, onRetry }) => {
   return (
-    <div className="p-4 text-center text-red-500">
-      <p>خطا: {message}</p>
-      <button onClick={onRetry} className="mt-2 text-blue-500">
-        إعادة التحميل
-      </button>
-    </div>
+    <Alert variant="destructive" className="mx-auto max-w-lg">
+      {" "}
+      {/* Use Shadcn's Alert component */}
+      <AlertCircle className="h-4 w-4" /> {/* Icon for visual cue */}
+      <AlertTitle>خطأ</AlertTitle> {/* Consistent Arabic title */}
+      <AlertDescription>
+        {message}
+        {onRetry && (
+          <div className="mt-4">
+            <Button variant="outline" size="sm" onClick={onRetry}>
+              إعادة التحميل
+            </Button>
+          </div>
+        )}
+      </AlertDescription>
+    </Alert>
   );
 };
 

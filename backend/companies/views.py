@@ -26,8 +26,14 @@ class CompanyViewSet(viewsets.ModelViewSet):
         "contact_email__icontains",
         "contact_phone__icontains",
     ]
-    ordering_fields = ["name", "created_at"]
-    ordering = ["name"]
+    ordering_fields = [
+        "name",
+        "address",
+        "contact_email",
+        "contact_phone",
+        "created_at",
+    ]
+    ordering = ["-created_at"]
     pagination_class = CompanyPagination
 
     def get_queryset(self):

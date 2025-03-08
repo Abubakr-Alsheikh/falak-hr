@@ -1,105 +1,193 @@
-import React, { useState, useCallback } from "react";
-import useInquiries from "@hooks/useInquiries";
+import React, { useState, useCallback, useMemo } from "react";
+import {
+  ColumnDef,
+  SortingState,
+  VisibilityState,
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  Column,
+  Row,
+} from "@tanstack/react-table";
+import { ArrowUpDown, Trash2, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import useInquiries from "@/hooks/useInquiries";
+import { Inquiry } from "@/types/inquiry";
 import { DEFAULT_PAGE_SIZE } from "@/utils/pagination";
-import { GetContactMessage } from "@/api/inquiryService";
+import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
+import {
+  DataTableToolbar,
+  DataTable,
+  DataTablePagination,
+  ActionsDropdown,
+} from "@/components/common/dashboard/table";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import Table from "@/components/common/dashboard/page/Table";
-import Pagination from "@/components/common/dashboard/page/Pagination";
-import TableHeader from "@/components/common/dashboard/page/TableHeader";
-import ErrorDisplay from "@/components/common/dashboard/page/ErrorDisplay";
+import {
+  ReadInquiryModal,
+  DeleteInquiryModal,
+} from "@/pages/dashboard/inquiries/Modals";
+import { useModal } from "@/hooks/useModal";
+
+const COLUMN_LABELS: Record<string, string> = {
+  name: "الاسم",
+  email: "البريد الإلكتروني",
+  phone: "رقم الهاتف",
+  message: "الرسالة",
+  created_at: "تاريخ الإنشاء",
+};
 
 const InquiriesPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const {
     inquiries,
     loading,
     error,
     totalCount,
+    refreshInquiries,
     nextPageUrl,
     previousPageUrl,
-    refreshInquiries,
-  } = useInquiries({ page: currentPage, search: searchQuery });
+  } = useInquiries({
+    page: currentPage,
+    search: searchQuery,
+    ordering:
+      sorting.length > 0 ? `${sorting[0].desc ? "-" : ""}${sorting[0].id}` : "",
+  });
 
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query);
+  const { openModal, closeModal, modalState, selectedItem } =
+    useModal<Inquiry>();
+
+  // Handlers for CRUD operations - kept for consistency and potential future use
+  const handleActionComplete = useCallback(() => {
+    refreshInquiries();
+  }, [refreshInquiries]);
+
+  // Reset page to 1 when search query changes
+  React.useEffect(() => {
     setCurrentPage(1);
-  }, []);
+  }, [searchQuery, sorting]);
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-  };
-
-  const renderHeader = () => (
-    <>
-      <th scope="col" className="px-4 py-4">
-        الاسم
-      </th>
-      <th scope="col" className="px-4 py-3">
-        البريد الإلكتروني
-      </th>
-      <th scope="col" className="px-4 py-3">
-        رقم الهاتف
-      </th>
-      <th scope="col" className="px-4 py-3">
-        الرسالة
-      </th>
-      <th scope="col" className="px-4 py-3">
-        تاريخ الإنشاء
-      </th>
-    </>
+  const columns = useMemo<ColumnDef<Inquiry>[]>(
+    () => [
+      ...Object.entries(COLUMN_LABELS).map(([accessorKey, header]) => ({
+        accessorKey,
+        header: ({ column }: { column: Column<Inquiry> }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {header} <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
+        cell: ({ row }: { row: Row<Inquiry> }) => {
+          if (accessorKey === "created_at") {
+            return (
+              <div>
+                {format(
+                  new Date(row.getValue(accessorKey)),
+                  "dd/MM/yyyy HH:mm",
+                  {
+                    locale: ar,
+                  }
+                )}
+              </div>
+            );
+          }
+          return <div>{row.getValue(accessorKey)}</div>;
+        },
+      })),
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => (
+          <ActionsDropdown
+            data={row.original}
+            actions={[
+              {
+                label: "معاينة",
+                onClick: () => openModal("read", row.original),
+                icon: <Eye className="h-4 w-4" />,
+              },
+              {
+                label: "حذف",
+                onClick: () => openModal("delete", row.original),
+                icon: <Trash2 className="h-4 w-4" />,
+                className: "text-red-500",
+              },
+            ]}
+          />
+        ),
+      },
+    ],
+    [openModal]
   );
 
-  const renderRow = (inquiry: GetContactMessage) => (
-    <tr className="border-b dark:border-gray-700" key={inquiry.id}>
-      <td className="px-4 py-3">{inquiry.name}</td>
-      <td className="px-4 py-3">{inquiry.email}</td>
-      <td className="px-4 py-3">{inquiry.phone}</td>
-      <td className="px-4 py-3">{inquiry.message}</td>
-      <td className="px-4 py-3">
-        {format(new Date(inquiry.created_at), "dd/MM/yyyy HH:mm", {
-          locale: ar,
-        })}
-      </td>
-    </tr>
-  );
+  const table = useReactTable({
+    data: inquiries,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
+    state: { sorting, columnVisibility },
+  });
 
   if (error) {
-    <ErrorDisplay message={error} onRetry={refreshInquiries} />;
+    return <ErrorDisplay message={error} onRetry={refreshInquiries} />;
   }
 
   return (
-    <section
-      className="bg-gray-50 p-3 antialiased dark:bg-gray-900 sm:p-5"
-      dir="rtl"
-    >
-      <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
-        <div className="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-          <TableHeader
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-            title="الاستفسارات"
-          />
-          <Table
-            items={inquiries}
-            renderHeader={renderHeader}
-            renderRow={renderRow}
-            isLoading={loading}
-            noDataMessage="لا يوجد رسائل."
-            colSpan={5}
-          />
-          <Pagination
-            totalCount={totalCount}
-            currentPage={currentPage}
-            itemsPerPage={DEFAULT_PAGE_SIZE}
-            onPageChange={handlePageChange}
-            nextPageUrl={nextPageUrl}
-            previousPageUrl={previousPageUrl}
-          />
-        </div>
+    <section className="p-3 antialiased sm:p-5">
+      <div className="mx-auto rounded-lg border shadow-lg">
+        <DataTableToolbar
+          table={table}
+          title="الاستفسارات"
+          searchPlaceholder="ابحث عن استفسار..."
+          onSearch={setSearchQuery}
+          columnLabels={COLUMN_LABELS}
+        />
+        <DataTable
+          data={inquiries}
+          columns={columns}
+          isLoading={loading}
+          totalCount={totalCount}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          sorting={sorting}
+          setSorting={setSorting}
+          columnVisibility={columnVisibility}
+          setColumnVisibility={setColumnVisibility}
+          pageSize={DEFAULT_PAGE_SIZE}
+          noDataMessage="لا توجد استفسارات لعرضها."
+        />
+        <DataTablePagination
+          currentPage={currentPage}
+          totalCount={totalCount}
+          itemsPerPage={DEFAULT_PAGE_SIZE}
+          onPreviousPage={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          onNextPage={() => setCurrentPage((prev) => prev + 1)}
+          canPreviousPage={!!previousPageUrl}
+          canNextPage={!!nextPageUrl}
+          isLoading={loading}
+        />
       </div>
+
+      {/* Modals */}
+      <ReadInquiryModal
+        isOpen={modalState.read}
+        onClose={() => closeModal("read")}
+        inquiry={selectedItem}
+      />
+      <DeleteInquiryModal
+        isOpen={modalState.delete}
+        onClose={() => closeModal("delete")}
+        onConfirm={handleActionComplete}
+        inquiry={selectedItem}
+      />
     </section>
   );
 };

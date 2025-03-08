@@ -10,7 +10,7 @@ import {
 import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import ScaleUp from "@components/animations/ScaleUp";
-import FeatureCard from "@/components/public/FeatureCard";
+import FeatureCard from "@/pages/public/remote/components/FeatureCard";
 
 const RemoteFeaturesSection: React.FC = () => {
   const features = [

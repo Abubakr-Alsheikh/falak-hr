@@ -93,7 +93,7 @@ Authorization: Bearer <your_access_token>
 
 *   **Filtering (Companies):**  `GET /api/companies/?parent_company={id}`
 *   **Searching (Companies):** `GET /api/companies/?search={term}` (Searches: `name`, `address`, `contact_email`, `contact_phone`)
-*   **Ordering (Companies):** `GET /api/companies/?ordering={field}` (Orderable: `name`, `created_at`; Default: `name`)
+*   **Ordering (Companies):** `GET /api/companies/?ordering={field}` (Orderable: `name`, `address`, `contact_email`, `contact_phone`, `created_at`; Default: `created_at`)
 
 ---
 

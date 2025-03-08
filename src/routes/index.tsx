@@ -3,7 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import PublicLayout from "@layouts/PublicLayout";
 import ErrorPage from "@/pages/ErrorPage";
 import PrivateRoute from "@/layouts/PrivateRoute";
-import DashboardLayout from "@/layouts/DashboardLayout";
 
 // Public Pages (Lazy Loaded)
 const Home = lazy(() => import("@pages/public/home/Home"));
@@ -19,6 +18,7 @@ const LoginPage = lazy(() => import("@pages/auth/LoginPage"));
 const LogoutPage = lazy(() => import("@pages/auth/LogoutPage"));
 
 // Dashboard Pages (Lazy Loaded)
+const DashboardLayout = lazy(() => import("@/layouts/DashboardLayout"));
 const DashboardOverview = lazy(() => import("@pages/dashboard/Overview"));
 const CompanyPage = lazy(
   () => import("@/pages/dashboard/companies/CompanyPage")

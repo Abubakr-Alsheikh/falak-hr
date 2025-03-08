@@ -1,23 +1,33 @@
+import Modal from "@/components/common/dashboard/page/Modal";
 import React from "react";
 import { FaCheck, FaBan } from "react-icons/fa";
-import Modal from "@/components/common/dashboard/page/Modal";
+import { Task } from "@/types/task";
+import { taskService } from "@api/taskService";
 
 interface DeleteTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => Promise<void>;
+  task: Task | null;
+  onConfirm: () => void;
 }
 
 const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
   isOpen,
   onClose,
+  task,
   onConfirm,
 }) => {
   const handleConfirm = async () => {
-    await onConfirm();
-  };
+    if (!task) return;
 
-  if (!isOpen) return null;
+    try {
+      await taskService.deleteTask(task.id);
+      onConfirm();
+      onClose();
+    } catch (error: any) {
+      console.error("Failed to delete task:", error);
+    }
+  };
 
   return (
     <Modal
@@ -29,7 +39,9 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
       <div className="p-6 text-center">
         <FaBan className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
         <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-          هل أنت متأكد أنك تريد حذف هذه المهمة؟
+          {task
+            ? `هل أنت متأكد أنك تريد حذف المهمة "${task.title}"؟`
+            : "هل أنت متأكد أنك تريد حذف هذه المهمة؟"}
         </h3>
         <button
           onClick={handleConfirm}

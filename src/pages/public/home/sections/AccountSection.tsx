@@ -4,7 +4,7 @@ import remoteSecondImage from "@assets/HomeAccountSection/home-remote-2.png";
 import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import ScaleUp from "@components/animations/ScaleUp";
-import AccountCard from "@/components/public/AccountCard";
+import AccountCard from "@/pages/public/home/components/AccountCard";
 
 const AccountSection: React.FC = () => {
   const accountData = [

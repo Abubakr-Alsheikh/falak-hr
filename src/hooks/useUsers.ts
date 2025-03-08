@@ -14,7 +14,6 @@ const useUsers = (initialParams: GetUsersParams) => {
   const { logout } = useAuth();
   const [params, setParams] = useState(initialParams);
 
-  // Use useCallback for fetchUsers to prevent unnecessary re-renders and re-fetches
   const fetchUsers = useCallback(
     async (currentParams: GetUsersParams) => {
       setLoading(true);
@@ -42,19 +41,16 @@ const useUsers = (initialParams: GetUsersParams) => {
       }
     },
     [logout]
-  ); // Removed params from here
+  );
 
-  // Use useEffect to trigger the API call when params change
   useEffect(() => {
     fetchUsers(params);
-  }, [fetchUsers, params]); // fetchUsers is stable, params is the dependency
-
-  // Refresh function to refetch data with current params
-  const refreshUsers = useCallback(() => {
-    fetchUsers(params); // Use the current params
   }, [fetchUsers, params]);
 
-  // Function to update the parameters and trigger a refetch
+  const refreshUsers = useCallback(() => {
+    fetchUsers(params);
+  }, [fetchUsers, params]);
+
   const updateParams = useCallback((newParams: Partial<GetUsersParams>) => {
     setParams((prevParams) => ({ ...prevParams, ...newParams }));
   }, []);
@@ -67,7 +63,7 @@ const useUsers = (initialParams: GetUsersParams) => {
     nextPageUrl,
     previousPageUrl,
     refreshUsers,
-    updateParams, // Expose the updateParams function
+    updateParams,
   };
 };
 

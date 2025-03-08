@@ -1,17 +1,20 @@
 import Modal from "@/components/common/dashboard/page/Modal";
 import React from "react";
 import { FaCheck, FaBan } from "react-icons/fa";
+import { Project } from "@/types/project";
 
 interface DeleteProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => Promise<void>;
+  onConfirm: () => void;
+  project: Project | null;
 }
 
 const DeleteProjectModal: React.FC<DeleteProjectModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
+  project, // Receive the project
 }) => {
   const handleConfirm = async () => {
     await onConfirm();
@@ -27,7 +30,10 @@ const DeleteProjectModal: React.FC<DeleteProjectModalProps> = ({
       <div className="p-6 text-center">
         <FaBan className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
         <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-          هل أنت متأكد أنك تريد حذف هذا المشروع؟
+          {/* Show project name if available */}
+          {project
+            ? `هل أنت متأكد أنك تريد حذف مشروع "${project.name}"؟`
+            : "هل أنت متأكد أنك تريد حذف هذا المشروع؟"}
         </h3>
         <button
           onClick={handleConfirm}
