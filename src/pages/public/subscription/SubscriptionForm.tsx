@@ -1,12 +1,33 @@
 import React, { useState } from "react";
-import subscriptionService from "@api/subscriptionService"; // Import the service
-import { SubscriptionRequest } from "@/types/subscription"; // Import the type
-import Button from "@/components/common/public/Button";
+import subscriptionService from "@api/subscriptionService";
+import { SubscriptionRequest } from "@/types/subscription";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
 import LoadingScreen from "@/components/common/public/LoadingScreen";
 import { Link } from "react-router-dom";
+import { Separator } from "@/components/ui/separator";
+import * as Tooltip from "@radix-ui/react-tooltip";
 
 interface SubscriptionFormProps {
-  onSuccess?: () => void; // Optional callback for success
+  onSuccess?: () => void;
 }
 
 const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ onSuccess }) => {
@@ -24,6 +45,17 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ onSuccess }) => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const clearForm = () => {
+    setUserType("employer");
+    setSubscriptionType("basic");
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setPhoneNumber("");
+    setCompanyName("");
+    setMessage("");
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
@@ -31,7 +63,6 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ onSuccess }) => {
     setSuccessMessage(null);
 
     const formData: SubscriptionRequest = {
-      // Use the type
       user_type: userType,
       subscription_type: subscriptionType,
       first_name: firstName,
@@ -45,24 +76,15 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ onSuccess }) => {
     try {
       const response = await subscriptionService.createSubscriptionRequest(
         formData
-      ); // Use the service
-      setSuccessMessage(response.message); // Access message from response
-      // Reset form
-      setUserType("employer");
-      setSubscriptionType("basic");
-      setFirstName("");
-      setLastName("");
-      setEmail("");
-      setPhoneNumber("");
-      setCompanyName("");
-      setMessage("");
+      );
+      setSuccessMessage("تم إرسال طلب الاشتراك بنجاح!");
+      clearForm();
       if (onSuccess) {
         onSuccess();
       }
     } catch (err: any) {
       if (err.response && err.response.data && err.response.data.errors) {
-        // Handle specific validation errors from backend
-        let errorMsg = "حدثت الأخطاء التالية:\n";
+        let errorMsg = "";
         for (const field in err.response.data.errors) {
           err.response.data.errors[field].forEach((errorDetail: string) => {
             errorMsg += `- ${field}: ${errorDetail}\n`;
@@ -74,166 +96,213 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ onSuccess }) => {
         err.response.data &&
         err.response.data.message
       ) {
-        // Handle general error messages.
         setError(err.response.data.message);
       } else {
-        // Handle network or other unexpected errors
         setError("حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
       }
     } finally {
       setIsLoading(false);
     }
   };
+
   if (isLoading) {
-    return <LoadingScreen />; // Show loading indicator while submitting
+    return <LoadingScreen />;
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {successMessage && <p className="text-green-500">{successMessage}</p>}
-      {error && <p className="text-red-500">{error}</p>}
+    <Card dir="rtl">
+      <CardHeader className="text-right">
+        <CardTitle>نموذج الاشتراك</CardTitle>
+        <CardDescription>
+          املأ النموذج لإنشاء طلب اشتراك. يرجى التأكد من إدخال جميع المعلومات
+          المطلوبة.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {" "}
+          {/* Increased spacing */}
+          {successMessage && (
+            <Alert>
+              <AlertTitle>نجاح!</AlertTitle>
+              <AlertDescription>{successMessage}</AlertDescription>
+            </Alert>
+          )}
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>خطأ</AlertTitle>
+              <AlertDescription>
+                <pre className="whitespace-pre-wrap">{error}</pre>
+              </AlertDescription>
+            </Alert>
+          )}
+          <div className="space-y-4">
+            {" "}
+            {/* Increased spacing within sections */}
+            <Separator />
+            <h3 className="text-lg font-semibold">معلومات المستخدم</h3>
+            <Separator />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="user_type">نوع المستخدم:</Label>
+                <Select
+                  onValueChange={(value) =>
+                    setUserType(value as "employer" | "manager")
+                  }
+                  defaultValue={userType}
+                >
+                  <Tooltip.Provider delayDuration={200}>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger asChild>
+                        <SelectTrigger id="user_type">
+                          <SelectValue placeholder="اختر نوع المستخدم" />
+                        </SelectTrigger>
+                      </Tooltip.Trigger>
+                      <Tooltip.Portal>
+                        <Tooltip.Content
+                          className="bg-popover text-popover-foreground"
+                          sideOffset={5}
+                        >
+                          اختر نوع المستخدم (صاحب عمل أو مدير)
+                          <Tooltip.Arrow className="fill-current" />
+                        </Tooltip.Content>
+                      </Tooltip.Portal>
+                    </Tooltip.Root>
+                  </Tooltip.Provider>
 
-      <div>
-        <label
-          htmlFor="user_type"
-          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-        >
-          نوع المستخدم:
-        </label>
-        <select
-          id="user_type"
-          value={userType}
-          onChange={(e) =>
-            setUserType(e.target.value as "employer" | "manager")
-          }
-          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        >
-          <option value="employer">صاحب عمل</option>
-          <option value="manager">مدير</option>
-        </select>
-      </div>
-
-      <div>
-        <label
-          htmlFor="subscription_type"
-          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-        >
-          نوع الاشتراك:
-        </label>
-        <select
-          id="subscription_type"
-          value={subscriptionType}
-          onChange={(e) =>
-            setSubscriptionType(e.target.value as "basic" | "silver" | "gold")
-          }
-          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        >
-          <option value="basic">أساسي</option>
-          <option value="silver">فضي</option>
-          <option value="gold">ذهبي</option>
-        </select>
-      </div>
-      <div>
-        <label
-          htmlFor="first_name"
-          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-        >
-          الاسم الأول:
-        </label>
-        <input
-          type="text"
-          id="first_name"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          required
-          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="last_name"
-          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-        >
-          اسم العائلة:
-        </label>
-        <input
-          type="text"
-          id="last_name"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          required
-          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor="email"
-          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-        >
-          البريد الإلكتروني:
-        </label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor="phone_number"
-          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-        >
-          رقم الهاتف:
-        </label>
-        <input
-          type="tel"
-          id="phone_number"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor="company_name"
-          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-        >
-          اسم الشركة:
-        </label>
-        <input
-          type="text"
-          id="company_name"
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor="message"
-          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-        >
-          الرسالة:
-        </label>
-        <textarea
-          id="message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-          rows={4}
-        />
-      </div>
-      <div className="flex flex-row gap-2">
-        <Button type="submit" text="إرسال الطلب" />
+                  <SelectContent>
+                    <SelectItem value="employer">صاحب عمل</SelectItem>
+                    <SelectItem value="manager">مدير</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="subscription_type">نوع الاشتراك:</Label>
+                <Select
+                  onValueChange={(value) =>
+                    setSubscriptionType(value as "basic" | "silver" | "gold")
+                  }
+                  defaultValue={subscriptionType}
+                >
+                  <Tooltip.Provider delayDuration={200}>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger asChild>
+                        <SelectTrigger id="subscription_type">
+                          <SelectValue placeholder="اختر نوع الاشتراك" />
+                        </SelectTrigger>
+                      </Tooltip.Trigger>
+                      <Tooltip.Portal>
+                        <Tooltip.Content
+                          className="bg-popover text-popover-foreground"
+                          sideOffset={5}
+                        >
+                          اختر نوع الاشتراك (أساسي، فضي، أو ذهبي)
+                          <Tooltip.Arrow className="fill-current" />
+                        </Tooltip.Content>
+                      </Tooltip.Portal>
+                    </Tooltip.Root>
+                  </Tooltip.Provider>
+                  <SelectContent>
+                    <SelectItem value="basic">أساسي</SelectItem>
+                    <SelectItem value="silver">فضي</SelectItem>
+                    <SelectItem value="gold">ذهبي</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <Separator />
+            <h3 className="text-lg font-semibold">المعلومات الشخصية</h3>
+            <Separator />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="first_name">الاسم الأول:</Label>
+                <Input
+                  type="text"
+                  id="first_name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  placeholder="أدخل اسمك الأول"
+                  className="text-right"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="last_name">اسم العائلة:</Label>
+                <Input
+                  type="text"
+                  id="last_name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                  placeholder="أدخل اسم العائلة"
+                  className="text-right"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">البريد الإلكتروني:</Label>
+              <Input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="أدخل بريدك الإلكتروني"
+                className="text-right"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone_number">رقم الهاتف:</Label>
+              <Input
+                type="tel"
+                id="phone_number"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="أدخل رقم هاتفك"
+                className="text-right"
+              />
+            </div>
+          </div>
+          <div className="space-y-4">
+            <Separator />
+            <h3 className="text-lg font-semibold">معلومات الشركة</h3>
+            <Separator />
+            <div className="space-y-2">
+              <Label htmlFor="company_name">اسم الشركة:</Label>
+              <Input
+                type="text"
+                id="company_name"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="أدخل اسم شركتك"
+                className="text-right"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="message">الرسالة:</Label>
+              <Textarea
+                id="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="أدخل رسالتك (اختياري)"
+                rows={4}
+                className="resize-none text-right"
+              />
+            </div>
+          </div>
+        </form>
+      </CardContent>
+      <CardFooter className="flex justify-start gap-2">
+        <Button type="submit" onClick={handleSubmit}>
+          إرسال الطلب
+        </Button>
         <Link to="/">
-          <Button type="submit" text="عودة" variant="secondary" />
+          <Button variant="outline">عودة</Button>
         </Link>
-      </div>
-    </form>
+      </CardFooter>
+    </Card>
   );
 };
 
