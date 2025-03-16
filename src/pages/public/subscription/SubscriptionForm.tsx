@@ -77,6 +77,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ onSuccess }) => {
       const response = await subscriptionService.createSubscriptionRequest(
         formData
       );
+      console.log(response);
       setSuccessMessage("تم إرسال طلب الاشتراك بنجاح!");
       clearForm();
       if (onSuccess) {
