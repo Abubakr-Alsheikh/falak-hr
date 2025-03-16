@@ -8,7 +8,7 @@ const AboutUs: React.FC = () => {
     <div className="container mx-auto mt-16">
       <AboutUsTitle />
       <CeoMessage
-        ceoName="اسم الرئيس التنفيذي"
+        ceoName="عبد العزيز النهدي"
         ceoTitle="الرئيس التنفيذي"
         message="مرحباً بكم في فلك للموارد البشرية. نفخر بالرحلة التي قطعناها والإنجازات التي حققناها. رؤيتنا واضحة وهدفنا ثابت نحو تقديم الأفضل دائماً."
       />

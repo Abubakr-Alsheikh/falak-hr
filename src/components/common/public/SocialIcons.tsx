@@ -14,7 +14,11 @@ const SocialIcons: React.FC = () => {
     { href: "#", icon: FaXTwitter, alt: "X (Twitter)" },
     { href: "#", icon: AiFillInstagram, alt: "Instagram" },
     { href: "#", icon: AiFillYoutube, alt: "YouTube" },
-    { href: "#", icon: AiFillLinkedin, alt: "LinkedIn" },
+    {
+      href: "http://www.linkedin.com/in/falak-hr-a162112a5",
+      icon: AiFillLinkedin,
+      alt: "LinkedIn",
+    },
   ];
 
   const ref = useRef(null);
