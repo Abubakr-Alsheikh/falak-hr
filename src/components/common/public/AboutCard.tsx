@@ -18,7 +18,7 @@ const AboutCard: React.FC<AboutCardProps> = ({
 }) => {
   return (
     <div
-      className={`mx-4 my-8 max-w-screen-xl items-center gap-8 rounded-2xl border px-4 py-8 shadow-xl sm:py-16 md:mx-auto md:grid md:grid-cols-3 md:px-0 lg:px-6 xl:gap-16`}
+      className={`mx-4 my-8 max-w-screen-xl items-center gap-8 rounded-2xl border px-4 py-8 shadow-xl md:mx-4 md:grid md:grid-cols-3 md:px-0 lg:px-6 xl:gap-16`}
     >
       <img
         className={`w-full rounded-2xl border ${
