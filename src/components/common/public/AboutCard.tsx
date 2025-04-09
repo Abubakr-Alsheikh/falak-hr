@@ -6,6 +6,7 @@ interface AboutCardProps {
   description: string;
   imageUrl: string;
   buttonText: string;
+  buttonLink: string;
   isReversed?: boolean;
 }
 
@@ -14,6 +15,7 @@ const AboutCard: React.FC<AboutCardProps> = ({
   description,
   imageUrl,
   buttonText,
+  buttonLink,
   isReversed,
 }) => {
   return (
@@ -25,20 +27,27 @@ const AboutCard: React.FC<AboutCardProps> = ({
           isReversed ? "md:order-2" : "md:order-1"
         }`}
         src={imageUrl}
-        alt="dashboard image"
+        alt={`${title}`}
       />
       <div
         className={`mt-4 text-right md:mt-0 col-span-2 ${
           isReversed ? "md:order-1" : "md:order-2"
         }`}
       >
-        <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+        <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
           {title}
         </h2>
         <p className="mb-6 font-light text-gray-500 dark:text-gray-400 md:text-lg">
           {description}
         </p>
-        <Button text={buttonText} variant="secondary" />
+        <div>
+          <Button
+            text={buttonText}
+            variant="secondary"
+            buttonLink={buttonLink}
+            className="w-fit"
+          />
+        </div>
       </div>
     </div>
   );
