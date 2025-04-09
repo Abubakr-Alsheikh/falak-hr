@@ -132,16 +132,19 @@ const Navbar: React.FC = () => {
             animate="visible"
             variants={largeScreenVariants}
           >
-            <Link to="/subscription">
-              <Button
-                text="اشترك معنا"
-                variant="secondary"
-                hideInSmallScreen={true}
-              />
-            </Link>
-            <Link to="/login">
-              <Button text="تسجيل الدخول" variant="primary" className="mr-2" />
-            </Link>
+            <Button
+              text="انضم معنا"
+              variant="secondary"
+              hideInSmallScreen={true}
+              buttonLink="/#type-section"
+            />
+            <Button
+              text="اطلب خدماتنا"
+              variant="primary"
+              className="mr-2"
+              buttonLink="https://forms.gle/qMFC32jfMhBWqyt9A"
+              target="_blank"
+            />
           </motion.div>
 
           {/* Mobile Menu Button (Visible Only on Small Screens) */}

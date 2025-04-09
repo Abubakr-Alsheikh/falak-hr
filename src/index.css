@@ -8,6 +8,10 @@
   font-style: normal;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 .gradient-primary-color {
   background: rgb(76, 5, 25);
   background: -moz-linear-gradient(

@@ -26,7 +26,7 @@ const AccountSection: React.FC = () => {
 
   return (
     <section className="bg-white dark:bg-gray-900">
-      <div className="mx-auto mb-16 px-4 md:px-0">
+      <div id="type-section" className="mx-auto mb-16 px-4 md:px-0">
         <FadeIn direction="up">
           <HeaderSection
             title="ماذا نقدم لك"
