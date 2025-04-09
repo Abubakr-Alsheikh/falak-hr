@@ -6,53 +6,57 @@ import groupOfIndividuals from "@assets/RemoteWorkExplain/group of individuals.p
 import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
 import SlideIn from "@components/animations/SlideIn";
-import AboutCard from "@/components/common/public/AboutCard";
+import AboutCard from "@/components/common/public/AboutCard"; // Assume this exists and is styled
 
 const RemoteWorkExplain: React.FC = () => {
   const cards = [
     {
-      title: "دورات تدريبية شهرية",
+      title: "دورات تدريبية متخصصة للعمل عن بعد",
       description:
-        "نقدم في فلك للموارد البشرية دورات تدريبية شهرية مخصصة لموظفي برنامج العمل عن بعد، بهدف تطوير مهاراتهم وتعزيز إنتاجيتهم في بيئة العمل الحديثة.",
+        "نقدم دورات تركز على تزويد المتدربين بالمهارات والأدوات اللازمة للنجاح في بيئة العمل عن بعد، بما في ذلك إدارة الوقت، التواصل الفعال، واستراتيجيات زيادة الإنتاجية وتحقيق التوازن.",
       imageUrl: calendarHighlighting,
       buttonText: "عرض المزيد",
+      buttonLink: "#",
     },
     {
-      title: "دورات تدريبية حسب الطلب للشركاء",
+      title: "برامج تدريبية مخصصة للشركات",
       description:
-        "نوفر في فلك للموارد البشرية دورات تدريبية مصممة خصيصاً لشركائنا بناءً على احتياجاتهم ومتطلباتهم، لضمان تحقيق أقصى استفادة من برنامج العمل عن بعد.",
+        "نصمم ونقدم برامج تدريبية حسب الطلب لشركائنا، تغطي احتياجاتهم الخاصة في مجالات مثل خدمة العملاء، اللوجستيات، إدارة المشاريع، وغيرها، لضمان تلبية متطلبات أعمالهم الفريدة.",
       imageUrl: collaborativePlanning,
       buttonText: "عرض المزيد",
+      buttonLink: "#",
     },
     {
-      title: "مدربون معتمدون",
+      title: "مدربون بخبرة وكفاءة عالية",
       description:
-        "يتم تقديم الدورات التدريبية في فلك للموارد البشرية من قبل نخبة من المدربين المعتمدين ذوي الخبرة والكفاءة العالية في مجال العمل عن بعد والموارد البشرية.",
+        "يقدم دوراتنا نخبة من المدربين المعتمدين الذين يتمتعون بخبرة واسعة وكفاءة عالية، مع فهم عميق لاحتياجات السوق السعودي ومتطلبات بيئة العمل الحديثة.",
       imageUrl: knowledgeableInstructor,
       buttonText: "عرض المزيد",
+      buttonLink: "#",
     },
     {
-      title: "شهادات حضور معتمدة",
+      title: "بيئة تدريب تفاعلية وشهادات معتمدة",
       description:
-        "يحصل الملتحقون بالدورات التدريبية في فلك للموارد البشرية على شهادات حضور معتمدة تثبت مشاركتهم وإتمامهم للدورة، مما يعزز ملفهم المهني.",
+        "نوفر بيئة تدريبية تفاعلية وجذابة باستخدام أحدث التقنيات والأساليب. يحصل المشاركون على شهادات حضور معتمدة تعزز مسارهم المهني عند إتمام الدورة.",
       imageUrl: groupOfIndividuals,
       buttonText: "عرض المزيد",
+      buttonLink: "#",
     },
   ];
 
   return (
-    <div className="mt-20 overflow-hidden">
+    <div className="mt-20 overflow-x-hidden">
       <FadeIn direction="up">
         <HeaderSection
-          title="شرح برامج التدريب للعمل عن بعد"
-          text="في فلك للموارد البشرية، نؤمن بأهمية التطوير المستمر لموظفي العمل عن بعد وشركائنا. لذلك، نقدم مجموعة متنوعة من الدورات التدريبية الاحترافية."
+          title="التدريب والتطوير في فلك للموارد البشرية"
+          text="نؤمن في فلك بأهمية التطوير المستمر. نقدم مجموعة متنوعة من الدورات التدريبية المصممة لتمكين الموظفين والشركاء بالمهارات اللازمة للنجاح."
         />
       </FadeIn>
       {cards.map((card, index) => (
         <SlideIn
           key={index}
           direction={index % 2 !== 0 ? "right" : "left"}
-          delay={index * 0.15}
+          delay={index * 0.1}
         >
           <AboutCard
             title={card.title}
@@ -60,6 +64,7 @@ const RemoteWorkExplain: React.FC = () => {
             imageUrl={card.imageUrl}
             buttonText={card.buttonText}
             isReversed={index % 2 !== 0}
+            buttonLink={card.buttonLink}
           />
         </SlideIn>
       ))}

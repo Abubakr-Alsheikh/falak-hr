@@ -1,11 +1,13 @@
 import React from "react";
 import {
   AiOutlineUser,
-  AiOutlineCalculator,
-  AiOutlineBarChart,
   AiOutlineShoppingCart,
   AiOutlineInbox,
   AiOutlineCloud,
+  AiOutlineStar,
+  AiOutlineBuild,
+  AiOutlineSolution,
+  AiOutlineRocket,
 } from "react-icons/ai";
 import HeaderSection from "@/components/common/public/HeaderSection";
 import FadeIn from "@components/animations/FadeIn";
@@ -15,40 +17,52 @@ import FeatureCard from "@/pages/public/remote/components/FeatureCard";
 const RemoteFeaturesSection: React.FC = () => {
   const features = [
     {
-      title: "إدارة الموارد البشرية",
+      title: "حلول الموارد البشرية المتكاملة",
       description:
-        "حلول متكاملة تشمل التوظيف، إدارة الموظفين، المستندات الحكومية، الإجازات، والخدمات الذاتية. بالإضافة إلى إدارة الرواتب، تقييم الأداء، الحضور والانصراف، السلف والقروض، وإنهاء الخدمات.",
-      icon: <AiOutlineUser />,
+        "نوفر حزم شاملة لتلبية احتياجات الموارد البشرية، تشمل جذب أفضل الكفاءات وتطويرها، إدارة شؤون الموظفين، الرواتب، تقييم الأداء، وضمان الامتثال لقوانين العمل.",
+      icon: <AiOutlineUser size={40} />,
     },
     {
-      title: "إدارة الحسابات والمالية",
+      title: "حلول العمل عن بعد",
       description:
-        "نظام محاسبة متكامل لإدارة السنوات والفترات المالية، الذمم الدائنة والمدينة، الفواتير والمدفوعات، وإعداد التقارير والبيانات القانونية. كما يشمل إدارة الخزينة والميزانية والأصول.",
-      icon: <AiOutlineCalculator />,
+        "تمكين الشركات من إدارة فرق العمل عن بعد بكفاءة ومرونة، مع توفير الأدوات والتدريب اللازم لتعزيز الإنتاجية وتحقيق التوازن بين العمل والحياة.",
+      icon: <AiOutlineCloud size={40} />,
     },
     {
-      title: "المبيعات والتسويق",
+      title: "خدمات التحول الرقمي والأتمتة",
       description:
-        "أدوات متقدمة لإدارة علاقات العملاء، بما في ذلك جهات الاتصال، الاستفسارات، والفرص. بالإضافة إلى حلول التسويق عبر البريد الإلكتروني وإدارة محتوى المواقع.",
-      icon: <AiOutlineBarChart />,
+        "مساعدة الشركات على تبني أحدث التقنيات وأدوات الذكاء الاصطناعي لتبسيط العمليات وتحسين الكفاءة التشغيلية ودعم الإدارة المرنة بغض النظر عن الموقع الجغرافي.",
+      icon: <AiOutlineBuild size={40} />,
     },
     {
-      title: "إدارة المبيعات المتقدمة",
+      title: "إسعاد العملاء",
       description:
-        "تبسيط عمليات البيع من خلال إدارة عروض الأسعار، أوامر البيع، التجارة الإلكترونية، ونقاط البيع المتعددة.",
-      icon: <AiOutlineShoppingCart />,
+        "تطبيق استراتيجيات تتجاوز توقعات العملاء، بناء علاقات قوية، وتحسين السمعة التجارية من خلال تجارب إيجابية وخدمة مخصصة وفعالة.",
+      icon: <AiOutlineStar size={40} />,
     },
     {
-      title: "إدارة المشتريات والمخازن",
+      title: "التدريب والتطوير المهني",
       description:
-        "تنظيم عمليات الشراء من خلال طلبات الشراء والمناقصات وتقييم الموردين. بالإضافة إلى إدارة المخازن المتعددة، طلبات الصرف، العهد، والعقود.",
-      icon: <AiOutlineInbox />,
+        "برامج تدريبية متخصصة لتطوير المهارات في مجالات العمل عن بعد، خدمة العملاء، اللوجستيات، وإدارة المشاريع، مقدمة من مدربين ذوي خبرة لدعم النمو المهني.",
+      icon: <AiOutlineSolution size={40} />,
     },
     {
-      title: "أدوات العمل عن بعد",
+      title: "التجارة الإلكترونية",
       description:
-        "باقة متكاملة من الأدوات والأنظمة والبرامج التي تدعم مشاريع العمل عن بعد عبر خدمة المراقبة الذاتية، لتعزيز كفاءة وإنتاجية فريقك.",
-      icon: <AiOutlineCloud />,
+        "إنشاء وتصميم وتحسين المتاجر الإلكترونية لتعزيز التواجد الرقمي، تحسين تجربة المستخدم، وزيادة المبيعات باستخدام أحدث المنصات والتقنيات.",
+      icon: <AiOutlineShoppingCart size={40} />,
+    },
+    {
+      title: "إدارة سلاسل الإمداد واللوجستيات",
+      description:
+        "تخطيط وتنفيذ ومراقبة تدفق السلع والمعلومات بفعالية من المصدر إلى المستهلك، بما يشمل إدارة المشتريات، التخزين، التوزيع، وتقنيات SCM.",
+      icon: <AiOutlineInbox size={40} />,
+    },
+    {
+      title: "حاضنة ومسرعة الأعمال",
+      description:
+        "دعم رواد الأعمال والشركات الناشئة من خلال برامج متخصصة، إرشاد، توفير مساحات عمل مشتركة، وفرص للتمويل والتواصل مع المستثمرين والخبراء.",
+      icon: <AiOutlineRocket size={40} />,
     },
   ];
 
@@ -57,18 +71,19 @@ const RemoteFeaturesSection: React.FC = () => {
       <div className="mx-auto max-w-screen-xl px-4">
         <FadeIn direction="up">
           <HeaderSection
-            title="خدماتنا وحلولنا"
-            text="نقدم في فلك مجموعة متكاملة من الخدمات والحلول الرقمية التي تمكن الشركات من إدارة عملياتها بكفاءة وفعالية، مع التركيز على تبسيط الإجراءات وأتمتة المهام لتقليل التكاليف التشغيلية."
+            title="خدمات وحلول فلك للموارد البشرية"
+            text="نقدم في فلك مجموعة متكاملة من الخدمات والحلول الرقمية والمبتكرة التي تمكن الشركات والأفراد من تحقيق أهدافهم وتعزيز كفاءتهم في بيئة العمل الحديثة."
           />
         </FadeIn>
 
-        <div className="mt-12 space-y-8 md:grid md:grid-cols-2 md:gap-12 md:space-y-0 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => (
-            <ScaleUp key={index} delay={index * 0.15}>
+            <ScaleUp key={index} delay={index * 0.08}>
               <FeatureCard
                 title={feature.title}
                 description={feature.description}
                 icon={feature.icon}
+                number={index + 1}
               />
             </ScaleUp>
           ))}
