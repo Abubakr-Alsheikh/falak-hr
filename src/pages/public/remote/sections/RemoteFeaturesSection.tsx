@@ -84,6 +84,8 @@ const RemoteFeaturesSection: React.FC = () => {
                 description={feature.description}
                 icon={feature.icon}
                 number={index + 1}
+                buttonLink="https://forms.gle/qMFC32jfMhBWqyt9A"
+                buttonText="اطلب الان"
               />
             </ScaleUp>
           ))}

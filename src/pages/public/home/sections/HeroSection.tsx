@@ -4,6 +4,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import Button from "@/components/common/public/Button";
 import FadeIn from "@components/animations/FadeIn";
 import SlideIn from "@components/animations/SlideIn";
+import { Link } from "react-router-dom";
 
 const HeroSection: React.FC = () => {
   return (
@@ -34,12 +35,14 @@ const HeroSection: React.FC = () => {
           </FadeIn>
           <div className="flex flex-col space-y-4 sm:flex-row sm:justify-start sm:space-x-4 sm:space-y-0">
             <FadeIn direction="left" delay={0.8}>
-              <Button
-                icon={<BsArrowLeft />}
-                text="أبدا معنا"
-                variant="secondary"
-                className="m-0 bg-white"
-              />
+              <Link to="/remote-work">
+                <Button
+                  icon={<BsArrowLeft />}
+                  text="أبدا معنا"
+                  variant="secondary"
+                  className="m-0 bg-white"
+                />
+              </Link>
             </FadeIn>
           </div>
         </div>

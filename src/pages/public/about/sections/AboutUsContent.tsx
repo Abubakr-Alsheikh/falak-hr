@@ -54,7 +54,7 @@ const AboutUsContent: React.FC = () => {
             imageUrl={card.imageUrl}
             buttonText={card.buttonText}
             isReversed={index % 2 !== 0}
-            buttonLink=""
+            buttonLink="https://forms.gle/qMFC32jfMhBWqyt9A"
           />
         </SlideIn>
       ))}

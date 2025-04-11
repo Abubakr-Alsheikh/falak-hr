@@ -20,7 +20,7 @@ const AboutCard: React.FC<AboutCardProps> = ({
 }) => {
   return (
     <div
-      className={`mx-4 my-8 max-w-screen-xl items-center gap-8 rounded-2xl border px-4 py-8 shadow-xl md:mx-4 md:grid md:grid-cols-3 md:px-0 lg:px-6 xl:gap-16`}
+      className={`mx-4 my-8 max-w-screen-xl items-center gap-8 rounded-2xl border border-gray-200 bg-white p-6 px-4 py-8 text-center shadow-md transition-all duration-300 ease-in-out hover:scale-[1.02] hover:border-primary-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:hover:border-primary-600 dark:hover:bg-gray-700/50 md:mx-4 md:grid md:grid-cols-3 md:p-8 md:px-0 lg:px-6`}
     >
       <img
         className={`w-full rounded-2xl border ${
@@ -46,6 +46,8 @@ const AboutCard: React.FC<AboutCardProps> = ({
             variant="secondary"
             buttonLink={buttonLink}
             className="w-fit"
+            rel="noopener noreferrer"
+            target="_blank"
           />
         </div>
       </div>

@@ -15,32 +15,32 @@ const RemoteWorkExplain: React.FC = () => {
       description:
         "نقدم دورات تركز على تزويد المتدربين بالمهارات والأدوات اللازمة للنجاح في بيئة العمل عن بعد، بما في ذلك إدارة الوقت، التواصل الفعال، واستراتيجيات زيادة الإنتاجية وتحقيق التوازن.",
       imageUrl: calendarHighlighting,
-      buttonText: "عرض المزيد",
-      buttonLink: "#",
+      buttonText: "سجل الان كمتدرب",
+      buttonLink: "https://forms.gle/ErZyTGXJNg7mRZ7a7",
     },
     {
       title: "برامج تدريبية مخصصة للشركات",
       description:
         "نصمم ونقدم برامج تدريبية حسب الطلب لشركائنا، تغطي احتياجاتهم الخاصة في مجالات مثل خدمة العملاء، اللوجستيات، إدارة المشاريع، وغيرها، لضمان تلبية متطلبات أعمالهم الفريدة.",
       imageUrl: collaborativePlanning,
-      buttonText: "عرض المزيد",
-      buttonLink: "#",
+      buttonText: "سجل الان كمتدرب",
+      buttonLink: "https://forms.gle/ErZyTGXJNg7mRZ7a7",
     },
     {
       title: "مدربون بخبرة وكفاءة عالية",
       description:
         "يقدم دوراتنا نخبة من المدربين المعتمدين الذين يتمتعون بخبرة واسعة وكفاءة عالية، مع فهم عميق لاحتياجات السوق السعودي ومتطلبات بيئة العمل الحديثة.",
       imageUrl: knowledgeableInstructor,
-      buttonText: "عرض المزيد",
-      buttonLink: "#",
+      buttonText: "سجل الان كمتدرب",
+      buttonLink: "https://forms.gle/ErZyTGXJNg7mRZ7a7",
     },
     {
       title: "بيئة تدريب تفاعلية وشهادات معتمدة",
       description:
         "نوفر بيئة تدريبية تفاعلية وجذابة باستخدام أحدث التقنيات والأساليب. يحصل المشاركون على شهادات حضور معتمدة تعزز مسارهم المهني عند إتمام الدورة.",
       imageUrl: groupOfIndividuals,
-      buttonText: "عرض المزيد",
-      buttonLink: "#",
+      buttonText: "سجل الان كمتدرب",
+      buttonLink: "https://forms.gle/ErZyTGXJNg7mRZ7a7",
     },
   ];
 

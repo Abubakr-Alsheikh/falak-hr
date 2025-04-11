@@ -162,7 +162,7 @@ const Footer: React.FC = () => {
               className="text-sm text-gray-100 dark:text-gray-400 sm:text-center"
               dir="ltr"
             >
-              2024©{" "}
+              2025©{" "}
               <a href="#" className="hover:underline">
                 Falak HR™
               </a>{" "}
