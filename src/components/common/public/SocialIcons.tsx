@@ -2,7 +2,7 @@
 import React, { useRef } from "react";
 import { AiFillInstagram, AiFillLinkedin, AiFillYoutube } from "react-icons/ai";
 import { FaXTwitter } from "react-icons/fa6";
-import { FaWhatsapp, FaTiktok, FaLink, FaGlobe } from "react-icons/fa";
+import { FaWhatsapp, FaTiktok, FaLink } from "react-icons/fa";
 import { motion, useInView } from "framer-motion";
 
 interface SocialLink {
