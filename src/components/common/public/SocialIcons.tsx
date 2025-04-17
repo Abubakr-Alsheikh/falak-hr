@@ -1,6 +1,8 @@
+// src/components/common/public/SocialIcons.tsx
 import React, { useRef } from "react";
 import { AiFillInstagram, AiFillLinkedin, AiFillYoutube } from "react-icons/ai";
 import { FaXTwitter } from "react-icons/fa6";
+import { FaWhatsapp, FaTiktok, FaLink, FaGlobe } from "react-icons/fa";
 import { motion, useInView } from "framer-motion";
 
 interface SocialLink {
@@ -9,15 +11,44 @@ interface SocialLink {
   alt: string;
 }
 
-const SocialIcons: React.FC = () => {
+// Add props interface
+interface SocialIconsProps {
+  containerClassName?: string; // For the main div
+  iconClassName?: string; // For the <a> tag icons
+}
+
+const SocialIcons: React.FC<SocialIconsProps> = ({
+  // Provide default classes but allow overrides
+  containerClassName = "flex flex-wrap", // Default is flex-wrap row
+  iconClassName = "text-3xl text-secondary-200 transition-colors hover:text-secondary-700", // Default colors/size
+}) => {
   const socialLinks: SocialLink[] = [
-    { href: "#", icon: FaXTwitter, alt: "X (Twitter)" },
-    { href: "#", icon: AiFillInstagram, alt: "Instagram" },
-    { href: "#", icon: AiFillYoutube, alt: "YouTube" },
+    { href: "https://x.com/falakhrsa", icon: FaXTwitter, alt: "X (Twitter)" },
     {
-      href: "http://www.linkedin.com/in/falak-hr-a162112a5",
+      href: "https://www.instagram.com/falakhrsa",
+      icon: AiFillInstagram,
+      alt: "Instagram",
+    },
+    {
+      href: "https://www.youtube.com/@Falak-Hr-Sa",
+      icon: AiFillYoutube,
+      alt: "YouTube",
+    },
+    {
+      href: "https://www.linkedin.com/company/falakhrsa",
       icon: AiFillLinkedin,
       alt: "LinkedIn",
+    },
+    {
+      href: "https://sian.monshaat.gov.sa/en/startups/985/%D9%81%D9%84%D9%83-%D9%84%D9%84%D9%85%D9%88%D8%A7%D8%B1%D8%AF-%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D9%8A%D8%A9",
+      icon: FaLink,
+      alt: "Falak HR on Monshaat Sian Platform",
+    },
+    { href: "https://wa.me/+966580844442", icon: FaWhatsapp, alt: "WhatsApp" },
+    {
+      href: "https://www.tiktok.com/@falakhrsa",
+      icon: FaTiktok,
+      alt: "TikTok",
     },
   ];
 
@@ -25,12 +56,18 @@ const SocialIcons: React.FC = () => {
   const isInView = useInView(ref, { once: true });
 
   return (
-    <div className="flex text-gray-700" ref={ref}>
+    // Apply the containerClassName prop here
+    <div className={`${containerClassName}`} ref={ref}>
       {socialLinks.map((link, index) => (
         <motion.a
           key={index}
           href={link.href}
-          className="mr-4 text-3xl text-secondary-200 transition-colors hover:text-secondary-700"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={link.alt}
+          // Apply the iconClassName prop here, along with margin/padding as needed
+          // Added p-2 for spacing in column layout, removed mr-4/mb-2 which were for rows
+          className={`p-2 ${iconClassName}`}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={{
@@ -41,14 +78,12 @@ const SocialIcons: React.FC = () => {
               transition: {
                 duration: 0.4,
                 ease: "easeInOut",
-                delay: 0.2 * index,
+                delay: 0.1 * index,
               },
             },
           }}
-          whileHover={{ scale: 1.2, y: -2 }}
+          whileHover={{ scale: 1.2, y: -2 }} // y:-2 might look odd in column, adjust if needed
           whileTap={{ scale: 0.9 }}
-          about={link.alt}
-          role={link.alt}
         >
           <link.icon />
         </motion.a>

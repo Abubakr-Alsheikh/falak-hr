@@ -33,7 +33,7 @@ const Footer: React.FC = () => {
     { label: "الشروط والأحكام", to: "#" },
   ];
   const contactInfo = {
-    phone: "+966 500000000",
+    phone: "+966 580844442",
     email: "info@falakhr.com",
   };
 
