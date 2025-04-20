@@ -1,3 +1,4 @@
+// src/pages/public/about/AboutUs.tsx
 import React from "react";
 import AboutUsTitle from "./sections/AboutUsTitle";
 import CeoMessage from "./sections/CeoMessage";
@@ -7,11 +8,7 @@ const AboutUs: React.FC = () => {
   return (
     <div className="container mx-auto mt-16">
       <AboutUsTitle />
-      <CeoMessage
-        ceoName="عبد العزيز النهدي"
-        ceoTitle="الرئيس التنفيذي"
-        message="مرحباً بكم في فلك للموارد البشرية. نفخر بالرحلة التي قطعناها والإنجازات التي حققناها. رؤيتنا واضحة وهدفنا ثابت نحو تقديم الأفضل دائماً."
-      />
+      <CeoMessage ceoName="عبد العزيز النهدي" ceoTitle="الرئيس التنفيذي" />
       <AboutUsContent />
     </div>
   );
