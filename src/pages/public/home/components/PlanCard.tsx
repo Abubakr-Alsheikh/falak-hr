@@ -1,5 +1,6 @@
 import Button from "@/components/common/public/Button";
 import React from "react";
+import { Link } from "react-router-dom";
 
 interface PricingCardProps {
   title: string;
@@ -49,7 +50,9 @@ const PricingCard: React.FC<PricingCardProps> = ({
           </li>
         ))}
       </ul>
-      <Button text={buttonText} variant="secondary" />
+      <Link to="/remote-work" className="block w-full">
+        <Button text={buttonText} variant="secondary" className="w-full" />
+      </Link>
     </div>
   );
 };
