@@ -56,7 +56,7 @@ const ContactForm: React.FC = () => {
 
         setSubmitError(errorMessage);
       } else {
-        setSubmitError("An unexpected error occurred. Please try again later.");
+        setSubmitError("حدث خطأ غير متوقع. يُرجى المحاولة لاحقًا.");
       }
     } finally {
       setIsSubmitting(false);
@@ -118,9 +118,7 @@ const ContactForm: React.FC = () => {
             />
           </FadeIn>
           {submitSuccess && (
-            <div className="mt-4 text-green-600">
-              Message sent successfully!
-            </div>
+            <div className="mt-4 text-green-600">تم إرسال الرسالة بنجاح!</div>
           )}
           {submitError && (
             <div className="mt-4 text-red-600">{submitError}</div>
