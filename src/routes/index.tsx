@@ -35,6 +35,10 @@ const SubscriptionRequestsPage = lazy(
   () => import("@/pages/dashboard/subscriptions/SubscriptionRequestsPage")
 );
 
+const ServiceRequestsPage = lazy(
+  () => import("@/pages/dashboard/service-requests/ServiceRequestsPage")
+);
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -93,6 +97,7 @@ const AppRoutes = () => {
         <Route path="tasks" element={<TaskPage />} />
         <Route path="inquiries" element={<InquiriesPage />} />
         <Route path="subscription" element={<SubscriptionRequestsPage />} />
+        <Route path="service-requests" element={<ServiceRequestsPage />} />
       </Route>
 
       {/* 404 Page */}

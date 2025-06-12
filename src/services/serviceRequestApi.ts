@@ -1,5 +1,7 @@
 import apiClient from "@/api/client"; // <-- Import your configured Axios client
 import { ServiceRequestData } from "@/lib/validations/serviceRequestSchema";
+import { ServiceRequest } from "@/types/serviceRequest";
+import { PaginatedResponse } from "@/utils/pagination";
 import { isAxiosError } from "axios";
 
 // Placeholder for the actual API response type on success
@@ -7,6 +9,13 @@ interface SubmitResponse {
   id: string;
   status: string;
   message: string;
+}
+
+interface ServiceRequestParams {
+  page?: number;
+  page_size?: number;
+  ordering?: string;
+  search?: string; // Add search if the backend supports it
 }
 
 /**
@@ -32,7 +41,7 @@ export const submitServiceRequest = async (
   try {
     // Use the apiClient to make the POST request.
     const response = await apiClient.post<SubmitResponse>(
-      "/service-requests", // The endpoint path
+      "/service-requests/", // The endpoint path
       formData, // The FormData payload
       {
         // **CRUCIAL**: Override the default 'application/json' header for this specific request.
@@ -56,4 +65,29 @@ export const submitServiceRequest = async (
     // Handle non-Axios errors or cases where there's no response.
     throw new Error("An unexpected network error occurred. Please try again.");
   }
+};
+
+export const serviceRequestService = {
+  /**
+   * Fetches a paginated list of service requests.
+   */
+  getServiceRequests: async (
+    params: ServiceRequestParams = {}
+  ): Promise<PaginatedResponse<ServiceRequest>> => {
+    const response = await apiClient.get<PaginatedResponse<ServiceRequest>>(
+      "/service-requests/",
+      { params }
+    );
+    return response.data;
+  },
+
+  /**
+   * Fetches the details for a single service request by its ID.
+   */
+  getServiceRequestDetails: async (id: string): Promise<ServiceRequest> => {
+    const response = await apiClient.get<ServiceRequest>(
+      `/service-requests/${id}/`
+    );
+    return response.data;
+  },
 };

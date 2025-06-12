@@ -18,6 +18,7 @@ import {
   MessageCircle,
   View,
   LayoutDashboard,
+  ClipboardList,
 } from "lucide-react";
 
 import { NavMain } from "@/components/common/dashboard/layout/nav-main";
@@ -90,6 +91,11 @@ const data = {
           title: "طلبات الاشتراك",
           url: "/dashboard/subscription",
           icon: MailPlus,
+        },
+        {
+          title: "طلبات الخدمات",
+          url: "/dashboard/service-requests",
+          icon: ClipboardList,
         },
       ],
     },

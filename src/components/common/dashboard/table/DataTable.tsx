@@ -26,11 +26,11 @@ interface DataTableProps<TData> {
   isLoading: boolean;
   totalCount: number;
   currentPage: number;
-  onPageChange: (page: number) => void;
-  sorting: SortingState;
-  setSorting: OnChangeFn<SortingState>;
-  columnVisibility: VisibilityState;
-  setColumnVisibility: OnChangeFn<VisibilityState>;
+  onPageChange?: (page: number) => void;
+  sorting?: SortingState;
+  setSorting?: OnChangeFn<SortingState>;
+  columnVisibility?: VisibilityState;
+  setColumnVisibility?: OnChangeFn<VisibilityState>;
   pageSize: number;
   noDataMessage: string;
 }
@@ -78,7 +78,10 @@ export function DataTable<TData>({
 
   //  Handle page changes initiated within the table.
   useEffect(() => {
-    if (table.getState().pagination.pageIndex + 1 !== internalCurrentPage) {
+    if (
+      onPageChange !== undefined &&
+      table.getState().pagination.pageIndex + 1 !== internalCurrentPage
+    ) {
       onPageChange(table.getState().pagination.pageIndex + 1);
     }
   }, [table, internalCurrentPage, onPageChange]);
