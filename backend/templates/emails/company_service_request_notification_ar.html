@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; direction: rtl; text-align: right;}
+  .container { width: 80%; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+  .header { background-color: #f8f8f8; padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+  .content { padding: 20px 0; }
+  .detail-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+  .detail-table th, .detail-table td { padding: 8px; border: 1px solid #ddd; text-align: right; }
+  .detail-table th { background-color: #f2f2f2; }
+  .footer { margin-top: 20px; font-size: 0.9em; color: #666; text-align: center; }
+  a { color: #007bff; text-decoration: none; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>تم استلام طلب خدمة جديد</h2>
+      <p>من: {{ companyName }} ({{ requestType }})</p>
+    </div>
+    <div class="content">
+      <p>عزيزي المسؤول،</p>
+      <p>تم تقديم طلب خدمة جديد على منصة فلك للموارد البشرية. يرجى الاطلاع على التفاصيل أدناه:</p>
+
+      <table class="detail-table">
+        <tr><th>معرف الطلب:</th><td>{{ id }}</td></tr>
+        <tr><th>نوع الطلب:</th><td>{{ requestType }}</td></tr>
+        <tr><th>اسم الشركة:</th><td>{{ companyName }}</td></tr>
+        <tr><th>جهة الاتصال:</th><td>{{ contactPerson }}</td></tr>
+        <tr><th>البريد الإلكتروني:</th><td><a href="mailto:{{ email }}">{{ email }}</a></td></tr>
+        <tr><th>الهاتف:</th><td>{{ phone }}</td></tr>
+        <tr><th>الملف التعريفي للشركة:</th><td>{{ companyProfile }}</td></tr>
+      </table>
+
+      <h3>المستندات المرفقة:</h3>
+      <ul>
+        <li>التراخيص: <a href="{{ licenses_url }}">{{ licenses_url }}</a></li>
+        <li>المدراء: <a href="{{ managers_url }}">{{ managers_url }}</a></li>
+        <li>الميزانية: <a href="{{ balance_url }}">{{ balance_url }}</a></li>
+      </ul>
+
+      <p><strong>تاريخ التقديم:</strong> {{ created_at }}</p>
+      <p><strong>الحالة الحالية:</strong> {{ status }}</p>
+
+      <p>يرجى تسجيل الدخول إلى لوحة الإدارة لمراجعة الطلب.</p>
+    </div>
+    <div class="footer">
+      <p>مع أطيب التحيات،<br>فلك للموارد البشرية</p>
+    </div>
+  </div>
+</body>
+</html>
