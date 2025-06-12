@@ -1,17 +1,16 @@
+import { z } from "zod";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import {
-  RequestType,
-  ServiceFormData,
-} from "@/pages/public/contact/sections/ServiceRequest";
+import { ServiceRequestData } from "@/lib/validations/serviceRequestSchema";
 
 interface Props {
-  formData: ServiceFormData;
-  onDataChange: <T extends keyof ServiceFormData>(
-    field: T,
-    value: ServiceFormData[T]
+  formData: Partial<ServiceRequestData>;
+  onDataChange: (
+    field: "requestType",
+    value: "main_facility" | "branch_facility" | "modify_data"
   ) => void;
+  errors: z.ZodFormattedError<ServiceRequestData> | null;
 }
 
 const requestTypes = [
@@ -20,7 +19,7 @@ const requestTypes = [
   { value: "modify_data", label: "تعديل بيانات منشأة", icon: "✏️" },
 ] as const;
 
-export const Step1RequestType = ({ formData, onDataChange }: Props) => {
+export const Step1RequestType = ({ formData, onDataChange, errors }: Props) => {
   return (
     <div>
       <h2 className="mb-2 text-2xl font-bold text-sky-700">
@@ -32,9 +31,7 @@ export const Step1RequestType = ({ formData, onDataChange }: Props) => {
 
       <RadioGroup
         value={formData.requestType}
-        onValueChange={(value: RequestType) =>
-          onDataChange("requestType", value)
-        }
+        onValueChange={(value) => onDataChange("requestType", value as any)}
         className="grid grid-cols-1 gap-6 text-center md:grid-cols-3"
       >
         {requestTypes.map((type) => (
@@ -45,7 +42,7 @@ export const Step1RequestType = ({ formData, onDataChange }: Props) => {
               "p-6 rounded-lg cursor-pointer bg-slate-50 hover:bg-white transition-all duration-200 ease-in-out border-2",
               formData.requestType === type.value
                 ? "border-sky-600 shadow-md transform -translate-y-1"
-                : "border-transparent"
+                : "border-transparent hover:border-slate-200"
             )}
           >
             <RadioGroupItem
@@ -58,6 +55,11 @@ export const Step1RequestType = ({ formData, onDataChange }: Props) => {
           </Label>
         ))}
       </RadioGroup>
+      {errors?.requestType && (
+        <p className="mt-4 text-center text-sm font-medium text-destructive">
+          {errors.requestType._errors[0]}
+        </p>
+      )}
     </div>
   );
 };

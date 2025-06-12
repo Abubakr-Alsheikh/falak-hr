@@ -19,10 +19,10 @@ export const ServiceRequestStepper: React.FC<StepperProps> = ({
               className={cn(
                 "flex h-10 w-10 items-center justify-center rounded-full border-2 font-bold transition-all duration-300",
                 currentStep > step.id
-                  ? "bg-sky-800 border-sky-800 text-white" // Completed
+                  ? "bg-sky-800 border-sky-800 text-white"
                   : currentStep === step.id
-                  ? "bg-sky-600 border-sky-600 text-white" // Active
-                  : "bg-background border-slate-300 text-slate-500" // Inactive
+                  ? "bg-sky-600 border-sky-600 text-white"
+                  : "bg-background border-slate-300 text-slate-500"
               )}
             >
               {step.id}

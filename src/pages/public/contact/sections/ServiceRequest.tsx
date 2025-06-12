@@ -1,37 +1,27 @@
-"use client"; // Required for components with hooks
+"use client";
 
 import React, { useState } from "react";
+import { z, ZodObject } from "zod";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, Loader2 } from "lucide-react";
+
 import { ServiceRequestStepper } from "@/components/service-request/ServiceRequestStepper";
 import { Step1RequestType } from "@/components/service-request/steps/Step1RequestType";
 import { Step2Information } from "@/components/service-request/steps/Step2Information";
 import { Step3Attachments } from "@/components/service-request/steps/Step3Attachments";
 import { Step4Review } from "@/components/service-request/steps/Step4Review";
 import { ServiceRequestSuccess } from "@/components/service-request/ServiceRequestSuccess";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import FadeIn from "@/components/animations/FadeIn";
 
-// Define the structure for our form data with TypeScript
-export type RequestType =
-  | "main_facility"
-  | "branch_facility"
-  | "modify_data"
-  | "";
+import {
+  serviceRequestObjectSchema,
+  step3ValidationSchema,
+  serviceRequestFinalSchema,
+  ServiceRequestData,
+} from "@/lib/validations/serviceRequestSchema";
+import { submitServiceRequest } from "@/services/serviceRequestApi";
 
-export interface ServiceFormData {
-  requestType: RequestType;
-  companyName: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
-  companyProfile: string;
-  licenses: File | null;
-  managers: File | null;
-  balance: File | null;
-  agreement: boolean;
-}
-
-// Define the steps for our form wizard
 const steps = [
   { id: 1, title: "نوع الطلب" },
   { id: 2, title: "المعلومات" },
@@ -39,147 +29,201 @@ const steps = [
   { id: 4, title: "المراجعة" },
 ];
 
-const ServiceRequestPage = () => {
-  // State management using React Hooks
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [formData, setFormData] = useState<ServiceFormData>({
-    requestType: "",
-    companyName: "",
-    contactPerson: "",
-    email: "",
-    phone: "",
-    companyProfile: "",
-    licenses: null,
-    managers: null,
-    balance: null,
-    agreement: false,
-  });
+type FormErrors = z.ZodFormattedError<ServiceRequestData> | null;
 
-  // Handler to update form data. Using a generic approach for scalability.
-  const handleDataChange = <T extends keyof ServiceFormData>(
+const ServiceRequestPage = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<Partial<ServiceRequestData>>({});
+  const [errors, setErrors] = useState<FormErrors>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleDataChange = <T extends keyof ServiceRequestData>(
     field: T,
-    value: ServiceFormData[T]
+    value: ServiceRequestData[T]
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // When the user types, clear the specific error for that field.
+    if (errors?.[field]) {
+      setErrors((prev) => {
+        if (!prev) return null;
+        const newErrors = { ...prev };
+        delete (newErrors as any)[field];
+        if (Object.keys(newErrors).length <= 1 && newErrors._errors)
+          return null;
+        return newErrors;
+      });
+    }
   };
 
-  // Navigation handlers
-  const handleNext = () => {
-    // Add validation before proceeding if needed
-    if (currentStep === 1 && !formData.requestType) {
-      // Here you could trigger a toast notification for a better UX
-      alert("الرجاء اختيار نوع الطلب للمتابعة.");
-      return;
+  const validateStep = (step: number): boolean => {
+    let partialSchema: ZodObject<any> | z.ZodEffects<any>;
+
+    switch (step) {
+      case 1:
+        partialSchema = serviceRequestObjectSchema.pick({ requestType: true });
+        break;
+      case 2:
+        partialSchema = serviceRequestObjectSchema.pick({
+          companyName: true,
+          contactPerson: true,
+          email: true,
+          phone: true,
+        });
+        break;
+      case 3:
+        partialSchema = step3ValidationSchema;
+        break;
+      case 4:
+        partialSchema = serviceRequestObjectSchema.pick({ agreement: true });
+        break;
+      default:
+        return true;
     }
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length));
+
+    const result = partialSchema.safeParse(formData);
+
+    if (!result.success) {
+      // If validation fails, set the errors and stop.
+      setErrors(result.error.format());
+      return false;
+    }
+
+    // --- THE FIX ---
+    // If validation succeeds, clear all errors and proceed.
+    // This removes the code that was causing the crash.
+    setErrors(null);
+    return true;
+  };
+
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length));
+    }
   };
 
   const handlePrev = () => {
+    // Also clear errors when going back for a clean slate.
+    setErrors(null);
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend API
-    console.log("Form Submitted:", formData);
-    setIsSubmitted(true);
+    setSubmitError(null);
+
+    const result = serviceRequestFinalSchema.safeParse(formData);
+    if (!result.success) {
+      setErrors(result.error.format());
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await submitServiceRequest(result.data);
+      setIsSubmitted(true);
+    } catch (error: any) {
+      let errorMessage = "فشل الإرسال. حدث خطأ غير متوقع.";
+      if (error && error.errors) {
+        errorMessage = Object.values(error.errors).join(" ");
+      } else if (error && error.message) {
+        errorMessage = error.message;
+      }
+      setSubmitError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  // Helper to render the current step's component
   const renderStepContent = () => {
+    const props = { onDataChange: handleDataChange as any, formData, errors };
     switch (currentStep) {
       case 1:
-        return (
-          <Step1RequestType
-            formData={formData}
-            onDataChange={handleDataChange}
-          />
-        );
+        return <Step1RequestType {...props} />;
       case 2:
-        return (
-          <Step2Information
-            formData={formData}
-            onDataChange={handleDataChange}
-          />
-        );
+        return <Step2Information {...props} />;
       case 3:
-        return (
-          <Step3Attachments
-            formData={formData}
-            onDataChange={handleDataChange}
-          />
-        );
+        return <Step3Attachments {...props} />;
       case 4:
-        return (
-          <Step4Review formData={formData} onDataChange={handleDataChange} />
-        );
+        return <Step4Review {...props} />;
       default:
         return null;
     }
   };
 
-  // The main layout rendering
+  // The JSX remains identical
   return (
-    <FadeIn direction="up">
-      <div className="container mx-auto mb-8 max-w-4xl p-4" dir="rtl">
-        <header className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-sky-800 md:text-4xl">
-            استمارة طلب الخدمات
-          </h1>
-          <p className="mt-2 text-lg text-muted-foreground">
-            نظام تفاعلي لتقديم طلباتكم بكل سهولة ويسر
-          </p>
-        </header>
+    <div className="container mx-auto max-w-4xl p-4 md:p-8" dir="rtl">
+      <header className="mb-8 text-center">
+        <h1 className="text-3xl font-bold text-sky-800 md:text-4xl">
+          استمارة طلب الخدمات
+        </h1>
+        <p className="mt-2 text-lg text-muted-foreground">
+          نظام تفاعلي لتقديم طلباتكم بكل سهولة ويسر
+        </p>
+      </header>
 
-        <Card className="shadow-lg">
-          <CardContent className="p-6 md:p-10">
-            {isSubmitted ? (
-              <ServiceRequestSuccess />
-            ) : (
-              <>
-                <ServiceRequestStepper
-                  steps={steps}
-                  currentStep={currentStep}
-                />
-                <form onSubmit={handleSubmit} className="mt-10">
-                  {renderStepContent()}
+      <Card className="shadow-lg">
+        <CardContent className="p-6 md:p-10">
+          {isSubmitted ? (
+            <ServiceRequestSuccess />
+          ) : (
+            <>
+              <ServiceRequestStepper steps={steps} currentStep={currentStep} />
 
-                  {/* Navigation Buttons */}
-                  <div className="mt-10 flex justify-between">
-                    {currentStep > 1 ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handlePrev}
-                      >
-                        السابق
-                      </Button>
-                    ) : (
-                      <div />
-                    )}{" "}
-                    {/* Empty div for alignment */}
-                    {currentStep < steps.length ? (
-                      <Button type="button" onClick={handleNext}>
-                        التالي
-                      </Button>
-                    ) : (
-                      <Button
-                        type="submit"
-                        disabled={!formData.agreement}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        إرسال الطلب
-                      </Button>
-                    )}
-                  </div>
-                </form>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </FadeIn>
+              {submitError && (
+                <Alert variant="destructive" className="mt-6">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>فشل إرسال الطلب</AlertTitle>
+                  <AlertDescription>{submitError}</AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handleSubmit} className="mt-10">
+                <div className="min-h-[300px]">{renderStepContent()}</div>
+
+                <div className="mt-10 flex justify-between">
+                  {currentStep > 1 ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handlePrev}
+                      disabled={isSubmitting}
+                    >
+                      السابق
+                    </Button>
+                  ) : (
+                    <div />
+                  )}
+
+                  {currentStep < steps.length ? (
+                    <Button
+                      type="button"
+                      onClick={handleNext}
+                      disabled={isSubmitting}
+                    >
+                      التالي
+                    </Button>
+                  ) : (
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      {isSubmitting && (
+                        <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                      )}
+                      {isSubmitting ? "جار الإرسال..." : "إرسال الطلب"}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

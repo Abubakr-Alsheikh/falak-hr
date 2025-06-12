@@ -1,3 +1,4 @@
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -7,13 +8,15 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { ServiceRequestData } from "@/lib/validations/serviceRequestSchema";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { ServiceFormData } from "@/pages/public/contact/sections/ServiceRequest";
+import { Label } from "@/components/ui/label";
 
 interface Props {
-  formData: ServiceFormData;
+  formData: Partial<ServiceRequestData>;
   onDataChange: (field: "agreement", value: boolean) => void;
+  errors: z.ZodFormattedError<ServiceRequestData> | null;
 }
 
 const requestTypeLabels: Record<string, string> = {
@@ -22,20 +25,22 @@ const requestTypeLabels: Record<string, string> = {
   modify_data: "تعديل بيانات منشأة",
 };
 
-export const Step4Review = ({ formData, onDataChange }: Props) => {
-  const getFileName = (file: File | null) => file?.name || "لم يتم إرفاق ملف";
+export const Step4Review = ({ formData, onDataChange, errors }: Props) => {
+  const getFileName = (file: File | null | undefined) =>
+    file?.name || "لم يتم إرفاق ملف";
 
   return (
     <div>
       <h2 className="mb-6 text-2xl font-bold text-sky-700">
         الخطوة الرابعة: المراجعة النهائية والتأكيد
       </h2>
+      {/* Review Section */}
       <div className="space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-6">
         <h3 className="mb-3 border-b pb-2 text-lg font-semibold">ملخص الطلب</h3>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <p>
             <strong>نوع الطلب:</strong>{" "}
-            {requestTypeLabels[formData.requestType] || "غير محدد"}
+            {requestTypeLabels[formData.requestType || ""] || "غير محدد"}
           </p>
           <p>
             <strong>اسم المنشأة:</strong> {formData.companyName || "لم يدخل"}
@@ -74,6 +79,7 @@ export const Step4Review = ({ formData, onDataChange }: Props) => {
         </div>
       </div>
 
+      {/* Agreement Section */}
       <div className="mt-8">
         <div className="flex items-center space-x-2 space-x-reverse">
           <Checkbox
@@ -81,7 +87,7 @@ export const Step4Review = ({ formData, onDataChange }: Props) => {
             checked={formData.agreement}
             onCheckedChange={(checked) => onDataChange("agreement", !!checked)}
           />
-          <label
+          <Label
             htmlFor="agreement"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
@@ -92,12 +98,11 @@ export const Step4Review = ({ formData, onDataChange }: Props) => {
                   اتفاقية تزويد الخدمة
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[625px]">
+              <DialogContent className="sm:max-w-[625px]" dir="rtl">
                 <DialogHeader>
                   <DialogTitle>بنود اتفاقية تزويد الخدمة</DialogTitle>
                 </DialogHeader>
                 <div className="max-h-[60vh] overflow-y-auto py-4 text-sm leading-relaxed text-slate-700">
-                  {/* Agreement content here */}
                   <ol className="list-decimal space-y-2 pl-5">
                     <li>
                       <strong>النطاق والخدمات:</strong> يوافق الطرف الأول
@@ -126,17 +131,6 @@ export const Step4Review = ({ formData, onDataChange }: Props) => {
                       إنهاء هذه الاتفاقية بإشعار خطي مسبق وفقاً للمدة المتفق
                       عليها، في حال عدم التزام الطرف الآخر ببنود الاتفاقية.
                     </li>
-                    <li>
-                      <strong>القانون الحاكم وحل النزاعات:</strong> تخضع هذه
-                      الاتفاقية لقوانين المملكة العربية السعودية، وتتم تسوية أي
-                      نزاعات تنشأ عن هذه الاتفاقية ودياً، وفي حال عدم التوصل إلى
-                      تسوية، يتم اللجوء إلى المحاكم المختصة.
-                    </li>
-                    <li>
-                      <strong>التعديلات:</strong> لا تعتبر أي تعديلات على هذه
-                      الاتفاقية سارية المفعول إلا إذا تمت كتابتها ووقع عليها
-                      الطرفان.
-                    </li>
                   </ol>
                 </div>
                 <DialogFooter>
@@ -149,8 +143,13 @@ export const Step4Review = ({ formData, onDataChange }: Props) => {
               </DialogContent>
             </Dialog>
             .
-          </label>
+          </Label>
         </div>
+        {errors?.agreement && (
+          <p className="mt-2 text-sm font-medium text-destructive">
+            {errors.agreement._errors[0]}
+          </p>
+        )}
       </div>
     </div>
   );

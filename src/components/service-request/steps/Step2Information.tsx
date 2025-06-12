@@ -1,71 +1,84 @@
+import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ServiceFormData } from "@/pages/public/contact/sections/ServiceRequest";
+import { FormField } from "@/components/forms/FormField";
+import { ServiceRequestData } from "@/lib/validations/serviceRequestSchema";
 
 interface Props {
-  formData: ServiceFormData;
-  onDataChange: (field: keyof ServiceFormData, value: string) => void;
+  formData: Partial<ServiceRequestData>;
+  onDataChange: (field: keyof ServiceRequestData, value: string) => void;
+  errors: z.ZodFormattedError<ServiceRequestData> | null;
 }
 
-export const Step2Information = ({ formData, onDataChange }: Props) => {
+export const Step2Information = ({ formData, onDataChange, errors }: Props) => {
   return (
     <div>
       <h2 className="mb-6 text-2xl font-bold text-sky-700">
         الخطوة الثانية: معلومات المنشأة والتواصل
       </h2>
-      <div className="space-y-6">
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="companyName">اسم الجهة/المنشأة</Label>
+      <div className="space-y-4">
+        <FormField
+          id="companyName"
+          label="اسم الجهة/المنشأة"
+          error={errors?.companyName?._errors[0]}
+        >
           <Input
-            type="text"
             id="companyName"
-            value={formData.companyName}
+            value={formData.companyName ?? ""}
             onChange={(e) => onDataChange("companyName", e.target.value)}
-            required
           />
-        </div>
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="contactPerson">اسم المسؤول/المتصل</Label>
+        </FormField>
+
+        <FormField
+          id="contactPerson"
+          label="اسم المسؤول/المتصل"
+          error={errors?.contactPerson?._errors[0]}
+        >
           <Input
-            type="text"
             id="contactPerson"
-            value={formData.contactPerson}
+            value={formData.contactPerson ?? ""}
             onChange={(e) => onDataChange("contactPerson", e.target.value)}
-            required
           />
-        </div>
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="email">البريد الإلكتروني</Label>
+        </FormField>
+
+        <FormField
+          id="email"
+          label="البريد الإلكتروني"
+          error={errors?.email?._errors[0]}
+        >
           <Input
             type="email"
             id="email"
-            value={formData.email}
+            value={formData.email ?? ""}
             onChange={(e) => onDataChange("email", e.target.value)}
-            required
           />
-        </div>
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="phone">رقم الهاتف</Label>
+        </FormField>
+
+        <FormField
+          id="phone"
+          label="رقم الهاتف"
+          error={errors?.phone?._errors[0]}
+        >
           <Input
             type="tel"
             id="phone"
-            value={formData.phone}
+            value={formData.phone ?? ""}
             onChange={(e) => onDataChange("phone", e.target.value)}
-            required
           />
-        </div>
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="companyProfile">
-            نبذة تعريفية عن المنشأة وأنشطتها
-          </Label>
+        </FormField>
+
+        <FormField
+          id="companyProfile"
+          label="نبذة تعريفية عن المنشأة وأنشطتها"
+          error={errors?.companyProfile?._errors[0]}
+        >
           <Textarea
             id="companyProfile"
-            value={formData.companyProfile}
+            value={formData.companyProfile ?? ""}
             onChange={(e) => onDataChange("companyProfile", e.target.value)}
             rows={4}
           />
-        </div>
+        </FormField>
       </div>
     </div>
   );
