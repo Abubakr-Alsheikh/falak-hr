@@ -6,7 +6,7 @@ import {
   clearTokens,
 } from "@utils/auth";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL_V2;
 
 const createApiClient = (): AxiosInstance => {
   const config: AxiosRequestConfig = {
