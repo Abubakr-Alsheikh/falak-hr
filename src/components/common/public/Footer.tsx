@@ -27,14 +27,14 @@ const Footer: React.FC = () => {
     { label: "اتصل بنا", to: "/contact-us", icon: AiOutlinePhone },
   ];
   const companyLinks: FooterLink[] = [
-    { label: "خدماتنا", to: "#" },
-    { label: "مدونة", to: "#" },
-    { label: "سياسة الخصوصية", to: "#" },
-    { label: "الشروط والأحكام", to: "#" },
+    { label: "خدماتنا", to: "/remote-work" },
+    { label: "مدونة", to: "/about-us" },
+    { label: "سياسة الخصوصية", to: "/contact-us" },
+    { label: "الشروط والأحكام", to: "/contact-us" },
   ];
   const contactInfo = {
     phone: "+966 580844442",
-    email: "info@falakhr.com",
+    email: "falakhrsa@gmail.com",
   };
 
   const scrollToTop = () => {
