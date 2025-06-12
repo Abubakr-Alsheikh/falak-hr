@@ -1,11 +1,16 @@
-from django.urls import path
-from .views import ServiceRequestCreateAPIView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ServiceRequestViewSet
+
+# Create a router and register our ViewSet with it.
+router = DefaultRouter()
+router.register(r"service-requests", ServiceRequestViewSet, basename="service-request")
 
 urlpatterns = [
-    # Endpoint URL: /api/service-requests (when included under /api/)
-    path(
-        "service-requests",
-        ServiceRequestCreateAPIView.as_view(),
-        name="create-service-request",
-    ),
+    # The router automatically generates URLs for list, create, retrieve, etc.
+    # For example:
+    #   - GET /api/service-requests/ (list)
+    #   - POST /api/service-requests/ (create)
+    #   - GET /api/service-requests/{id}/ (retrieve)
+    path("", include(router.urls)),
 ]
