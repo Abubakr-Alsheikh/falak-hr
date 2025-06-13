@@ -30,6 +30,11 @@ const fileSchema = z
   .optional();
 
 export const serviceRequestObjectSchema = z.object({
+  // --- NEW FIELDS ---
+  // These will hold the data from the feature card that was clicked.
+  serviceTitle: z.string().optional(),
+  serviceDescription: z.string().optional(),
+  // --- END NEW FIELDS ---
   requestType: z.enum(["main_facility", "branch_facility", "modify_data"], {
     errorMap: () => ({ message: "الرجاء اختيار نوع الطلب." }),
   }),

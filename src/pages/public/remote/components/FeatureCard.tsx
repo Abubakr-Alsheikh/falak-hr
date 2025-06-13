@@ -8,6 +8,7 @@ interface FeatureCardProps {
   number?: number;
   buttonLink?: string;
   buttonText?: string;
+  onButtonClick: () => void;
 }
 
 const FeatureCard: React.FC<FeatureCardProps> = ({
@@ -15,8 +16,9 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   description,
   icon,
   number,
-  buttonLink,
+  buttonLink = "",
   buttonText,
+  onButtonClick,
 }) => {
   return (
     <div className="flex h-full transform flex-col items-center justify-start rounded-xl border border-gray-200 bg-white p-6 text-center shadow-md transition-all duration-300 ease-in-out hover:scale-[1.02] hover:border-primary-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:hover:border-primary-600 dark:hover:bg-gray-700/50 md:p-8">
@@ -35,13 +37,13 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
         {description}
       </p>
 
-      {buttonLink && buttonText && (
+      {buttonText && (
         <Button
-          buttonLink={buttonLink}
           text={buttonText}
           target="_blank"
           rel="noopener noreferrer"
           className="w-full"
+          onClick={onButtonClick}
         />
       )}
     </div>

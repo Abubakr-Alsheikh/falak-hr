@@ -17,6 +17,7 @@ interface Props {
   formData: Partial<ServiceRequestData>;
   onDataChange: (field: "agreement", value: boolean) => void;
   errors: z.ZodFormattedError<ServiceRequestData> | null;
+  serviceTitle?: string;
 }
 
 const requestTypeLabels: Record<string, string> = {
@@ -25,7 +26,12 @@ const requestTypeLabels: Record<string, string> = {
   modify_data: "تعديل بيانات منشأة",
 };
 
-export const Step4Review = ({ formData, onDataChange, errors }: Props) => {
+export const Step4Review = ({
+  formData,
+  onDataChange,
+  errors,
+  serviceTitle,
+}: Props) => {
   const getFileName = (file: File | null | undefined) =>
     file?.name || "لم يتم إرفاق ملف";
 
@@ -37,6 +43,11 @@ export const Step4Review = ({ formData, onDataChange, errors }: Props) => {
       {/* Review Section */}
       <div className="space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-6">
         <h3 className="mb-3 border-b pb-2 text-lg font-semibold">ملخص الطلب</h3>
+        {serviceTitle && (
+          <p>
+            <strong>عنوان الخدمة:</strong> {serviceTitle}
+          </p>
+        )}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <p>
             <strong>نوع الطلب:</strong>{" "}

@@ -5,7 +5,10 @@ export type ServiceRequestStatus =
   | "in_progress"
   | "completed";
 
-export type ServiceRequestType = "main_facility" | "modify_data";
+export type ServiceRequestType =
+  | "main_facility"
+  | "branch_facility"
+  | "modify_data";
 
 export interface ServiceRequest {
   id: string;
