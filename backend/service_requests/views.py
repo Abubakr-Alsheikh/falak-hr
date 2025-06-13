@@ -8,13 +8,11 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
-# Import both permission classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import ServiceRequest
 from .serializers import ServiceRequestSerializer
 
-# Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 
@@ -30,30 +28,16 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceRequestSerializer
     parser_classes = [MultiPartParser, FormParser]
 
-    # Default permission: By default, assume all actions require authentication.
-    # This is overridden by get_permissions for specific actions.
     permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that the view requires.
-        Allows unauthenticated users to create (POST) a service request,
-        but requires authentication for all other actions (GET list, GET retrieve, etc.).
-        """
         if self.action == "create":
-            # For the 'create' action (POST), allow any user (authenticated or not).
             permission_classes = [AllowAny]
         else:
-            # For all other actions (list, retrieve, update, destroy), require authentication.
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
     def create(self, request, *args, **kwargs):
-        """
-        Handles the POST request to create a ServiceRequest.
-        Customizes success and error responses to match the specification.
-        Includes email sending upon successful creation.
-        """
         serializer = self.get_serializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
@@ -72,37 +56,36 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
 
             email_context = {
                 "id": service_request_instance.id,
-                "requestType": service_request_instance.get_request_type_display(),  # This will be in Arabic if choices are translated
+                "requestType": service_request_instance.get_request_type_display(),
                 "companyName": service_request_instance.company_name,
                 "contactPerson": service_request_instance.contact_person,
                 "email": user_email,
                 "phone": service_request_instance.phone,
                 "companyProfile": service_request_instance.company_profile or "N/A",
+                # --- New fields for email context ---
+                "serviceTitle": service_request_instance.service_title or "N/A",
+                "serviceDescription": service_request_instance.service_description
+                or "N/A",
+                # --- End new fields ---
                 "licenses_url": get_file_url(service_request_instance.licenses),
                 "managers_url": get_file_url(service_request_instance.managers),
                 "balance_url": get_file_url(service_request_instance.balance),
-                "status": service_request_instance.get_status_display(),  # This will be in Arabic if choices are translated
+                "status": service_request_instance.get_status_display(),
                 "created_at": service_request_instance.created_at.strftime(
                     "%Y-%m-%d %H:%M:%S UTC"
                 ),
             }
 
             try:
-                # --- Language Selection Logic (forcing Arabic for demonstration) ---
-                # In a real application, this would typically come from request headers (Accept-Language)
-                # or a user preference setting.
-                lang_suffix = "_ar"  # Forces Arabic templates to be used
+                lang_suffix = "_ar"
 
-                # 1. Send Email to Company (admin-facing, can be English or Arabic based on preference)
-                # Keeping this in English for typical admin clarity, but you could add an _ar template
-                # and logic to select based on admin's preferred language.
-                company_subject = f"تم استلام طلب خدمة جديد: {email_context['requestType']} من {email_context['companyName']}"
+                company_subject = f"New Service Request Received: {email_context['requestType']} from {email_context['companyName']}"
                 company_message_plain = render_to_string(
-                    f"emails/company_service_request_notification{lang_suffix}.txt",  # Ensure this template exists
+                    f"emails/company_service_request_notification{lang_suffix}.txt",
                     email_context,
                 )
                 company_message_html = render_to_string(
-                    f"emails/company_service_request_notification{lang_suffix}.html",  # Ensure this template exists
+                    f"emails/company_service_request_notification{lang_suffix}.html",
                     email_context,
                 )
 
@@ -118,16 +101,13 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
                     f"Email sent to company ({company_email}) for service request {service_request_instance.id}."
                 )
 
-                # 2. Send Email to User (translated to Arabic as requested)
-                user_subject = (
-                    f"تم إرسال طلب خدمتك رقم #{email_context['id']}"  # Translated
-                )
+                user_subject = f"تم إرسال طلب خدمتك رقم #{email_context['id']}"
                 user_message_plain = render_to_string(
-                    f"emails/user_service_request_confirmation{lang_suffix}.txt",  # Ensure this template exists
+                    f"emails/user_service_request_confirmation{lang_suffix}.txt",
                     email_context,
                 )
                 user_message_html = render_to_string(
-                    f"emails/user_service_request_confirmation{lang_suffix}.html",  # Ensure this template exists
+                    f"emails/user_service_request_confirmation{lang_suffix}.html",
                     email_context,
                 )
 
@@ -153,18 +133,16 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
                     exc_info=True,
                 )
 
-            # --- SUCCESS Response (201 Created) ---
             return Response(
                 {
                     "id": service_request_instance.id,
                     "status": service_request_instance.status,
-                    "message": "تم إرسال طلب الخدمة بنجاح. تم إرسال بريد إلكتروني للتأكيد.",  # Translated
+                    "message": "تم إرسال طلب الخدمة بنجاح. تم إرسال بريد إلكتروني للتأكيد.",
                 },
                 status=status.HTTP_201_CREATED,
                 headers=headers,
             )
         except ValidationError as e:
-            # --- CLIENT-SIDE ERROR Response (400 Bad Request) ---
             formatted_errors = {}
             for field, messages in e.detail.items():
                 if isinstance(messages, list) and messages:
@@ -173,20 +151,16 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
                     formatted_errors[field] = str(messages)
 
             return Response(
-                {
-                    "message": "البيانات المدخلة غير صالحة.",
-                    "errors": formatted_errors,
-                },  # Translated
+                {"message": "البيانات المدخلة غير صالحة.", "errors": formatted_errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as e:
-            # --- SERVER-SIDE ERROR Response (500 Internal Server Error) ---
             logger.exception(
                 f"An unexpected server error occurred during service request creation: {e}"
             )
             return Response(
                 {
-                    "message": "حدث خطأ غير متوقع في الخادم. الرجاء المحاولة مرة أخرى لاحقًا أو الاتصال بالدعم."  # Translated
+                    "message": "حدث خطأ غير متوقع في الخادم. الرجاء المحاولة مرة أخرى لاحقًا أو الاتصال بالدعم."
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

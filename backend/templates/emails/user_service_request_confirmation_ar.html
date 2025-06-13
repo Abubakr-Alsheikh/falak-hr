@@ -26,6 +26,8 @@
         <li><strong>معرف الطلب:</strong> {{ id }}</li>
         <li><strong>نوع الطلب:</strong> {{ requestType }}</li>
         <li><strong>اسم الشركة:</strong> {{ companyName }}</li>
+        <li><strong>عنوان الخدمة:</strong> {{ serviceTitle|default:"غير متوفر" }}</li>
+        <li><strong>وصف الخدمة:</strong> {{ serviceDescription|default:"غير متوفر" }}</li>
         <li><strong>الحالة الحالية:</strong> {{ status }}</li>
       </ul>
 

@@ -31,14 +31,16 @@
         <tr><th>جهة الاتصال:</th><td>{{ contactPerson }}</td></tr>
         <tr><th>البريد الإلكتروني:</th><td><a href="mailto:{{ email }}">{{ email }}</a></td></tr>
         <tr><th>الهاتف:</th><td>{{ phone }}</td></tr>
-        <tr><th>الملف التعريفي للشركة:</th><td>{{ companyProfile }}</td></tr>
+        <tr><th>الملف التعريفي للشركة:</th><td>{{ companyProfile|default:"غير متوفر" }}</td></tr>
+        <tr><th>عنوان الخدمة:</th><td>{{ serviceTitle|default:"غير متوفر" }}</td></tr>
+        <tr><th>وصف الخدمة:</th><td>{{ serviceDescription|default:"غير متوفر" }}</td></tr>
       </table>
 
       <h3>المستندات المرفقة:</h3>
       <ul>
-        <li>التراخيص: <a href="{{ licenses_url }}">{{ licenses_url }}</a></li>
-        <li>المدراء: <a href="{{ managers_url }}">{{ managers_url }}</a></li>
-        <li>الميزانية: <a href="{{ balance_url }}">{{ balance_url }}</a></li>
+        <li>التراخيص: <a href="{{ licenses_url }}">{{ licenses_url|default:"غير متوفر" }}</a></li>
+        <li>المدراء: <a href="{{ managers_url }}">{{ managers_url|default:"غير متوفر" }}</a></li>
+        <li>الميزانية: <a href="{{ balance_url }}">{{ balance_url|default:"غير متوفر" }}</a></li>
       </ul>
 
       <p><strong>تاريخ التقديم:</strong> {{ created_at }}</p>

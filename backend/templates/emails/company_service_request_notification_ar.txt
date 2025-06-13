@@ -12,12 +12,14 @@ Subject: تم استلام طلب خدمة جديد: {{ requestType }} من {{ c
 جهة الاتصال: {{ contactPerson }}
 البريد الإلكتروني: {{ email }}
 الهاتف: {{ phone }}
-الملف التعريفي للشركة: {{ companyProfile }}
+الملف التعريفي للشركة: {{ companyProfile|default:"غير متوفر" }}
+عنوان الخدمة: {{ serviceTitle|default:"غير متوفر" }}
+وصف الخدمة: {{ serviceDescription|default:"غير متوفر" }}
 
 المستندات المرفقة:
-التراخيص: {{ licenses_url }}
-المدراء: {{ managers_url }}
-الميزانية: {{ balance_url }}
+التراخيص: {{ licenses_url|default:"غير متوفر" }}
+المدراء: {{ managers_url|default:"غير متوفر" }}
+الميزانية: {{ balance_url|default:"غير متوفر" }}
 
 تاريخ التقديم: {{ created_at }}
 الحالة الحالية: {{ status }}
