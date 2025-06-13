@@ -79,7 +79,7 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
             try:
                 lang_suffix = "_ar"
 
-                company_subject = f"New Service Request Received: {email_context['requestType']} from {email_context['companyName']}"
+                company_subject = f"تم استلام طلب خدمة جديد: {email_context['requestType']} من {email_context['companyName']}"
                 company_message_plain = render_to_string(
                     f"emails/company_service_request_notification{lang_suffix}.txt",
                     email_context,
