@@ -66,21 +66,21 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
         allowed_choices = [choice[0] for choice in ServiceRequest.REQUEST_TYPE_CHOICES]
         if value not in allowed_choices:
             raise serializers.ValidationError(
-                f"Invalid request type '{value}'. Must be one of: {', '.join(allowed_choices)}."
+                f"نوع الطلب '{value}' غير صالح. يجب أن يكون أحد الأنواع التالية: {', '.join(allowed_choices)}."  # Translated
             )
         return value
 
     def validate_phone(self, value):
         if not re.fullmatch(r"^\+?[0-9\s-]{7,20}$", value):
             raise serializers.ValidationError(
-                "Please enter a valid phone number format."
+                "الرجاء إدخال تنسيق رقم هاتف صحيح."  # Translated
             )
         return value
 
     def validate_agreement(self, value):
         if str(value).lower() != "true":
             raise serializers.ValidationError(
-                "You must agree to the terms and conditions by setting 'agreement' to 'true'."
+                "يجب الموافقة على الشروط والأحكام بتعيين 'agreement' إلى 'true'."  # Translated
             )
         return True
 
@@ -90,41 +90,55 @@ class ServiceRequestSerializer(serializers.ModelSerializer):
 
         if file.size > MAX_FILE_SIZE_BYTES:
             raise serializers.ValidationError(
-                f"{field_name} file size ({file.size / (1024*1024):.2f}MB) "
-                f"exceeds the maximum allowed size of {MAX_FILE_SIZE_MB}MB."
+                f"حجم ملف {field_name} ({file.size / (1024*1024):.2f} ميجابايت) "  # Translated
+                f"يتجاوز الحد الأقصى المسموح به وهو {MAX_FILE_SIZE_MB} ميجابايت."  # Translated
             )
 
         file_extension = file.name.split(".")[-1].lower()
         if file_extension not in allowed_extensions:
             raise serializers.ValidationError(
-                f"Invalid file type for {field_name}. "
-                f"Allowed types are: {', '.join(allowed_extensions)}."
+                f"نوع الملف غير صالح لـ {field_name}. "  # Translated
+                f"الأنواع المسموح بها هي: {', '.join(allowed_extensions)}."  # Translated
             )
         return file
 
     def validate_licenses(self, file):
         return self._validate_file_common(
-            file, "Licenses", ["pdf", "docx", "png", "jpg", "jpeg"]
+            file,
+            "التراخيص",
+            ["pdf", "docx", "png", "jpg", "jpeg"],  # Translated field name for error
         )
 
     def validate_managers(self, file):
         return self._validate_file_common(
-            file, "Managers", ["pdf", "docx", "png", "jpg", "jpeg"]
+            file,
+            "المديرين",
+            ["pdf", "docx", "png", "jpg", "jpeg"],  # Translated field name for error
         )
 
     def validate_balance(self, file):
         return self._validate_file_common(
-            file, "Balance", ["pdf", "docx", "png", "jpg", "jpeg"]
+            file,
+            "الميزانية العمومية",
+            ["pdf", "docx", "png", "jpg", "jpeg"],  # Translated field name for error
         )
 
     def validate(self, data):
         request_type = data.get("request_type")
         balance_file = data.get("balance")
 
+        # Get translated choices for conditional validation message
+        main_facility_display = dict(ServiceRequest.REQUEST_TYPE_CHOICES)[
+            "main_facility"
+        ]
+        branch_facility_display = dict(ServiceRequest.REQUEST_TYPE_CHOICES)[
+            "branch_facility"
+        ]
+
         if request_type in ["main_facility", "branch_facility"] and not balance_file:
             raise serializers.ValidationError(
                 {
-                    "balance": "The 'balance' file is required for 'Main Facility' and 'Branch Facility' request types."
+                    "balance": f"ملف 'الميزانية العمومية' مطلوب لأنواع طلبات '{main_facility_display}' و '{branch_facility_display}'."  # Translated
                 }
             )
 

@@ -60,7 +60,7 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
 
-            # --- Email Sending Logic (unchanged) ---
+            # --- Email Sending Logic ---
             service_request_instance = serializer.instance
             user_email = service_request_instance.email
             company_email = settings.EMAIL_HOST_USER
@@ -72,7 +72,7 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
 
             email_context = {
                 "id": service_request_instance.id,
-                "requestType": service_request_instance.get_request_type_display(),
+                "requestType": service_request_instance.get_request_type_display(),  # This will be in Arabic if choices are translated
                 "companyName": service_request_instance.company_name,
                 "contactPerson": service_request_instance.contact_person,
                 "email": user_email,
@@ -81,34 +81,29 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
                 "licenses_url": get_file_url(service_request_instance.licenses),
                 "managers_url": get_file_url(service_request_instance.managers),
                 "balance_url": get_file_url(service_request_instance.balance),
-                "status": service_request_instance.get_status_display(),
+                "status": service_request_instance.get_status_display(),  # This will be in Arabic if choices are translated
                 "created_at": service_request_instance.created_at.strftime(
                     "%Y-%m-%d %H:%M:%S UTC"
                 ),
             }
 
             try:
-                # --- Language Selection Logic (Example) ---
-                # You might get the preferred language from request headers, user profile, or a form field
-                # preferred_language = (
-                #     request.META.get("HTTP_ACCEPT_LANGUAGE", "en").split(",")[0].lower()
-                # )
-                # if "ar" in preferred_language:  # Simple check for Arabic
-                #     lang_suffix = "_ar"
-                # else:
-                #     lang_suffix = ""  # Default to English
-                lang_suffix = "_ar"
+                # --- Language Selection Logic (forcing Arabic for demonstration) ---
+                # In a real application, this would typically come from request headers (Accept-Language)
+                # or a user preference setting.
+                lang_suffix = "_ar"  # Forces Arabic templates to be used
 
-                # 1. Send Email to Company (always English for admin?)
-                # You might choose to send admin emails only in a default language like English.
-                company_subject = f"New Service Request Received: {email_context['requestType']} from {email_context['companyName']}"
+                # 1. Send Email to Company (admin-facing, can be English or Arabic based on preference)
+                # Keeping this in English for typical admin clarity, but you could add an _ar template
+                # and logic to select based on admin's preferred language.
+                company_subject = f"تم استلام طلب خدمة جديد: {email_context['requestType']} من {email_context['companyName']}"
                 company_message_plain = render_to_string(
-                    f"emails/company_service_request_notification{lang_suffix}.txt",
-                    email_context,  # Use suffix
+                    f"emails/company_service_request_notification{lang_suffix}.txt",  # Ensure this template exists
+                    email_context,
                 )
                 company_message_html = render_to_string(
-                    f"emails/company_service_request_notification{lang_suffix}.html",
-                    email_context,  # Use suffix
+                    f"emails/company_service_request_notification{lang_suffix}.html",  # Ensure this template exists
+                    email_context,
                 )
 
                 send_mail(
@@ -123,17 +118,17 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
                     f"Email sent to company ({company_email}) for service request {service_request_instance.id}."
                 )
 
-                # 2. Send Email to User (based on preferred language)
+                # 2. Send Email to User (translated to Arabic as requested)
                 user_subject = (
-                    f"Your Service Request #{email_context['id']} Has Been Submitted"
+                    f"تم إرسال طلب خدمتك رقم #{email_context['id']}"  # Translated
                 )
                 user_message_plain = render_to_string(
-                    f"emails/user_service_request_confirmation{lang_suffix}.txt",
-                    email_context,  # Use suffix
+                    f"emails/user_service_request_confirmation{lang_suffix}.txt",  # Ensure this template exists
+                    email_context,
                 )
                 user_message_html = render_to_string(
-                    f"emails/user_service_request_confirmation{lang_suffix}.html",
-                    email_context,  # Use suffix
+                    f"emails/user_service_request_confirmation{lang_suffix}.html",  # Ensure this template exists
+                    email_context,
                 )
 
                 send_mail(
@@ -163,7 +158,7 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
                 {
                     "id": service_request_instance.id,
                     "status": service_request_instance.status,
-                    "message": "Service request submitted successfully. Confirmation email sent.",
+                    "message": "تم إرسال طلب الخدمة بنجاح. تم إرسال بريد إلكتروني للتأكيد.",  # Translated
                 },
                 status=status.HTTP_201_CREATED,
                 headers=headers,
@@ -178,7 +173,10 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
                     formatted_errors[field] = str(messages)
 
             return Response(
-                {"message": "The given data was invalid.", "errors": formatted_errors},
+                {
+                    "message": "البيانات المدخلة غير صالحة.",
+                    "errors": formatted_errors,
+                },  # Translated
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as e:
@@ -188,7 +186,7 @@ class ServiceRequestViewSet(viewsets.ModelViewSet):
             )
             return Response(
                 {
-                    "message": "An unexpected server error occurred. Please try again later or contact support."
+                    "message": "حدث خطأ غير متوقع في الخادم. الرجاء المحاولة مرة أخرى لاحقًا أو الاتصال بالدعم."  # Translated
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

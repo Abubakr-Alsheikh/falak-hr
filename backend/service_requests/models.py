@@ -14,14 +14,14 @@ class ServiceRequest(models.Model):
     id = models.CharField(primary_key=True, max_length=20, editable=False)
 
     REQUEST_TYPE_CHOICES = [
-        ("main_facility", "Main Facility"),
-        ("branch_facility", "Branch Facility"),
-        ("modify_data", "Modify Data"),
+        ("main_facility", "المنشأة الرئيسية"),  # Translated
+        ("branch_facility", "المنشأة الفرعية"),  # Translated
+        ("modify_data", "تعديل البيانات"),  # Translated
     ]
     request_type = models.CharField(
         max_length=50,
         choices=REQUEST_TYPE_CHOICES,
-        help_text="Type of service request (e.g., main_facility, branch_facility, modify_data).",
+        help_text="نوع طلب الخدمة (مثال: المنشأة الرئيسية, المنشأة الفرعية, تعديل البيانات).",  # Translated
     )
 
     company_name = models.CharField(max_length=255)
@@ -32,11 +32,11 @@ class ServiceRequest(models.Model):
         blank=True,
         null=True,
         max_length=2000,
-        help_text="Optional: Brief description of the company profile.",
+        help_text="اختياري: وصف موجز لملف تعريف الشركة.",  # Translated
     )
     agreement = models.BooleanField(
         default=False,
-        help_text="Indicates if the user has agreed to terms and conditions.",
+        help_text="يشير إلى ما إذا كان المستخدم قد وافق على الشروط والأحكام.",  # Translated
     )
 
     # File fields: upload_to defines the subdirectory within MEDIA_ROOT
@@ -50,7 +50,7 @@ class ServiceRequest(models.Model):
                 allowed_extensions=["pdf", "docx", "png", "jpg", "jpeg"]
             )
         ],
-        help_text="Optional: Upload relevant licenses (PDF, DOCX, PNG, JPG, JPEG).",
+        help_text="اختياري: قم بتحميل التراخيص ذات الصلة (PDF, DOCX, PNG, JPG, JPEG).",  # Translated
     )
     managers = models.FileField(
         upload_to="service_requests/managers/",
@@ -61,7 +61,7 @@ class ServiceRequest(models.Model):
                 allowed_extensions=["pdf", "docx", "png", "jpg", "jpeg"]
             )
         ],
-        help_text="Optional: Upload documents related to managers (PDF, DOCX, PNG, JPG, JPEG).",
+        help_text="اختياري: قم بتحميل المستندات المتعلقة بالمديرين (PDF, DOCX, PNG, JPG, JPEG).",  # Translated
     )
     balance = models.FileField(
         upload_to="service_requests/balance/",
@@ -72,20 +72,20 @@ class ServiceRequest(models.Model):
                 allowed_extensions=["pdf", "docx", "png", "jpg", "jpeg"]
             )
         ],
-        help_text="Conditionally Optional: Balance sheet (PDF, DOCX, PNG, JPG, JPEG).",
+        help_text="اختياري مشروط: الميزانية العمومية (PDF, DOCX, PNG, JPG, JPEG).",  # Translated
     )
 
     STATUS_CHOICES = [
-        ("pending_review", "Pending Review"),
-        ("approved", "Approved"),
-        ("rejected", "Rejected"),
+        ("pending_review", "قيد المراجعة"),  # Translated
+        ("approved", "تمت الموافقة"),  # Translated
+        ("rejected", "مرفوض"),  # Translated
     ]
     status = models.CharField(
         max_length=50,
         choices=STATUS_CHOICES,
         default="pending_review",
         editable=False,  # Status changes should be managed internally/by admins
-        help_text="Current status of the service request.",
+        help_text="الحالة الحالية لطلب الخدمة.",  # Translated
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -99,11 +99,10 @@ class ServiceRequest(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return (
-            f"Service Request {self.id} for {self.company_name} ({self.request_type})"
-        )
+        # Using get_request_type_display() to show the translated choice value
+        return f"طلب خدمة {self.id} لـ {self.company_name} ({self.get_request_type_display()})"  # Translated
 
     class Meta:
-        verbose_name = "Service Request"
-        verbose_name_plural = "Service Requests"
+        verbose_name = "طلب خدمة"  # Translated
+        verbose_name_plural = "طلبات الخدمة"  # Translated
         ordering = ["-created_at"]
