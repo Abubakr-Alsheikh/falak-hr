@@ -24,4 +24,6 @@ export interface ServiceRequest {
   status: ServiceRequestStatus;
   created_at: string; // ISO 8601 date string
   updated_at: string; // ISO 8601 date string
+  serviceTitle?: string | null; // Mark as optional and possibly null if not provided
+  serviceDescription?: string | null; // Mark as optional and possibly null if not provided
 }

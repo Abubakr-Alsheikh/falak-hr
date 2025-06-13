@@ -40,7 +40,6 @@ const statusStyles: Record<
 };
 
 // DetailRow and FileLink components remain the same
-
 const DetailRow = ({
   label,
   value,
@@ -48,12 +47,12 @@ const DetailRow = ({
   label: string;
   value: string | React.ReactNode;
 }) => (
-  <div className="flex flex-col sm:flex-row sm:items-center">
+  <div className="flex flex-col border-b border-gray-200 py-3 last:border-b-0 sm:flex-row sm:items-start">
     <dt className="w-full text-sm font-medium text-gray-500 dark:text-gray-400 sm:w-1/3">
       {label}
     </dt>
     <dd className="mt-1 w-full text-sm text-gray-900 dark:text-gray-100 sm:mt-0 sm:w-2/3">
-      {value}
+      {value || <span className="text-gray-400">غير متوفر</span>}
     </dd>
   </div>
 );
@@ -77,17 +76,12 @@ export const ServiceRequestDetailsModal = ({
   onClose,
   request,
 }: ServiceRequestDetailsModalProps) => {
-  // --- CHANGE IS HERE ---
-  // The <Dialog> component itself is now always rendered.
-  // Its visibility is controlled ONLY by the `open` and `onOpenChange` props.
-  // We conditionally render the *content* inside to avoid errors when `request` is null.
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl" dir="rtl">
         {request && (
           <>
-            <DialogHeader>
+            <DialogHeader className="text-right">
               <DialogTitle>
                 تفاصيل طلب الخدمة - {request.companyName}
               </DialogTitle>
@@ -96,7 +90,7 @@ export const ServiceRequestDetailsModal = ({
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-6 py-4">
-              <dl className="space-y-4">
+              <dl className="space-y-0 divide-y divide-gray-200">
                 <DetailRow
                   label="الحالة"
                   value={
@@ -105,11 +99,25 @@ export const ServiceRequestDetailsModal = ({
                     </Badge>
                   }
                 />
+                {request.serviceTitle && (
+                  <DetailRow
+                    label="الخدمة المطلوبة"
+                    value={request.serviceTitle}
+                  />
+                )}
+                {request.serviceDescription && (
+                  <DetailRow
+                    label="وصف الخدمة"
+                    value={request.serviceDescription}
+                  />
+                )}
                 <DetailRow
                   label="نوع الطلب"
                   value={
                     request.requestType === "main_facility"
                       ? "منشأة رئيسية"
+                      : request.requestType === "branch_facility"
+                      ? "منشأة فرعية"
                       : "تعديل بيانات"
                   }
                 />
@@ -126,7 +134,7 @@ export const ServiceRequestDetailsModal = ({
                   )}
                 />
                 <DetailRow
-                  label="ملف الشركة"
+                  label="تفاصيل الشركة"
                   value={
                     request.companyProfile || (
                       <span className="text-gray-400">لا يوجد</span>
