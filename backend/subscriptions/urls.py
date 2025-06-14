@@ -1,26 +1,21 @@
-from django.urls import path
+# backend/subscriptions/urls.py
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import (
-    TrainerApplicationCreateView,
-    TraineeApplicationCreateView,
-    JobSeekerApplicationCreateView,
+    TrainerApplicationViewSet,
+    TraineeApplicationViewSet,
+    JobSeekerApplicationViewSet,
 )
 
-app_name = "subscriptions"
+# Create a router and register our viewsets with it.
+router = DefaultRouter()
+router.register(r"trainers", TrainerApplicationViewSet, basename="trainer-application")
+router.register(r"trainees", TraineeApplicationViewSet, basename="trainee-application")
+router.register(
+    r"job-seekers", JobSeekerApplicationViewSet, basename="jobseeker-application"
+)
 
+# The API URLs are now determined automatically by the router.
 urlpatterns = [
-    path(
-        "trainers/",
-        TrainerApplicationCreateView.as_view(),
-        name="trainer-application-create",
-    ),
-    path(
-        "trainees/",
-        TraineeApplicationCreateView.as_view(),
-        name="trainee-application-create",
-    ),
-    path(
-        "job-seekers/",
-        JobSeekerApplicationCreateView.as_view(),
-        name="jobseeker-application-create",
-    ),
+    path("", include(router.urls)),
 ]
