@@ -1,45 +1,71 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 
 
-class SubscriptionRequest(models.Model):
-    USER_TYPE_CHOICES = (
-        ("employer", "صاحب عمل"),
-        ("manager", "مدير"),
-    )
+class BaseApplication(models.Model):
+    """
+    An abstract base model containing common fields for all application forms.
+    """
 
-    SUBSCRIPTION_TYPE_CHOICES = (
-        ("basic", "أساسي"),
-        ("silver", "فضي"),
-        ("gold", "ذهبي"),
-    )
-
-    user_type = models.CharField(
-        max_length=20, choices=USER_TYPE_CHOICES, verbose_name="نوع المستخدم"
-    )
-    subscription_type = models.CharField(
-        max_length=20, choices=SUBSCRIPTION_TYPE_CHOICES, verbose_name="نوع الاشتراك"
-    )
-    # Personal info (you can add more like company_name in the next steps)
-    first_name = models.CharField(max_length=255, verbose_name="الاسم الأول")
-    last_name = models.CharField(max_length=255, verbose_name="اسم العائلة")
+    fullName = models.CharField(max_length=255, verbose_name="الاسم الكامل")
     email = models.EmailField(verbose_name="البريد الإلكتروني")
-    phone_number = models.CharField(
-        max_length=20, verbose_name="رقم الهاتف", blank=True, null=True
+    whatsappNumber = models.CharField(max_length=30, verbose_name="رقم الواتساب")
+    ageCategory = models.CharField(max_length=100, verbose_name="الفئة العمرية")
+    nationality = models.CharField(max_length=100, verbose_name="الجنسية")
+    howHeard = models.CharField(max_length=255, verbose_name="كيف سمعت عنا")
+    receiveNotifications = models.CharField(
+        max_length=50, verbose_name="استلام الإشعارات"
     )
-    company_name = models.CharField(
-        max_length=255, verbose_name="اسم الشركة", blank=True, null=True
+    inquiriesNotes = models.TextField(
+        verbose_name="استفسارات وملاحظات", blank=True, null=True
     )
-    message = models.TextField(
-        verbose_name="الرسالة", blank=True, null=True
-    )
-    request_date = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ الطلب")
-    is_processed = models.BooleanField(
-        default=False, verbose_name="تمت معالجته؟"
-    )
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.get_user_type_display()} - {self.get_subscription_type_display()}"
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ التقديم")
 
     class Meta:
-        verbose_name = "طلب اشتراك"
-        verbose_name_plural = "طلبات الاشتراك"
+        abstract = True
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.fullName} ({self.email})"
+
+
+class TrainerApplication(BaseApplication):
+    cityRegion = models.CharField(max_length=100, verbose_name="المدينة/المنطقة")
+    gender = models.CharField(max_length=50, verbose_name="الجنس")
+    educationalDegree = models.CharField(max_length=100, verbose_name="الدرجة العلمية")
+    registrationType = models.CharField(max_length=100, verbose_name="نوع التسجيل")
+    specialization = models.CharField(max_length=255, verbose_name="التخصص")
+    trainingPackageBrief = models.TextField(verbose_name="نبذة عن الحقيبة التدريبية")
+    clientSegmentsBrief = models.TextField(verbose_name="نبذة عن شرائح العملاء")
+    serviceIdea = models.TextField(verbose_name="فكرة الخدمة المراد تقديمها")
+
+    class Meta(BaseApplication.Meta):
+        verbose_name = "طلب مدرب"
+        verbose_name_plural = "طلبات المدربين"
+
+
+class TraineeApplication(BaseApplication):
+    skillsToDevelop = models.TextField(verbose_name="المهارات المراد تطويرها")
+
+    class Meta(BaseApplication.Meta):
+        verbose_name = "طلب متدرب"
+        verbose_name_plural = "طلبات المتدربين"
+
+
+class JobSeekerApplication(BaseApplication):
+    cityRegion = models.CharField(max_length=100, verbose_name="المدينة/المنطقة")
+    educationalDegree = models.CharField(max_length=100, verbose_name="الدرجة العلمية")
+    specialization = models.CharField(max_length=255, verbose_name="التخصص")
+    yearsOfExperience = models.PositiveIntegerField(
+        verbose_name="سنوات الخبرة", validators=[MinValueValidator(0)]
+    )
+    desiredWorkField = models.CharField(
+        max_length=255, verbose_name="مجال العمل عن بعد المطلوب"
+    )
+    cvLink = models.URLField(
+        max_length=500, verbose_name="رابط السيرة الذاتية", blank=True, null=True
+    )
+
+    class Meta(BaseApplication.Meta):
+        verbose_name = "طلب باحث عن عمل"
+        verbose_name_plural = "طلبات الباحثين عن عمل"

@@ -1,12 +1,24 @@
-# backend/subscriptions/serializers.py
 from rest_framework import serializers
-from .models import SubscriptionRequest
+from .models import TrainerApplication, TraineeApplication, JobSeekerApplication
 
-class SubscriptionRequestSerializer(serializers.ModelSerializer):
-    user_type_display = serializers.CharField(source='get_user_type_display', read_only=True)
-    subscription_type_display = serializers.CharField(source='get_subscription_type_display', read_only=True)
 
+class TrainerApplicationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubscriptionRequest
-        fields = '__all__'
-        read_only_fields = ('request_date', 'user_type_display', 'subscription_type_display')
+        model = TrainerApplication
+        # Exclude read-only fields from the input, but include them in the output
+        fields = "__all__"
+        read_only_fields = ("created_at",)
+
+
+class TraineeApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TraineeApplication
+        fields = "__all__"
+        read_only_fields = ("created_at",)
+
+
+class JobSeekerApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JobSeekerApplication
+        fields = "__all__"
+        read_only_fields = ("created_at",)
