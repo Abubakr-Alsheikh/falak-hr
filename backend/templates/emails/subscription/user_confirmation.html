@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تم استلام طلبك بنجاح</title>
+    <style>
+        /* Same styles as admin_notification.html */
+        body { font-family: sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .header { background-color: #f7f7f7; padding: 10px; text-align: center; border-bottom: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: right; }
+        th { background-color: #f2f2f2; }
+        .footer { margin-top: 20px; font-size: 0.9em; text-align: center; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>شكراً لتقديمك طلب {{ application_type }}</h2>
+        </div>
+        <p>مرحباً {{ applicant_name }}،</p>
+        <p>لقد استلمنا طلبك بنجاح. سيقوم فريقنا بمراجعته والتواصل معك في أقرب فرصة ممكنة. </p>
+        <p>هذه نسخة من البيانات التي قمت بتقديمها:</p>
+
+        <table>
+            <tbody>
+                 {% for field, value in application_data.items %}
+                <tr>
+                    <th>{{ field }}</th>
+                    <td>{{ value|default:"--" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>مع تحيات،<br>فريق فلك للموارد البشرية</p>
+        </div>
+    </div>
+</body>
+</html>

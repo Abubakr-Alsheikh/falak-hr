@@ -3,6 +3,9 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
+# Import our new email function
+from .emails import send_application_notification_emails
+
 from .models import TrainerApplication, TraineeApplication, JobSeekerApplication
 from .serializers import (
     TrainerApplicationSerializer,
@@ -22,24 +25,26 @@ class BaseApplicationViewSet(viewsets.ModelViewSet):
     """
 
     def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
         if self.action == "create":
             self.permission_classes = [AllowAny]
         else:
-            # Only admin users can list, retrieve, or modify submissions
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
     def create(self, request, *args, **kwargs):
         """
         Overrides the default create action to provide a custom success
-        and error response format as per the API specification.
+        and error response format, and to explicitly trigger email notifications.
         """
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=False):  # We handle exception manually
+        if serializer.is_valid(raise_exception=False):
+            # This is the key change. `perform_create` calls serializer.save(),
+            # which populates `serializer.instance` with the newly created object.
             self.perform_create(serializer)
+
+            # Now we explicitly call our email function with the new instance.
+            send_application_notification_emails(serializer.instance)
+
             # Custom success response
             return Response(
                 {"message": "تم استلام طلبك بنجاح. شكراً لك."},
