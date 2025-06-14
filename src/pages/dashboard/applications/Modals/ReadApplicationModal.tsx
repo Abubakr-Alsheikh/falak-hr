@@ -23,7 +23,7 @@ interface ReadApplicationModalProps {
   application: AnyApplicationResponse | null;
 }
 
-// Reusable component for displaying a detail field
+// Reusable component for displaying a detail field (no changes needed, it's good)
 const DetailField = ({
   label,
   value,
@@ -31,9 +31,11 @@ const DetailField = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="grid grid-cols-1 gap-1 border-b py-2 sm:grid-cols-3">
-    <dt className="font-semibold text-muted-foreground">{label}:</dt>
-    <dd className="sm:col-span-2">
+  <div className="grid grid-cols-1 items-center gap-2 py-2 sm:grid-cols-3 sm:gap-4">
+    <dt className="text-right font-semibold text-muted-foreground sm:col-span-1">
+      {label}:
+    </dt>
+    <dd className="col-span-2 text-foreground">
       {value || <span className="text-gray-400">غير متوفر</span>}
     </dd>
   </div>
@@ -61,6 +63,22 @@ export const ReadApplicationModal: React.FC<ReadApplicationModalProps> = ({
             value={application.registrationType}
           />
           <DetailField label="التخصص" value={application.specialization} />
+          <DetailField
+            label="نبذة عن الحقيبة التدريبية"
+            value={
+              <p className="whitespace-pre-wrap">
+                {application.trainingPackageBrief}
+              </p>
+            }
+          />
+          <DetailField
+            label="نبذة عن شرائح العملاء"
+            value={
+              <p className="whitespace-pre-wrap">
+                {application.clientSegmentsBrief}
+              </p>
+            }
+          />
           <DetailField
             label="فكرة الخدمة"
             value={
@@ -120,49 +138,69 @@ export const ReadApplicationModal: React.FC<ReadApplicationModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl" dir="rtl">
+      <DialogContent
+        className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl"
+        dir="rtl"
+      >
         <DialogHeader>
           <DialogTitle>تفاصيل الطلب: {application.fullName}</DialogTitle>
+          {/* Optional: Add a brief description if needed */}
         </DialogHeader>
-        <div className="space-y-2 py-4">
+
+        {/* Scrollable Content Area */}
+        <div className="max-h-[70vh] overflow-y-auto pr-4">
+          {" "}
+          {/* Added max-h and overflow-y-auto */}
           <h3 className="mb-2 text-lg font-semibold text-primary">
             المعلومات الأساسية
           </h3>
-          <DetailField label="الاسم الكامل" value={application.fullName} />
-          <DetailField label="البريد الإلكتروني" value={application.email} />
-          <DetailField
-            label="رقم الواتساب"
-            value={application.whatsappNumber}
-          />
-          <DetailField
-            label="تاريخ الطلب"
-            value={format(new Date(application.created_at), "PPPpppp", {
-              locale: ar,
-            })}
-          />
-          <DetailField label="كيف سمع عنا" value={application.howHeard} />
-          <DetailField
-            label="يرغب بالاشعارات"
-            value={application.receiveNotifications}
-          />
-
-          <h3 className="mb-2 pt-4 text-lg font-semibold text-primary">
+          <div className="space-y-2 p-4">
+            {" "}
+            {/* Added grouping for basic info */}
+            <DetailField label="الاسم الكامل" value={application.fullName} />
+            <DetailField label="البريد الإلكتروني" value={application.email} />
+            <DetailField
+              label="رقم الواتساب"
+              value={application.whatsappNumber}
+            />
+            <DetailField
+              label="الفئة العمرية"
+              value={application.ageCategory}
+            />
+            <DetailField label="الجنسية" value={application.nationality} />
+            <DetailField
+              label="تاريخ الطلب"
+              value={format(new Date(application.created_at), "PPPpppp", {
+                locale: ar,
+              })}
+            />
+            <DetailField label="كيف سمع عنا" value={application.howHeard} />
+            <DetailField
+              label="يرغب بالاشعارات"
+              value={application.receiveNotifications}
+            />
+          </div>
+          <h3 className="mb-2 mt-6 text-lg font-semibold text-primary">
             معلومات إضافية
           </h3>
-          {renderSpecificFields()}
-
-          <DetailField
-            label="ملاحظات"
-            value={
-              <p className="whitespace-pre-wrap">
-                {application.inquiriesNotes}
-              </p>
-            }
-          />
+          <div className="space-y-2 p-4">
+            {" "}
+            {/* Added grouping for specific info */}
+            {renderSpecificFields()}
+            <DetailField
+              label="ملاحظات"
+              value={
+                <p className="whitespace-pre-wrap">
+                  {application.inquiriesNotes}
+                </p>
+              }
+            />
+          </div>
         </div>
+
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="secondary">إغلاق</Button>
+            <Button variant="default">إغلاق</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
