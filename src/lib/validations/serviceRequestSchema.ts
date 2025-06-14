@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// --- Constants and Error Messages (remain the same) ---
+// --- Constants and Error Messages ---
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ACCEPTED_FILE_TYPES = [
   "application/pdf",
@@ -12,15 +12,20 @@ const ACCEPTED_FILE_TYPES = [
 
 const errorMessages = {
   required: "هذا الحقل مطلوب.",
-  invalidEmail: "الرجاء إدخال بريد إلكتروني صحيح.",
-  fileTooLarge: `يجب أن يكون حجم الملف أصغر من 5 ميجابايت.`,
-  invalidFileType: "نوع الملف غير مدعوم. (PDF, DOCX, JPG, PNG)",
+  invalidEmail: "الرجاء إدخال بريد إلكتروني صحيح وصالح.",
+  fileRequired: "الرجاء تحميل الملف المطلوب.",
+  fileTooLarge: `يجب أن يكون حجم الملف أقل من 5 ميجابايت.`,
+  invalidFileType:
+    "نوع الملف غير مدعوم. الأنواع المدعومة: PDF, DOCX, JPG, PNG.",
   agreementRequired: "يجب الموافقة على اتفاقية الخدمة للمتابعة.",
   balanceRequired: "مستند الرصيد الافتتاحي مطلوب لهذا النوع من الطلبات.",
+  invalidPhone: "الرجاء إدخال رقم هاتف صحيح يتكون من 9 أرقام على الأقل.",
+  invalidNumber: "يجب أن يكون هذا الحقل رقماً.", // New specific message for invalid number type
 };
 
+// File schema already handles `undefined` with `instanceof(File, { message: errorMessages.fileRequired })`
 const fileSchema = z
-  .instanceof(File, { message: errorMessages.required })
+  .instanceof(File, { message: errorMessages.fileRequired })
   .refine((file) => file.size <= MAX_FILE_SIZE, errorMessages.fileTooLarge)
   .refine(
     (file) => ACCEPTED_FILE_TYPES.includes(file.type),
@@ -31,17 +36,25 @@ const fileSchema = z
 
 export const serviceRequestObjectSchema = z.object({
   // --- NEW FIELDS ---
-  // These will hold the data from the feature card that was clicked.
   serviceTitle: z.string().optional(),
   serviceDescription: z.string().optional(),
   // --- END NEW FIELDS ---
   requestType: z.enum(["main_facility", "branch_facility", "modify_data"], {
-    errorMap: () => ({ message: "الرجاء اختيار نوع الطلب." }),
+    errorMap: () => ({ message: "الرجاء اختيار نوع الطلب من القائمة." }),
   }),
-  companyName: z.string().min(1, errorMessages.required),
-  contactPerson: z.string().min(1, errorMessages.required),
-  email: z.string().email(errorMessages.invalidEmail),
-  phone: z.string().min(9, "الرجاء إدخال رقم هاتف صحيح."),
+  // Added required_error to z.string() for undefined values
+  companyName: z
+    .string({ required_error: errorMessages.required })
+    .min(1, errorMessages.required),
+  contactPerson: z
+    .string({ required_error: errorMessages.required })
+    .min(1, errorMessages.required),
+  email: z
+    .string({ required_error: errorMessages.required })
+    .email(errorMessages.invalidEmail),
+  phone: z
+    .string({ required_error: errorMessages.required })
+    .min(9, errorMessages.invalidPhone),
   companyProfile: z.string().optional(),
   licenses: fileSchema,
   managers: fileSchema,
@@ -52,31 +65,28 @@ export const serviceRequestObjectSchema = z.object({
 });
 
 // --- THE FIX: Create a dedicated schema for Step 3 validation ---
-// This schema knows about the conditional requirement of the 'balance' field.
 export const step3ValidationSchema = serviceRequestObjectSchema
   .pick({
-    requestType: true, // We need requestType to make the conditional check
+    requestType: true,
     licenses: true,
     managers: true,
     balance: true,
   })
   .refine(
     (data) => {
-      // If the request type requires a balance sheet, then the balance field must have a file.
       if (data.requestType && data.requestType !== "modify_data") {
         return !!data.balance;
       }
-      // Otherwise, we don't care about the balance field.
       return true;
     },
     {
-      // This message will be shown if the refine check fails.
       message: errorMessages.balanceRequired,
-      path: ["balance"], // Attach the error specifically to the 'balance' field.
+      path: ["balance"],
     }
   );
 
-// The final schema for the entire form submission remains the same.
+// The final schema for the entire form submission remains the same,
+// ensuring the conditional validation applies at the final submission stage as well.
 export const serviceRequestFinalSchema = serviceRequestObjectSchema.refine(
   (data) => {
     if (data.requestType !== "modify_data") {
