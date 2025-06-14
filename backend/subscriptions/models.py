@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.core.validators import MinValueValidator
 
@@ -5,7 +6,11 @@ from django.core.validators import MinValueValidator
 class BaseApplication(models.Model):
     """
     An abstract base model containing common fields for all application forms.
+    Now uses a UUID for the primary key.
     """
+
+    # This is the key change:
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     fullName = models.CharField(max_length=255, verbose_name="الاسم الكامل")
     email = models.EmailField(verbose_name="البريد الإلكتروني")
