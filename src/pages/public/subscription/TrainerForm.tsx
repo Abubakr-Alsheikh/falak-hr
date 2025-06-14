@@ -23,6 +23,7 @@ import {
   FormRadioGroupField,
 } from "./FormElements";
 import { ArrowLeft } from "lucide-react";
+import SuccessDialog from "@/components/common/SuccessDialog"; // Import the new dialog
 
 interface TrainerFormProps {
   onBack: () => void;
@@ -31,9 +32,7 @@ interface TrainerFormProps {
 
 const TrainerForm: React.FC<TrainerFormProps> = ({ onBack, onSuccess }) => {
   const [error, setError] = React.useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = React.useState<string | null>(
-    null
-  );
+  const [showSuccessDialog, setShowSuccessDialog] = React.useState(false); // New state for dialog
 
   const form = useForm<TrainerApplication>({
     resolver: zodResolver(trainerApplicationSchema),
@@ -47,6 +46,14 @@ const TrainerForm: React.FC<TrainerFormProps> = ({ onBack, onSuccess }) => {
       clientSegmentsBrief: "",
       serviceIdea: "",
       inquiriesNotes: "",
+      // Ensure all required enum fields have an initial value if you want to avoid Zod's `required_error` for type mismatch on initial render
+      ageCategory: undefined, // Or a default like "18 إلى 30"
+      nationality: undefined,
+      gender: undefined,
+      educationalDegree: undefined,
+      registrationType: undefined,
+      howHeard: undefined,
+      receiveNotifications: undefined,
     },
   });
 
@@ -54,18 +61,22 @@ const TrainerForm: React.FC<TrainerFormProps> = ({ onBack, onSuccess }) => {
 
   const onSubmit = async (data: TrainerApplication) => {
     setError(null);
-    setSuccessMessage(null);
     try {
-      const response = await subscriptionService.createTrainerApplication(data);
-      setSuccessMessage(response.message || "تم إرسال طلبك بنجاح! شكراً لك.");
-      form.reset();
-      onSuccess();
+      // The API call returns SuccessResponse with a message
+      await subscriptionService.createTrainerApplication(data);
+      setShowSuccessDialog(true); // Show success dialog
+      form.reset(); // Reset form fields
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
           "حدث خطأ غير متوقع أثناء إرسال الطلب. يرجى المحاولة مرة أخرى."
       );
     }
+  };
+
+  const handleCloseSuccessDialog = () => {
+    setShowSuccessDialog(false);
+    onSuccess(); // Trigger the parent's onSuccess to navigate back
   };
 
   return (
@@ -81,15 +92,7 @@ const TrainerForm: React.FC<TrainerFormProps> = ({ onBack, onSuccess }) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-6">
-            {successMessage && (
-              <Alert
-                variant="default"
-                className="border-green-400 bg-green-100 text-green-700 dark:border-green-600 dark:bg-green-900/30 dark:text-green-300"
-              >
-                <AlertTitle>نجاح!</AlertTitle>
-                <AlertDescription>{successMessage}</AlertDescription>
-              </Alert>
-            )}
+            {/* Removed inline success alert */}
             {error && (
               <Alert variant="destructive">
                 <AlertTitle>خطأ</AlertTitle>
@@ -246,6 +249,14 @@ const TrainerForm: React.FC<TrainerFormProps> = ({ onBack, onSuccess }) => {
           </CardFooter>
         </form>
       </Form>
+
+      {/* Success Dialog */}
+      <SuccessDialog
+        isOpen={showSuccessDialog}
+        onClose={handleCloseSuccessDialog}
+        title="تم الإرسال بنجاح!"
+        message="شكراً لتقديم طلبك، سنتواصل معك قريباً لمعالجة طلب الانضمام كمدرب."
+      />
     </Card>
   );
 };

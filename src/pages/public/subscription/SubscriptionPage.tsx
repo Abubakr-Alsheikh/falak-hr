@@ -32,7 +32,7 @@ const SubscriptionPage: React.FC = () => {
 
   const handleSubscriptionSuccess = () => {
     console.log("Subscription request submitted successfully!");
-    setTimeout(() => setCurrentView("selection"), 4000);
+    setTimeout(() => setCurrentView("selection"), 2000);
   };
 
   const handleBack = () => setCurrentView("selection");

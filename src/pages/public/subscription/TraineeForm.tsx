@@ -23,6 +23,7 @@ import {
   FormRadioGroupField,
 } from "./FormElements";
 import { ArrowLeft } from "lucide-react";
+import SuccessDialog from "@/components/common/SuccessDialog"; // Import the new dialog
 
 interface TraineeFormProps {
   onBack: () => void;
@@ -31,9 +32,7 @@ interface TraineeFormProps {
 
 const TraineeForm: React.FC<TraineeFormProps> = ({ onBack, onSuccess }) => {
   const [error, setError] = React.useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = React.useState<string | null>(
-    null
-  );
+  const [showSuccessDialog, setShowSuccessDialog] = React.useState(false); // New state for dialog
 
   const form = useForm<TraineeApplication>({
     resolver: zodResolver(traineeApplicationSchema),
@@ -43,6 +42,11 @@ const TraineeForm: React.FC<TraineeFormProps> = ({ onBack, onSuccess }) => {
       whatsappNumber: "",
       skillsToDevelop: "",
       inquiriesNotes: "",
+      // Ensure all required enum fields have an initial value
+      ageCategory: undefined,
+      nationality: undefined,
+      howHeard: undefined,
+      receiveNotifications: undefined,
     },
   });
 
@@ -50,18 +54,21 @@ const TraineeForm: React.FC<TraineeFormProps> = ({ onBack, onSuccess }) => {
 
   const onSubmit = async (data: TraineeApplication) => {
     setError(null);
-    setSuccessMessage(null);
     try {
-      const response = await subscriptionService.createTraineeApplication(data);
-      setSuccessMessage(response.message || "تم تسجيلك بنجاح! شكراً لك.");
-      form.reset();
-      onSuccess();
+      await subscriptionService.createTraineeApplication(data);
+      setShowSuccessDialog(true); // Show success dialog
+      form.reset(); // Reset form fields
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
           "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
       );
     }
+  };
+
+  const handleCloseSuccessDialog = () => {
+    setShowSuccessDialog(false);
+    onSuccess(); // Trigger the parent's onSuccess to navigate back
   };
 
   return (
@@ -77,15 +84,7 @@ const TraineeForm: React.FC<TraineeFormProps> = ({ onBack, onSuccess }) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-6">
-            {successMessage && (
-              <Alert
-                variant="default"
-                className="border-green-400 bg-green-100 text-green-700 dark:border-green-600 dark:bg-green-900/30 dark:text-green-300"
-              >
-                <AlertTitle>نجاح!</AlertTitle>
-                <AlertDescription>{successMessage}</AlertDescription>
-              </Alert>
-            )}
+            {/* Removed inline success alert */}
             {error && (
               <Alert variant="destructive">
                 <AlertTitle>خطأ</AlertTitle>
@@ -185,6 +184,14 @@ const TraineeForm: React.FC<TraineeFormProps> = ({ onBack, onSuccess }) => {
           </CardFooter>
         </form>
       </Form>
+
+      {/* Success Dialog */}
+      <SuccessDialog
+        isOpen={showSuccessDialog}
+        onClose={handleCloseSuccessDialog}
+        title="تم الإرسال بنجاح!"
+        message="شكراً لتقديم طلبك، سنتواصل معك قريباً لمعالجة طلب الانضمام كمتدرب."
+      />
     </Card>
   );
 };
