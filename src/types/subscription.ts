@@ -160,3 +160,74 @@ export type JobSeekerApplication = z.infer<typeof jobSeekerApplicationSchema>;
 export interface SuccessResponse {
   message: string;
 }
+
+interface BaseApplicationResponse {
+  id: string; // UUID
+  fullName: string;
+  email: string;
+  whatsappNumber: string;
+  ageCategory: string;
+  nationality: string;
+  howHeard: string;
+  receiveNotifications: string;
+  inquiriesNotes: string | null;
+  created_at: string; // ISO Date string
+}
+
+export interface TrainerApplicationResponse extends BaseApplicationResponse {
+  cityRegion: string;
+  gender: string;
+  educationalDegree: string;
+  registrationType: string;
+  specialization: string;
+  trainingPackageBrief: string;
+  clientSegmentsBrief: string;
+  serviceIdea: string;
+}
+
+export interface TraineeApplicationResponse extends BaseApplicationResponse {
+  skillsToDevelop: string;
+}
+
+export interface JobSeekerApplicationResponse extends BaseApplicationResponse {
+  cityRegion: string;
+  educationalDegree: string;
+  specialization: string;
+  yearsOfExperience: number;
+  desiredWorkField: string;
+  cvLink: string | null;
+}
+
+// A union type to represent any possible application response
+export type AnyApplicationResponse =
+  | TrainerApplicationResponse
+  | TraineeApplicationResponse
+  | JobSeekerApplicationResponse;
+
+// A type guard to check if an application is a TrainerApplicationResponse
+export function isTrainer(
+  app: AnyApplicationResponse
+): app is TrainerApplicationResponse {
+  return "serviceIdea" in app;
+}
+
+// A type guard to check if an application is a TraineeApplicationResponse
+export function isTrainee(
+  app: AnyApplicationResponse
+): app is TraineeApplicationResponse {
+  return "skillsToDevelop" in app;
+}
+
+// A type guard to check if an application is a JobSeekerApplicationResponse
+export function isJobSeeker(
+  app: AnyApplicationResponse
+): app is JobSeekerApplicationResponse {
+  return "yearsOfExperience" in app;
+}
+
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}

@@ -22,11 +22,17 @@ def api_root(request, format=None):
             # "inquiries": reverse(
             #     "list_create_contact_messages", request=request, format=format
             # ),
-            "subscriptions": reverse(
-                "subscription-request-list-create", request=request, format=format
+            "trainer": reverse(
+                "trainer-application-list", request=request, format=format
+            ),
+            "trainee": reverse(
+                "trainee-application-list", request=request, format=format
+            ),
+            "jobseeker": reverse(
+                "jobseeker-application-list", request=request, format=format
             ),
             "service_request": reverse(
-                "create-service-request", request=request, format=format
+                "service-request-list", request=request, format=format
             ),
         }
     )

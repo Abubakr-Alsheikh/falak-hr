@@ -32,7 +32,7 @@ const InquiriesPage = lazy(
   () => import("@/pages/dashboard/inquiries/InquiriesPage")
 );
 const SubscriptionRequestsPage = lazy(
-  () => import("@/pages/dashboard/subscriptions/SubscriptionRequestsPage")
+  () => import("@/pages/dashboard/applications/ApplicationsListPage")
 );
 
 const ServiceRequestsPage = lazy(

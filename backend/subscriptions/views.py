@@ -1,7 +1,7 @@
 # backend/subscriptions/views.py
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import TrainerApplication, TraineeApplication, JobSeekerApplication
 from .serializers import (
@@ -29,7 +29,7 @@ class BaseApplicationViewSet(viewsets.ModelViewSet):
             self.permission_classes = [AllowAny]
         else:
             # Only admin users can list, retrieve, or modify submissions
-            self.permission_classes = [IsAdminUser]
+            self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
     def create(self, request, *args, **kwargs):
