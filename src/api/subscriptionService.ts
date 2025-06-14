@@ -1,28 +1,55 @@
 import apiClient from "./client";
-import { SubscriptionResponse, SuccesssResponse } from "@/types/subscription";
-import { PaginatedResponse } from "@utils/pagination";
+import {
+  TrainerApplication,
+  TraineeApplication,
+  SuccessResponse,
+  JobSeekerApplication,
+} from "../types/subscription";
 
-export interface GetSubscriptionRequestsParams {
-  page?: number;
-  page_size?: number; //
-  search?: string;
-  ordering?: string;
-  is_processed?: boolean;
-}
+// Note: The previous getSubscriptionRequests and createSubscriptionRequest functions are removed.
+// Add them back if they are used elsewhere in your application.
 
 const subscriptionService = {
-  getSubscriptionRequests: async (
-    params: GetSubscriptionRequestsParams = {}
-  ): Promise<PaginatedResponse<SubscriptionResponse>> => {
-    const response = await apiClient.get<
-      PaginatedResponse<SubscriptionResponse>
-    >("/subscriptions/", { params });
+  /**
+   * Submits a trainer application to the backend.
+   * @param data The trainer application data.
+   * @returns A success message from the API.
+   */
+  createTrainerApplication: async (
+    data: TrainerApplication
+  ): Promise<SuccessResponse> => {
+    const response = await apiClient.post<SuccessResponse>(
+      "/subscriptions/trainers/",
+      data
+    );
     return response.data;
   },
 
-  createSubscriptionRequest: async (data: any) => {
-    const response = await apiClient.post<SuccesssResponse>(
-      "/subscriptions/",
+  /**
+   * Submits a trainee application to the backend.
+   * @param data The trainee application data.
+   * @returns A success message from the API.
+   */
+  createTraineeApplication: async (
+    data: TraineeApplication
+  ): Promise<SuccessResponse> => {
+    const response = await apiClient.post<SuccessResponse>(
+      "/subscriptions/trainees/",
+      data
+    );
+    return response.data;
+  },
+
+  /**
+   * Submits a job seeker application to the backend.
+   * @param data The job seeker application data.
+   * @returns A success message from the API.
+   */
+  createJobSeekerApplication: async (
+    data: JobSeekerApplication
+  ): Promise<SuccessResponse> => {
+    const response = await apiClient.post<SuccessResponse>(
+      "/subscriptions/job-seekers/",
       data
     );
     return response.data;
