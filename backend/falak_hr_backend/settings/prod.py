@@ -7,7 +7,7 @@ import os
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["falakhr.sa", "www.falakhr.sa"]
+ALLOWED_HOSTS = ["falakhr.sa", "www.falakhr.sa", "162.241.115.35"]
 
 # DATABASES = {
 #     "default": {
