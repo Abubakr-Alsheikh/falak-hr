@@ -16,7 +16,7 @@ const RemoteWorkExplain: React.FC = () => {
         "نقدم دورات تركز على تزويد المتدربين بالمهارات والأدوات اللازمة للنجاح في بيئة العمل عن بعد، بما في ذلك إدارة الوقت، التواصل الفعال، واستراتيجيات زيادة الإنتاجية وتحقيق التوازن.",
       imageUrl: calendarHighlighting,
       buttonText: "سجل الان كمتدرب",
-      buttonLink: "https://forms.gle/ErZyTGXJNg7mRZ7a7",
+      buttonLink: "/subscription",
     },
     {
       title: "برامج تدريبية مخصصة للشركات",
@@ -24,7 +24,7 @@ const RemoteWorkExplain: React.FC = () => {
         "نصمم ونقدم برامج تدريبية حسب الطلب لشركائنا، تغطي احتياجاتهم الخاصة في مجالات مثل خدمة العملاء، اللوجستيات، إدارة المشاريع، وغيرها، لضمان تلبية متطلبات أعمالهم الفريدة.",
       imageUrl: collaborativePlanning,
       buttonText: "سجل الان كمتدرب",
-      buttonLink: "https://forms.gle/ErZyTGXJNg7mRZ7a7",
+      buttonLink: "/subscription",
     },
     {
       title: "مدربون بخبرة وكفاءة عالية",
@@ -32,7 +32,7 @@ const RemoteWorkExplain: React.FC = () => {
         "يقدم دوراتنا نخبة من المدربين المعتمدين الذين يتمتعون بخبرة واسعة وكفاءة عالية، مع فهم عميق لاحتياجات السوق السعودي ومتطلبات بيئة العمل الحديثة.",
       imageUrl: knowledgeableInstructor,
       buttonText: "سجل الان كمتدرب",
-      buttonLink: "https://forms.gle/ErZyTGXJNg7mRZ7a7",
+      buttonLink: "/subscription",
     },
     {
       title: "بيئة تدريب تفاعلية وشهادات معتمدة",
@@ -40,7 +40,7 @@ const RemoteWorkExplain: React.FC = () => {
         "نوفر بيئة تدريبية تفاعلية وجذابة باستخدام أحدث التقنيات والأساليب. يحصل المشاركون على شهادات حضور معتمدة تعزز مسارهم المهني عند إتمام الدورة.",
       imageUrl: groupOfIndividuals,
       buttonText: "سجل الان كمتدرب",
-      buttonLink: "https://forms.gle/ErZyTGXJNg7mRZ7a7",
+      buttonLink: "/subscription",
     },
   ];
 

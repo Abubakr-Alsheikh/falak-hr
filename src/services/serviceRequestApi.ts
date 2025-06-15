@@ -63,7 +63,9 @@ export const submitServiceRequest = async (
     }
 
     // Handle non-Axios errors or cases where there's no response.
-    throw new Error("An unexpected network error occurred. Please try again.");
+    throw new Error(
+      "حدث خطأ غير متوقع في الشبكة. يُرجى المحاولة مرة أخرى. او إعادة تحديث الصفحة, وفي حال استمرار المشكلة, يرجى التواصل مع الدعم."
+    );
   }
 };
 
