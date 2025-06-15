@@ -42,14 +42,7 @@ export const submitServiceRequest = async (
     // Use the apiClient to make the POST request.
     const response = await apiClient.post<SubmitResponse>(
       "/service-requests/", // The endpoint path
-      formData, // The FormData payload
-      {
-        // **CRUCIAL**: Override the default 'application/json' header for this specific request.
-        // Axios will automatically set the correct multipart boundary.
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
+      formData // The FormData payload
     );
 
     // With Axios, the response data is directly on the `data` property.
