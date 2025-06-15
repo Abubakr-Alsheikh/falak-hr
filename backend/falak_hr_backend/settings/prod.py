@@ -7,7 +7,14 @@ import os
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["falakhr.sa", "www.falakhr.sa", "162.241.115.35"]
+ALLOWED_HOSTS = [
+    "falakhr.sa",
+    "www.falakhr.sa",
+    "162.241.115.35",
+    "www.roserrooter.com",
+    "162-241-115-35.webhostbox.net",
+    "162.241.115.35:443",
+]
 
 # DATABASES = {
 #     "default": {
