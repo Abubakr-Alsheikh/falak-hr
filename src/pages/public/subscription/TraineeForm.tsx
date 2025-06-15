@@ -61,7 +61,7 @@ const TraineeForm: React.FC<TraineeFormProps> = ({ onBack, onSuccess }) => {
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
-          "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
+          "خطأ غير متوقع. يرجى المحاولة مرة أخرى. او إعادة تحديث الصفحة, وفي حال استمرار المشكلة, يرجى التواصل مع الدعم."
       );
     }
   };

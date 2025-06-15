@@ -134,7 +134,8 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({
         }, 2000);
       }
     } catch (error: any) {
-      let errorMessage = "فشل الإرسال. حدث خطأ غير متوقع.";
+      let errorMessage =
+        "خطأ غير متوقع في عملية الارسال. يرجى المحاولة مرة أخرى. او إعادة تحديث الصفحة, وفي حال استمرار المشكلة يرجى التواصل مع الدعم.";
       if (error && error.errors) {
         errorMessage = Object.values(error.errors).join(" ");
       } else if (error && error.message) {

@@ -69,7 +69,7 @@ const TrainerForm: React.FC<TrainerFormProps> = ({ onBack, onSuccess }) => {
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
-          "حدث خطأ غير متوقع أثناء إرسال الطلب. يرجى المحاولة مرة أخرى."
+          "خطأ غير متوقع. يرجى المحاولة مرة أخرى. او إعادة تحديث الصفحة, وفي حال استمرار المشكلة, يرجى التواصل مع الدعم."
       );
     }
   };

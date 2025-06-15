@@ -66,7 +66,7 @@ const JobSeekerForm: React.FC<JobSeekerFormProps> = ({ onBack, onSuccess }) => {
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
-          "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
+          "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى. او إعادة تحديث الصفحة, وفي حال استمرار المشكلة, يرجى التواصل مع الدعم. "
       );
     }
   };

@@ -56,7 +56,9 @@ const ContactForm: React.FC = () => {
 
         setSubmitError(errorMessage);
       } else {
-        setSubmitError("حدث خطأ غير متوقع. يُرجى المحاولة لاحقًا.");
+        setSubmitError(
+          "حدث  خطأ غير متوقع. يرجى المحاولة مرة أخرى. او إعادة تحديث الصفحة, وفي حال استمرار المشكلة, يرجى التواصل مع الدعم."
+        );
       }
     } finally {
       setIsSubmitting(false);
