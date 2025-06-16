@@ -123,6 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -134,3 +135,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # In production, you would typically use cloud storage like AWS S3.
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"  # Creates a 'media' folder at your project root
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
