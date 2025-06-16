@@ -20,6 +20,7 @@ import {
   ServiceRequestData,
 } from "@/lib/validations/serviceRequestSchema";
 import { submitServiceRequest } from "@/services/serviceRequestApi";
+import { Progress } from "../ui/progress";
 
 const steps = [
   { id: 1, title: "نوع الطلب" },
@@ -51,6 +52,7 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleDataChange = <T extends keyof ServiceRequestData>(
     field: T,
@@ -115,6 +117,7 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitError(null);
+    setUploadProgress(0);
 
     const result = serviceRequestFinalSchema.safeParse(formData);
     if (!result.success) {
@@ -124,7 +127,10 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({
 
     setIsSubmitting(true);
     try {
-      await submitServiceRequest(result.data);
+      // Pass the progress handler to the API call
+      await submitServiceRequest(result.data, (progress) => {
+        setUploadProgress(progress);
+      });
       setIsSubmitted(true);
       // If a success callback is provided, call it.
       if (onFormSubmitSuccess) {
@@ -144,6 +150,7 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({
       setSubmitError(errorMessage);
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(0);
     }
   };
 
@@ -183,6 +190,14 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({
           <form onSubmit={handleSubmit} className="mt-10">
             <div className="min-h-[300px]">{renderStepContent()}</div>
 
+            {isSubmitting && (
+              <div className="my-4">
+                <Progress value={uploadProgress} className="w-full" />
+                <p className="mt-2 text-center text-sm text-muted-foreground">
+                  {uploadProgress}%
+                </p>
+              </div>
+            )}
             <div className="mt-10 flex justify-between">
               {currentStep > 1 ? (
                 <Button

@@ -11,7 +11,6 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL_V2;
 const createApiClient = (): AxiosInstance => {
   const config: AxiosRequestConfig = {
     baseURL: BASE_URL,
-    timeout: 5000,
     headers: {
       "Content-Type": "application/json",
     },

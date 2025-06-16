@@ -17,52 +17,53 @@ interface ServiceRequestParams {
   ordering?: string;
   search?: string; // Add search if the backend supports it
 }
-
 /**
- * Submits the service request form data to the backend using the centralized apiClient.
- * @param data The validated form data from the Zod schema.
+ * Submits the service request form data to the backend.
+ * @param data The validated form data.
+ * @param onUploadProgress Optional callback to track upload progress.
  * @returns The response from the server.
  */
 export const submitServiceRequest = async (
-  data: ServiceRequestData
+  data: ServiceRequestData,
+  onUploadProgress?: (progress: number) => void // <-- ADD THIS PARAMETER
 ): Promise<SubmitResponse> => {
-  // The FormData creation logic remains exactly the same.
   const formData = new FormData();
   (Object.keys(data) as Array<keyof ServiceRequestData>).forEach((key) => {
     const value = data[key];
     if (value instanceof File) {
       formData.append(key, value);
     } else if (value !== null && value !== undefined) {
-      // FormData converts values to strings, which is what the backend expects for multipart.
       formData.append(key, String(value));
     }
   });
 
   try {
-    // Use the apiClient to make the POST request.
     const response = await apiClient.post<SubmitResponse>(
-      "/service-requests/", // The endpoint path
-      formData, // The FormData payload
+      "/service-requests/",
+      formData,
       {
-        // **CRUCIAL**: Override the default 'application/json' header for this specific request.
-        // Axios will automatically set the correct multipart boundary.
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        // ** ADD THIS CONFIGURATION FOR PROGRESS TRACKING **
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            // Call the callback function if it was provided
+            if (onUploadProgress) {
+              onUploadProgress(percentCompleted);
+            }
+          }
+        },
       }
     );
-
-    // With Axios, the response data is directly on the `data` property.
     return response.data;
   } catch (error) {
-    // Use Axios's type guard for robust error handling.
     if (isAxiosError(error) && error.response) {
-      // The frontend expects the backend's error payload (e.g., { errors: {...} }).
-      // Throwing this will propagate it to the component's catch block.
       throw error.response.data;
     }
-
-    // Handle non-Axios errors or cases where there's no response.
     throw new Error(
       "حدث خطأ غير متوقع في الشبكة. يُرجى المحاولة مرة أخرى. او إعادة تحديث الصفحة, وفي حال استمرار المشكلة, يرجى التواصل مع الدعم."
     );

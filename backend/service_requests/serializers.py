@@ -1,4 +1,3 @@
-# backend/service_requests/serializers.py
 import re
 from rest_framework import serializers
 from .models import ServiceRequest
